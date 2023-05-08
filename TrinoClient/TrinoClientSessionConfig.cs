@@ -40,6 +40,11 @@ namespace TrinoClient
         #region Public Properties
 
         /// <summary>
+        /// JWT Token used for authentication such as with Azure Trino. If set this will be used instead of the User and Password properties.
+        /// </summary>
+        public string JwtToken { get; set; }
+
+        /// <summary>
         /// The DNS host name or IP address of the presto coordinator.
         /// </summary>
         public string Host { get; set; }
@@ -272,6 +277,7 @@ namespace TrinoClient
         /// </summary>
         public TrinoClientSessionConfig()
         {
+            this.JwtToken = null;
             this.Host = _DEFAULT_HOST;
             this.Port = _DEFAULT_PORT;
             this.User = Environment.GetEnvironmentVariable("USERNAME") ?? Environment.GetEnvironmentVariable("USER");

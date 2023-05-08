@@ -1201,7 +1201,11 @@ namespace TrinoClient
             request.Headers.Add("User-Agent", $"bamcis_presto_dotnet_core_sdk/{AssemblyVersion}");
             request.Headers.Add(TrinoHeader.TRINO_SOURCE.Value, "bamcis_presto_dotnet_core_sdk");
 
-            if (!String.IsNullOrEmpty(this.Configuration.User))
+            if (!String.IsNullOrEmpty(this.Configuration.JwtToken))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue(scheme: "Bearer", parameter: this.Configuration.JwtToken);
+            }
+            else if (!String.IsNullOrEmpty(this.Configuration.User))
             {
                 request.Headers.Add(TrinoHeader.TRINO_USER.Value, this.Configuration.User.Replace(":", ""));
 
