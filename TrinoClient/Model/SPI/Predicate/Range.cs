@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.SPI.Type;
-using System;
+﻿using System;
 using System.Text;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Model.SPI.Predicate
 {
@@ -21,7 +21,7 @@ namespace TrinoClient.Model.SPI.Predicate
         {
             get
             {
-                return this.Low.Type;
+                return Low.Type;
             }
         }
 
@@ -31,15 +31,9 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public Range(Marker low, Marker high)
         {
-            if (low == null)
-            {
-                throw new ArgumentNullException("low");
-            }
+            ArgumentNullException.ThrowIfNull(low);
 
-            if (high == null)
-            {
-                throw new ArgumentNullException("high");
-            }
+            ArgumentNullException.ThrowIfNull(high);
 
             if (low.IsUpperUnbounded())
             {
@@ -56,8 +50,8 @@ namespace TrinoClient.Model.SPI.Predicate
                 throw new ArgumentOutOfRangeException("Low must be less than or equal to high.");
             }
 
-            this.Low = low;
-            this.High = high;
+            Low = low;
+            High = high;
         }
 
         #endregion
@@ -66,72 +60,69 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public bool IsSingleValue()
         {
-            return this.Low.Bound == Bound.EXACTLY && this.Low.Equals(this.High);
+            return Low.Bound == Bound.EXACTLY && Low.Equals(High);
         }
 
         public object GetSingleValue()
         {
-            if (!this.IsSingleValue())
+            if (!IsSingleValue())
             {
                 throw new InvalidOperationException("Range does not have just a single value.");
             }
 
-            return this.Low.GetValue();
+            return Low.GetValue();
         }
 
         public bool IsAll()
         {
-            return this.Low.IsLowerUnbounded() && this.High.IsUpperUnbounded();
+            return Low.IsLowerUnbounded() && High.IsUpperUnbounded();
         }
 
         public bool Includes(Marker marker)
         {
-            if (marker == null)
-            {
-                throw new ArgumentNullException("marker");
-            }
+            ArgumentNullException.ThrowIfNull(marker);
 
-            this.CheckTypeCompatibility(marker);
+            CheckTypeCompatibility(marker);
 
-            return this.Low.CompareTo(marker) <= 0 && this.High.CompareTo(marker) >= 0;
+            return Low.CompareTo(marker) <= 0 && High.CompareTo(marker) >= 0;
         }
 
         public bool Contains(Range other)
         {
-            this.CheckTypeCompatibility(other);
+            CheckTypeCompatibility(other);
 
-            return this.Low.CompareTo(other.Low) <= 0 &&
-                   this.High.CompareTo(other.High) >= 0;
+            return Low.CompareTo(other.Low) <= 0 &&
+                   High.CompareTo(other.High) >= 0;
         }
 
         public Range Span(Range other)
         {
-            this.CheckTypeCompatibility(other);
+            CheckTypeCompatibility(other);
 
-            Marker LowMarker = Marker.Min(this.Low, other.Low);
-            Marker HighMarker = Marker.Max(this.High, other.High);
+            Marker LowMarker = Marker.Min(Low, other.Low);
+            Marker HighMarker = Marker.Max(High, other.High);
             return new Range(LowMarker, HighMarker);
         }
 
         public bool Overlaps(Range other)
         {
-            this.CheckTypeCompatibility(other);
+            CheckTypeCompatibility(other);
 
-            return this.Low.CompareTo(other.High) <= 0 &&
-                other.Low.CompareTo(this.High) <= 0;
+            return Low.CompareTo(other.High) <= 0 &&
+                other.Low.CompareTo(High) <= 0;
         }
 
         public Range Intersect(Range other)
         {
-            this.CheckTypeCompatibility(other);
+            CheckTypeCompatibility(other);
 
-            if (!this.Overlaps(other))
+            if (!Overlaps(other))
             {
                 throw new ArgumentException("Cannot intersect non-overlapping ranges");
             }
 
-            Marker LowMarker = Marker.Max(this.Low, other.Low);
-            Marker HighMarker = Marker.Min(this.High, other.High);
+            Marker LowMarker = Marker.Max(Low, other.Low);
+            Marker HighMarker = Marker.Min(High, other.High);
             return new Range(LowMarker, HighMarker);
         }
 
@@ -142,37 +133,37 @@ namespace TrinoClient.Model.SPI.Predicate
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             Range Other = (Range)obj;
 
-            return this.Low.Equals(Other.Low) &&
-                    this.High.Equals(Other.High);
+            return Low.Equals(Other.Low) &&
+                    High.Equals(Other.High);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Low, this.High);
+            return Hashing.Hash(Low, High);
         }
 
         public string ToString(IConnectorSession session)
         {
-            StringBuilder SB = new StringBuilder();
+            StringBuilder SB = new();
 
-            if (this.IsSingleValue())
+            if (IsSingleValue())
             {
-                SB.Append("[").Append(this.Low.GetPrintableValue(session)).Append("]");
+                SB.Append("[").Append(Low.GetPrintableValue(session)).Append("]");
             }
             else
             {
-                SB.Append(this.Low.Bound == Bound.EXACTLY ? "[" : "(");
-                SB.Append(this.Low.IsLowerUnbounded() ? "<min>" : this.Low.GetPrintableValue(session));
+                SB.Append(Low.Bound == Bound.EXACTLY ? "[" : "(");
+                SB.Append(Low.IsLowerUnbounded() ? "<min>" : Low.GetPrintableValue(session));
                 SB.Append(", ");
-                SB.Append(this.High.IsUpperUnbounded() ? "<max>" : this.High.GetPrintableValue(session));
-                SB.Append(this.High.Bound == Bound.EXACTLY ? "]" : ")");
+                SB.Append(High.IsUpperUnbounded() ? "<max>" : High.GetPrintableValue(session));
+                SB.Append(High.Bound == Bound.EXACTLY ? "]" : ")");
             }
 
             return SB.ToString();
@@ -225,17 +216,17 @@ namespace TrinoClient.Model.SPI.Predicate
 
         private void CheckTypeCompatibility(Range range)
         {
-            if (!this.Type.Equals(range.Type))
+            if (!Type.Equals(range.Type))
             {
-                throw new ArgumentException($"Mismatched Range types: {this.Type} vs {range.Type}.");
+                throw new ArgumentException($"Mismatched Range types: {Type} vs {range.Type}.");
             }
         }
 
         private void CheckTypeCompatibility(Marker marker)
         {
-            if (!this.Type.Equals(marker.Type))
+            if (!Type.Equals(marker.Type))
             {
-                throw new ArgumentException($"Marker of {marker.Type} does not match Range of {this.Type}.");
+                throw new ArgumentException($"Marker of {marker.Type} does not match Range of {Type}.");
             }
         }
 

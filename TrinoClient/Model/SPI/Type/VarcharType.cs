@@ -15,20 +15,20 @@ namespace TrinoClient.Model.SPI.Type
 
         #region Public Properties
 
-        public static readonly int UNBOUNDED_LENGTH = Int32.MaxValue;
-        public static readonly int MAX_LENGTH = Int32.MaxValue - 1;
-        public static readonly VarcharType VARCHAR = new VarcharType(UNBOUNDED_LENGTH);
+        public static readonly int UNBOUNDED_LENGTH = int.MaxValue;
+        public static readonly int MAX_LENGTH = int.MaxValue - 1;
+        public static readonly VarcharType VARCHAR = new(UNBOUNDED_LENGTH);
 
         public int Length
         {
             get
             {
-                if (this.IsUnbounded())
+                if (IsUnbounded())
                 {
                     throw new InvalidOperationException("Cannot get size of unbounded VARCHAR.");
                 }
 
-                return this._Length;
+                return _Length;
             }
         }
 
@@ -40,7 +40,7 @@ namespace TrinoClient.Model.SPI.Type
         {
             ParameterCheck.OutOfRange(length >= 0, "length");
 
-            this._Length = length;
+            _Length = length;
         }
 
         #endregion
@@ -49,7 +49,7 @@ namespace TrinoClient.Model.SPI.Type
 
         public bool IsUnbounded()
         {
-            return this._Length == UNBOUNDED_LENGTH;
+            return _Length == UNBOUNDED_LENGTH;
         }
 
         public override bool IsComparable()
@@ -69,29 +69,29 @@ namespace TrinoClient.Model.SPI.Type
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             VarcharType other = (VarcharType)obj;
 
-            return Object.Equals(this._Length, other._Length);
+            return Object.Equals(_Length, other._Length);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this._Length);
+            return Hashing.Hash(_Length);
         }
 
         public string DisplayName()
         {
-            if (this._Length == UNBOUNDED_LENGTH)
+            if (_Length == UNBOUNDED_LENGTH)
             {
-                return this.Signature.Base;
+                return Signature.Base;
             }
 
-            return this.Signature.ToString();
+            return Signature.ToString();
         }
 
         public override string ToString()

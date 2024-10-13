@@ -20,33 +20,33 @@ namespace TrinoClient.Model.SPI.Type
 
         public TypeSignatureParameter(TypeSignature typeSignature)
         {
-            this.Kind = ParameterKind.TYPE;
-            this.Value = typeSignature ?? throw new ArgumentNullException("typeSignature");
+            Kind = ParameterKind.TYPE;
+            Value = typeSignature ?? throw new ArgumentNullException(nameof(typeSignature));
         }
 
         public TypeSignatureParameter(long longLiteral)
         {
-            this.Kind = ParameterKind.LONG;
-            this.Value = longLiteral;
+            Kind = ParameterKind.LONG;
+            Value = longLiteral;
         }
 
         public TypeSignatureParameter(NamedTypeSignature namedTypeSignature)
         {
-            this.Kind = ParameterKind.NAMED_TYPE;
-            this.Value = namedTypeSignature ?? throw new ArgumentNullException("namedTypeSignature");
+            Kind = ParameterKind.NAMED_TYPE;
+            Value = namedTypeSignature ?? throw new ArgumentNullException(nameof(namedTypeSignature));
         }
 
         public TypeSignatureParameter(string variable)
         {
-            this.Kind = ParameterKind.VARIABLE;
-            this.Value = variable;
+            Kind = ParameterKind.VARIABLE;
+            Value = variable;
         }
 
         [JsonConstructor]
         private TypeSignatureParameter(ParameterKind kind, object value)
         {
-            this.Kind = kind;
-            this.Value = value ?? throw new ArgumentNullException("value", "The value cannot be null"); ;
+            Kind = kind;
+            Value = value ?? throw new ArgumentNullException(nameof(value), "The value cannot be null"); ;
         }
 
         #endregion
@@ -55,22 +55,22 @@ namespace TrinoClient.Model.SPI.Type
 
         public bool IsTypeSignature()
         {
-            return this.Kind == ParameterKind.TYPE;
+            return Kind == ParameterKind.TYPE;
         }
 
         public bool IsLongLiteral()
         {
-            return this.Kind == ParameterKind.LONG;
+            return Kind == ParameterKind.LONG;
         }
 
         public bool IsNamedTypeSignature()
         {
-            return this.Kind == ParameterKind.NAMED_TYPE;
+            return Kind == ParameterKind.NAMED_TYPE;
         }
 
         public bool IsVariable()
         {
-            return this.Kind == ParameterKind.VARIABLE;
+            return Kind == ParameterKind.VARIABLE;
         }
 
         public TypeSignature GetTypeSignature()
@@ -95,19 +95,14 @@ namespace TrinoClient.Model.SPI.Type
 
         public bool IsCalculated()
         {
-            switch (this.Kind)
+            return Kind switch
             {
-                case ParameterKind.TYPE:
-                    return this.GetTypeSignature().Calculated;
-                case ParameterKind.NAMED_TYPE:
-                    return this.GetNamedTypeSignature().TypeSignature.Calculated;
-                case ParameterKind.LONG:
-                    return false;
-                case ParameterKind.VARIABLE:
-                    return true;
-                default:
-                    throw new ArgumentException($"Unexpected parameter kind: {this.Kind}");
-            }
+                ParameterKind.TYPE => GetTypeSignature().Calculated,
+                ParameterKind.NAMED_TYPE => GetNamedTypeSignature().TypeSignature.Calculated,
+                ParameterKind.LONG => false,
+                ParameterKind.VARIABLE => true,
+                _ => throw new ArgumentException($"Unexpected parameter kind: {Kind}"),
+            };
         }
 
         public override string ToString()
@@ -121,7 +116,7 @@ namespace TrinoClient.Model.SPI.Type
 
         private object GetValue(ParameterKind expectedParameterKind, System.Type target)
         {
-            return Convert.ChangeType(this.Value, target);
+            return Convert.ChangeType(Value, target);
         }
 
         #endregion

@@ -8,48 +8,39 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.IndexJoinNode.java
     /// </summary>
-    public class IndexJoinNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.IndexJoinNode.java
+                                 /// </summary>
+    public class IndexJoinNode(
+        PlanNodeId id,
+        IndexJoinNodeType type,
+        PlanNode probeSource,
+        PlanNode indexSource,
+        IEnumerable<IndexJoinNode.EquiJoinClause> criteria,
+        Symbol probeHashSymbol,
+        Symbol indexHashSymbol
+            ) : PlanNode(id)
     {
         #region Public Properties
 
-        public IndexJoinNodeType Type { get; }
+        public IndexJoinNodeType Type { get; } = type;
 
-        public PlanNode ProbeSource { get; }
+        public PlanNode ProbeSource { get; } = probeSource ?? throw new ArgumentNullException(nameof(probeSource));
 
-        public PlanNode IndexSource { get; }
+        public PlanNode IndexSource { get; } = indexSource ?? throw new ArgumentNullException(nameof(indexSource));
 
-        public IEnumerable<EquiJoinClause> Criteria { get; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        [Optional]
-        public Symbol ProbeHashSymbol { get; }
+        public IEnumerable<EquiJoinClause> Criteria { get; } = criteria ?? throw new ArgumentNullException(nameof(criteria));
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
-        public Symbol IndexHashSymbol { get; }
+        public Symbol ProbeHashSymbol { get; } = probeHashSymbol;
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [Optional]
+        public Symbol IndexHashSymbol { get; } = indexHashSymbol;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public IndexJoinNode(
-            PlanNodeId id,
-            IndexJoinNodeType type,
-            PlanNode probeSource,
-            PlanNode indexSource,
-            IEnumerable<EquiJoinClause> criteria,
-            Symbol probeHashSymbol,
-            Symbol indexHashSymbol
-            ) : base(id)
-        {
-            this.Type = type;
-            this.ProbeSource = probeSource ?? throw new ArgumentNullException("probeSource");
-            this.IndexSource = indexSource ?? throw new ArgumentNullException("indexSource");
-            this.Criteria = criteria ?? throw new ArgumentNullException("criteria");
-            this.ProbeHashSymbol = probeHashSymbol;
-            this.IndexHashSymbol = indexHashSymbol;
-        }
 
         #endregion
 
@@ -57,36 +48,29 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.ProbeSource.GetOutputSymbols().Concat(this.IndexSource.GetOutputSymbols());
+            return ProbeSource.GetOutputSymbols().Concat(IndexSource.GetOutputSymbols());
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.ProbeSource;
-            yield return this.IndexSource;
+            yield return ProbeSource;
+            yield return IndexSource;
         }
 
         #endregion
 
         #region Internal Classes
 
-        public class EquiJoinClause
+        public class EquiJoinClause(Symbol probe, Symbol index)
         {
             #region Public Properties
 
-            public Symbol Probe { get; }
+            public Symbol Probe { get; } = probe ?? throw new ArgumentNullException(nameof(probe));
 
-            public Symbol Index { get; }
+            public Symbol Index { get; } = index ?? throw new ArgumentNullException(nameof(index));
 
             #endregion
-
             #region Constructors
-
-            public EquiJoinClause(Symbol probe, Symbol index)
-            {
-                this.Probe = probe ?? throw new ArgumentNullException("probe");
-                this.Index = index ?? throw new ArgumentNullException("index");
-            }
 
             #endregion
         }

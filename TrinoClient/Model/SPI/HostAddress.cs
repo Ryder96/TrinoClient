@@ -1,8 +1,8 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.SPI
 {
@@ -15,7 +15,7 @@ namespace TrinoClient.Model.SPI
         #region Private Fields
 
         private static readonly int NO_PORT = -1;
-        private static readonly Regex BRACKET_PATTERN = new Regex("^\\[(.*:.*)\\](?::(\\d*))?$");
+        private static readonly Regex BRACKET_PATTERN = new("^\\[(.*:.*)\\](?::(\\d*))?$");
 
         #endregion
 
@@ -33,14 +33,14 @@ namespace TrinoClient.Model.SPI
         public HostAddress(string hostPortString)
         {
             HostAddress Address = HostAddress.FromString(hostPortString);
-            this.Host = Address.Host;
-            this.Port = Address.Port;
+            Host = Address.Host;
+            Port = Address.Port;
         }
 
         public HostAddress(string host, int port)
         {
-            this.Host = host;
-            this.Port = port;
+            Host = host;
+            Port = port;
         }
 
         #endregion
@@ -49,9 +49,9 @@ namespace TrinoClient.Model.SPI
 
         public static HostAddress FromString(string hostPortString)
         {
-            if (String.IsNullOrEmpty(hostPortString))
+            if (string.IsNullOrEmpty(hostPortString))
             {
-                throw new ArgumentNullException("hostPortString", "The host port string was null or empty.");
+                throw new ArgumentNullException(nameof(hostPortString), "The host port string was null or empty.");
             }
 
             string Host;
@@ -88,7 +88,7 @@ namespace TrinoClient.Model.SPI
 
             int Port = NO_PORT;
 
-            if (!String.IsNullOrEmpty(PortString))
+            if (!string.IsNullOrEmpty(PortString))
             {
                 // Try to parse the whole port string as a number.
                 if (PortString.StartsWith("+"))
@@ -97,7 +97,7 @@ namespace TrinoClient.Model.SPI
                 }
                 try
                 {
-                    Port = Int32.Parse(PortString);
+                    Port = int.Parse(PortString);
                 }
                 catch (FormatException)
                 {
@@ -115,25 +115,25 @@ namespace TrinoClient.Model.SPI
 
         public bool HasPort()
         {
-            return this.Port >= 0;
+            return Port >= 0;
         }
 
         public override string ToString()
         {
-            StringBuilder SB = new StringBuilder();
+            StringBuilder SB = new();
 
-            if (this.Host.IndexOf(":") >= 0)
+            if (Host.IndexOf(":") >= 0)
             {
-                SB.Append("[").Append(this.Host).Append("]");
+                SB.Append("[").Append(Host).Append("]");
             }
             else
             {
-                SB.Append(this.Host);
+                SB.Append(Host);
             }
 
-            if (this.HasPort())
+            if (HasPort())
             {
-                SB.Append(":").Append(this.Port);
+                SB.Append(":").Append(Port);
             }
 
             return SB.ToString();

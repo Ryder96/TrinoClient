@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TrinoClient.Model
+﻿namespace TrinoClient.Model
 {
     /// <summary>
     /// From io.airlift.slice.Slices.java
@@ -9,13 +7,13 @@ namespace TrinoClient.Model
     {
         #region Public Fields
 
-        public static readonly Slice EMPTY_SLICE = new Slice();
+        public static readonly Slice EMPTY_SLICE = new();
 
         #endregion
 
         #region Private Fields
 
-        private static readonly int MAX_ARRAY_SIZE = Int32.MaxValue - 8;
+        private static readonly int MAX_ARRAY_SIZE = int.MaxValue - 8;
 
         private static readonly int SLICE_ALLOC_THRESHOLD = 524288; // 2^19
 
@@ -49,7 +47,7 @@ namespace TrinoClient.Model
             Preconditions.CheckPositionIndexes(offset, offset + length, slice.Length);
 
             Slice Copy = Slices.Allocate(length);
-            Copy.SetBytes(0, slice, offset, length);
+            Slice.SetBytes(0, slice, offset, length);
 
             return Copy;
         }

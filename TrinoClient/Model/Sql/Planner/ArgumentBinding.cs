@@ -21,13 +21,13 @@ namespace TrinoClient.Model.Sql.Planner
         [JsonConstructor]
         public ArgumentBinding(Symbol column, object constant)
         {
-            if ((column != null) == (constant != null))
+            if (column != null == (constant != null))
             {
                 throw new ArgumentException("Either column or constant must be set, not both, and both cannot be null.");
             }
 
-            this.Column = column;
-            this.Constant = constant;
+            Column = column;
+            Constant = constant;
         }
 
         #endregion
@@ -36,12 +36,12 @@ namespace TrinoClient.Model.Sql.Planner
 
         public bool IsConstant()
         {
-            return this.Constant != null;
+            return Constant != null;
         }
 
         public bool IsVariable()
         {
-            return this.Column != null;
+            return Column != null;
         }
 
         public static ArgumentBinding ColumnBinding(Symbol column)
@@ -56,13 +56,13 @@ namespace TrinoClient.Model.Sql.Planner
 
         public ArgumentBinding Translate(Func<Symbol, Symbol> translator)
         {
-            if (this.IsConstant())
+            if (IsConstant())
             {
                 return this;
             }
             else
             {
-                return ColumnBinding(translator.Invoke(this.Column));
+                return ColumnBinding(translator.Invoke(Column));
             }
         }
 

@@ -1,9 +1,9 @@
-﻿using TrinoClient.Model.Operator;
-using TrinoClient.Model.Sql.Planner.Plan;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Model.Operator;
+using TrinoClient.Model.Sql.Planner.Plan;
 
 namespace TrinoClient.Model.Sql.Planner
 {
@@ -55,20 +55,20 @@ namespace TrinoClient.Model.Sql.Planner
             PipelineExecutionStrategy pipelineExecutionStrategy
             )
         {
-            this.Id = id ?? throw new ArgumentNullException("id");
-            this.Root = root ?? throw new ArgumentNullException("root");
-            this.Symbols = symbols ?? throw new ArgumentNullException("symbols");
-            this.Partitioning = partitioning ?? throw new ArgumentNullException("partitioning");
-            this.PartitionedSources = partitionedSources ?? throw new ArgumentNullException("partitionedSources");
-            this.PipelineExecutionStrategy = pipelineExecutionStrategy;
-            this.PartitioningScheme = partitioningScheme ?? throw new ArgumentNullException("partitioningScheme");
+            Id = id ?? throw new ArgumentNullException(nameof(id));
+            Root = root ?? throw new ArgumentNullException(nameof(root));
+            Symbols = symbols ?? throw new ArgumentNullException(nameof(symbols));
+            Partitioning = partitioning ?? throw new ArgumentNullException(nameof(partitioning));
+            PartitionedSources = partitionedSources ?? throw new ArgumentNullException(nameof(partitionedSources));
+            PipelineExecutionStrategy = pipelineExecutionStrategy;
+            PartitioningScheme = partitioningScheme ?? throw new ArgumentNullException(nameof(partitioningScheme));
 
-            ParameterCheck.Check(this.PartitionedSources.Distinct().Count() == this.PartitionedSources.Count(), "PartitionedSources contains duplicates.");
+            ParameterCheck.Check(PartitionedSources.Distinct().Count() == PartitionedSources.Count(), "PartitionedSources contains duplicates.");
 
-            this.Types = this.PartitioningScheme.OutputLayout.Select(x => x.ToString());
+            Types = PartitioningScheme.OutputLayout.Select(x => x.ToString());
             // Materialize this during construction
-            this.PartionedSourceNodes = new HashSet<PlanNode>(FindSources(this.Root, this.PartitionedSources));
-            this.RemoteSourceNodes = FindRemoteSourceNodes(this.Root).ToList();
+            PartionedSourceNodes = new HashSet<PlanNode>(FindSources(Root, PartitionedSources));
+            RemoteSourceNodes = FindRemoteSourceNodes(Root).ToList();
         }
 
         #endregion
@@ -78,10 +78,10 @@ namespace TrinoClient.Model.Sql.Planner
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("id", this.Id)
-                .Add("partitioning", this.Partitioning)
-                .Add("partitionedSource", this.PartitionedSources)
-                .Add("partitionFunction", this.PartitioningScheme)
+                .Add("id", Id)
+                .Add("partitioning", Partitioning)
+                .Add("partitionedSource", PartitionedSources)
+                .Add("partitionFunction", PartitioningScheme)
                 .ToString();
         }
 
@@ -89,7 +89,7 @@ namespace TrinoClient.Model.Sql.Planner
 
         #region Private Methods
 
-        private IEnumerable<PlanNode> FindSources(PlanNode node, IEnumerable<PlanNodeId> nodeIds)
+        private static IEnumerable<PlanNode> FindSources(PlanNode node, IEnumerable<PlanNodeId> nodeIds)
         {
             if (nodeIds.Contains(node.Id))
             {

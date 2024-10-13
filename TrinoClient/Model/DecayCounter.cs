@@ -13,34 +13,27 @@ namespace TrinoClient.Model
     /// 
     /// From io.airlift.stats.DecayCounter.java
     /// </summary>
-    public class DecayCounter
+    public class DecayCounter(double alpha)
     {
         #region Private Fields
 
         // needs to be such that Math.exp(alpha * seconds) does not grow too big
         private static readonly long RESCALE_THRESHOLD_SECONDS = 50;
 
-        private volatile object SyncRoot = new object();
+        private volatile object SyncRoot = new();
 
         private double Count;
 
-        private long LandmarkInSeconds;
+        private long LandmarkInSeconds = GetTickInSeconds();
 
         #endregion
 
         #region Public Properties
 
-        public double Alpha { get; }
+        public double Alpha { get; } = alpha;
 
         #endregion
-
         #region Constructors
-
-        public DecayCounter(double alpha)
-        {
-            this.Alpha = alpha;
-            this.LandmarkInSeconds = this.GetTickInSeconds();
-        }
 
         #endregion
 
@@ -50,40 +43,37 @@ namespace TrinoClient.Model
         {
             lock (SyncRoot)
             {
-                long NowInSeconds = this.GetTickInSeconds();
+                long NowInSeconds = GetTickInSeconds();
 
-                if (NowInSeconds - this.LandmarkInSeconds >= RESCALE_THRESHOLD_SECONDS)
+                if (NowInSeconds - LandmarkInSeconds >= RESCALE_THRESHOLD_SECONDS)
                 {
-                    this.RescaleToNewLandmark(NowInSeconds);
+                    RescaleToNewLandmark(NowInSeconds);
                 }
 
-                this.Count += value * this.Weight(NowInSeconds, this.LandmarkInSeconds);
+                Count += value * Weight(NowInSeconds, LandmarkInSeconds);
             }
         }
 
         public void Merge(DecayCounter decayCounter)
         {
-            if (decayCounter == null)
-            {
-                throw new ArgumentNullException("decayCounter");
-            }
+            ArgumentNullException.ThrowIfNull(decayCounter);
 
-            ParameterCheck.Check(decayCounter.Alpha == this.Alpha, $"Expected decayCounter to have alpha {this.Alpha}, but was {decayCounter.Alpha}.");
+            ParameterCheck.Check(decayCounter.Alpha == Alpha, $"Expected decayCounter to have alpha {Alpha}, but was {decayCounter.Alpha}.");
 
             lock (SyncRoot)
             {
                 // if the landmark this counter is behind the other counter
-                if (this.LandmarkInSeconds < decayCounter.LandmarkInSeconds)
+                if (LandmarkInSeconds < decayCounter.LandmarkInSeconds)
                 {
                     // rescale this counter to the other counter, and add
-                    this.RescaleToNewLandmark(decayCounter.LandmarkInSeconds);
-                    this.Count += decayCounter.Count;
+                    RescaleToNewLandmark(decayCounter.LandmarkInSeconds);
+                    Count += decayCounter.Count;
                 }
                 else
                 {
                     // rescale the other counter and add
-                    double OtherRescaledCount = decayCounter.Count / this.Weight(this.LandmarkInSeconds, decayCounter.LandmarkInSeconds);
-                    this.Count += OtherRescaledCount;
+                    double OtherRescaledCount = decayCounter.Count / Weight(LandmarkInSeconds, decayCounter.LandmarkInSeconds);
+                    Count += OtherRescaledCount;
                 }
             }
         }
@@ -92,8 +82,8 @@ namespace TrinoClient.Model
         {
             lock (SyncRoot)
             {
-                this.LandmarkInSeconds = GetTickInSeconds();
-                this.Count = 0;
+                LandmarkInSeconds = GetTickInSeconds();
+                Count = 0;
             }
         }
 
@@ -102,7 +92,7 @@ namespace TrinoClient.Model
             lock (SyncRoot)
             {
                 long NowInSeconds = GetTickInSeconds();
-                return this.Count / this.Weight(NowInSeconds, this.LandmarkInSeconds);
+                return Count / Weight(NowInSeconds, LandmarkInSeconds);
             }
         }
 
@@ -110,20 +100,20 @@ namespace TrinoClient.Model
         {
             lock (SyncRoot)
             {
-                return this.GetCount() * this.Alpha;
+                return GetCount() * Alpha;
             }
         }
 
         public DecayCounterSnapshot Snapshot()
         {
-            return new DecayCounterSnapshot(this.GetCount(), this.GetRate());
+            return new DecayCounterSnapshot(GetCount(), GetRate());
         }
 
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("count", this.GetCount())
-                .Add("rate", this.GetRate())
+                .Add("count", GetCount())
+                .Add("rate", GetRate())
                 .ToString();
         }
 
@@ -131,45 +121,42 @@ namespace TrinoClient.Model
 
         #region Private Methods
 
-        private long GetTickInSeconds()
+        private static long GetTickInSeconds()
         {
-            return (DateTime.UtcNow.Ticks / TimeSpan.TicksPerSecond);
+            return DateTime.UtcNow.Ticks / TimeSpan.TicksPerSecond;
         }
 
         private void RescaleToNewLandmark(long newLandMarkInSeconds)
         {
             // rescale the count based on a new landmark to avoid numerical overflow issues
-            this.Count = this.Count / Weight(newLandMarkInSeconds, this.LandmarkInSeconds);
-            this.LandmarkInSeconds = newLandMarkInSeconds;
+            Count /= Weight(newLandMarkInSeconds, LandmarkInSeconds);
+            LandmarkInSeconds = newLandMarkInSeconds;
         }
 
         private double Weight(long timestampInSeconds, long landmarkInSeconds)
         {
-            return Math.Exp(this.Alpha * (timestampInSeconds - landmarkInSeconds));
+            return Math.Exp(Alpha * (timestampInSeconds - landmarkInSeconds));
         }
 
         #endregion
 
         #region Internal Classes
 
-        public class DecayCounterSnapshot
+        [method: JsonConstructor]
+        #endregion
+
+        #region Internal Classes
+
+        public class DecayCounterSnapshot(double count, double rate)
         {
             #region Public Methods
 
-            public double Count { get; }
+            public double Count { get; } = count;
 
-            public double Rate { get; }
+            public double Rate { get; } = rate;
 
             #endregion
-
             #region Constructors
-
-            [JsonConstructor]
-            public DecayCounterSnapshot(double count, double rate)
-            {
-                this.Count = count;
-                this.Rate = rate;
-            }
 
             #endregion
 
@@ -178,8 +165,8 @@ namespace TrinoClient.Model
             public override string ToString()
             {
                 return StringHelper.Build(this)
-                    .Add("count", this.Count)
-                    .Add("rate", this.Rate)
+                    .Add("count", Count)
+                    .Add("rate", Rate)
                     .ToString();
             }
 

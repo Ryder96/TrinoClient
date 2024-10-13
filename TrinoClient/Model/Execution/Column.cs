@@ -21,18 +21,18 @@ namespace TrinoClient.Model.Execution
         [JsonConstructor]
         public Column(string name, string type)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException("name", "The name cannot be null or empty.");
+                throw new ArgumentNullException(nameof(name), "The name cannot be null or empty.");
             }
 
-            if (String.IsNullOrEmpty(type))
+            if (string.IsNullOrEmpty(type))
             {
-                throw new ArgumentNullException("type", "The type cannot be null or empty.");
+                throw new ArgumentNullException(nameof(type), "The type cannot be null or empty.");
             }
 
-            this.Name = name;
-            this.Type = type;
+            Name = name;
+            Type = type;
         }
 
         #endregion
@@ -42,8 +42,8 @@ namespace TrinoClient.Model.Execution
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("name", this.Name)
-                .Add("type", this.Type)
+                .Add("name", Name)
+                .Add("type", Type)
                 .ToString();
         }
 

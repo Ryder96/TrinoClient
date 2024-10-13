@@ -1,42 +1,34 @@
-﻿using TrinoClient.Model.Sql.Tree;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using TrinoClient.Model.Sql.Tree;
 
 namespace TrinoClient.Model.Sql.Planner.Plan
 {
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.WindowNode.java (internal class Frame)
     /// </summary>
-    public class Frame
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.WindowNode.java (internal class Frame)
+                                 /// </summary>
+    public class Frame(WindowFrameType type, FrameBoundType startType, Symbol startValue, FrameBoundType endType, Symbol endValue)
     {
         #region Public Properties
 
-        public WindowFrameType Type { get; }
+        public WindowFrameType Type { get; } = type;
 
-        public FrameBoundType StartType { get; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        [Optional]
-        public Symbol StartValue { get; }
-
-        public FrameBoundType EndType { get; }
+        public FrameBoundType StartType { get; } = startType;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
-        public Symbol EndValue { get; }
+        public Symbol StartValue { get; } = startValue;
+
+        public FrameBoundType EndType { get; } = endType;
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [Optional]
+        public Symbol EndValue { get; } = endValue;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public Frame(WindowFrameType type, FrameBoundType startType, Symbol startValue, FrameBoundType endType, Symbol endValue)
-        {
-            this.Type = type;
-            this.StartType = startType;
-            this.StartValue = startValue;
-            this.EndType = endType;
-            this.EndValue = endValue;
-        }
 
         #endregion
 
@@ -45,11 +37,11 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         public override int GetHashCode()
         {
             return Hashing.Hash(
-                this.Type,
-                this.StartType,
-                this.EndType,
-                this.StartValue,
-                this.EndValue);
+                Type,
+                StartType,
+                EndType,
+                StartValue,
+                EndValue);
         }
 
         public override bool Equals(object obj)
@@ -66,11 +58,11 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
             Frame Other = (Frame)obj;
 
-            return object.Equals(this.Type, Other.Type) &&
-                    object.Equals(this.StartType, Other.StartType) &&
-                    object.Equals(this.StartValue, Other.StartValue) &&
-                    object.Equals(this.EndType, Other.EndType) &&
-                    object.Equals(this.EndValue, Other.EndValue);
+            return object.Equals(Type, Other.Type) &&
+                    object.Equals(StartType, Other.StartType) &&
+                    object.Equals(StartValue, Other.StartValue) &&
+                    object.Equals(EndType, Other.EndType) &&
+                    object.Equals(EndValue, Other.EndValue);
         }
 
         #endregion

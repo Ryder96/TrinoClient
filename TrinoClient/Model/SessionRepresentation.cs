@@ -1,9 +1,8 @@
-﻿using TrinoClient.Model.Connector;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+using TrinoClient.Model.Connector;
 using TrinoClient.Model.SPI.Type;
 using TrinoClient.Model.Transaction;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 
 namespace TrinoClient.Model
 {
@@ -61,7 +60,7 @@ namespace TrinoClient.Model
         public HashSet<string> ClientTags { get; set; }
 
 
-        public Int64 StartTime { get; set; }
+        public long StartTime { get; set; }
 
 
         public IDictionary<string, string> SystemProperties { get; set; }

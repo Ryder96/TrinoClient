@@ -1,6 +1,5 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
-using System;
+﻿using Newtonsoft.Json;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Execution
 {
@@ -12,7 +11,7 @@ namespace TrinoClient.Model.Execution
     {
         #region Private Fields
 
-        private static readonly Lifespan TASK_WIDE = new Lifespan(false, 0);
+        private static readonly Lifespan TASK_WIDE = new(false, 0);
         private static readonly string TASK_WIDE_STR = "TaskWide";
 
         #endregion
@@ -30,23 +29,23 @@ namespace TrinoClient.Model.Execution
         [JsonConstructor]
         public Lifespan(bool grouped, int groupId)
         {
-            this.Grouped = grouped;
-            this.GroupId = groupId;
+            Grouped = grouped;
+            GroupId = groupId;
         }
 
         public Lifespan(string value)
         {
             if (value.Equals(TASK_WIDE_STR))
             {
-                this.GroupId = 0;
-                this.Grouped = false;
+                GroupId = 0;
+                Grouped = false;
             }
             else
             {
                 if (value.StartsWith("Group"))
                 {
-                    this.Grouped = true;
-                    this.GroupId = Int32.Parse(value.Substring(5));
+                    Grouped = true;
+                    GroupId = int.Parse(value.Substring(5));
                 }
             }
         }
@@ -67,12 +66,12 @@ namespace TrinoClient.Model.Execution
 
         public bool IsTaskWide()
         {
-            return !this.Grouped;
+            return !Grouped;
         }
 
         public override string ToString()
         {
-            return (Grouped) ? $"Group{this.GroupId}" : TASK_WIDE_STR;
+            return Grouped ? $"Group{GroupId}" : TASK_WIDE_STR;
         }
 
         #endregion

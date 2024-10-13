@@ -39,18 +39,18 @@ namespace TrinoClient.Model.Sql.Planner
             int[] bucketToPartition
             )
         {
-            this.Partitioning = partitioning ?? throw new ArgumentNullException("partitioning");
-            this.OutputLayout = outputLayout ?? throw new ArgumentNullException("outputLayout");
+            Partitioning = partitioning ?? throw new ArgumentNullException(nameof(partitioning));
+            OutputLayout = outputLayout ?? throw new ArgumentNullException(nameof(outputLayout));
 
-            HashSet<Symbol> Columns = this.Partitioning.GetColumns();
+            HashSet<Symbol> Columns = Partitioning.GetColumns();
 
-            ParameterCheck.Check(Columns.All(x => this.OutputLayout.Contains(x)), $"Output layout ({this.OutputLayout}) doesn't include all partition colums ({Columns}).");
+            ParameterCheck.Check(Columns.All(x => OutputLayout.Contains(x)), $"Output layout ({OutputLayout}) doesn't include all partition colums ({Columns}).");
 
-            this.HashColumn = hashColumn;
+            HashColumn = hashColumn;
 
             ParameterCheck.Check(!replicateNullsAndAny || Columns.Count <= 1, "Must have at most one partitioning column when nullPartition is REPLICATE.");
-            this.ReplicateNullsAndAny = replicateNullsAndAny;
-            this.BucketToPartition = bucketToPartition;
+            ReplicateNullsAndAny = replicateNullsAndAny;
+            BucketToPartition = bucketToPartition;
         }
 
         #endregion
@@ -64,33 +64,33 @@ namespace TrinoClient.Model.Sql.Planner
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             PartitioningScheme That = (PartitioningScheme)obj;
 
-            return Object.Equals(this.Partitioning, That.Partitioning) &&
-                    Object.Equals(this.OutputLayout, That.OutputLayout) &&
-                    this.ReplicateNullsAndAny == That.ReplicateNullsAndAny &&
-                    Object.Equals(this.BucketToPartition, That.BucketToPartition);
+            return Object.Equals(Partitioning, That.Partitioning) &&
+                    Object.Equals(OutputLayout, That.OutputLayout) &&
+                    ReplicateNullsAndAny == That.ReplicateNullsAndAny &&
+                    Object.Equals(BucketToPartition, That.BucketToPartition);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Partitioning, this.OutputLayout, this.ReplicateNullsAndAny, this.BucketToPartition);
+            return Hashing.Hash(Partitioning, OutputLayout, ReplicateNullsAndAny, BucketToPartition);
         }
 
         public override string ToString()
         {
 
             return StringHelper.Build(this)
-                    .Add("partitioning", this.Partitioning)
-                    .Add("outputLayout", this.OutputLayout)
-                    .Add("hashChannel", this.HashColumn)
-                    .Add("replicateNullsAndAny", this.ReplicateNullsAndAny)
-                    .Add("bucketToPartition", this.BucketToPartition)
+                    .Add("partitioning", Partitioning)
+                    .Add("outputLayout", OutputLayout)
+                    .Add("hashChannel", HashColumn)
+                    .Add("replicateNullsAndAny", ReplicateNullsAndAny)
+                    .Add("bucketToPartition", BucketToPartition)
                     .ToString();
         }
 

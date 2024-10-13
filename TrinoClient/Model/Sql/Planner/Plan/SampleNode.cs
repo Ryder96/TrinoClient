@@ -27,9 +27,9 @@ namespace TrinoClient.Model.Sql.Planner.Plan
             ParameterCheck.OutOfRange(sampleRatio >= 0.0, "sampleRatio", "Sample ratio cannot be less than zero.");
             ParameterCheck.OutOfRange(sampleRatio <= 1.0, "sampleRatio", "Sample ratio cannot be greater than 1.");
 
-            this.SampleType = sampleType;
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.SampleRatio = sampleRatio;
+            SampleType = sampleType;
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            SampleRatio = sampleRatio;
         }
 
         #endregion
@@ -38,12 +38,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Source.GetOutputSymbols();
+            return Source.GetOutputSymbols();
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

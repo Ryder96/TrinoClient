@@ -6,44 +6,65 @@ namespace TrinoClient.Model.Client
     /// <summary>
     /// From com.facebook.presto.client.StatementStats.java
     /// </summary>
-    public class StatementStats
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.client.StatementStats.java
+                                 /// </summary>
+    public class StatementStats(
+        string state,
+        bool queued,
+        bool scheduled,
+        int nodes,
+        int totalSplits,
+        int queuedSplits,
+        int runningSplits,
+        int completedSplits,
+        long userTimeMillis,
+        long cpuTimeMillis,
+        long wallTimeMillis,
+        long queuedTimeMillis,
+        long elapsedTimeMillis,
+        long processedRows,
+        long processedBytes,
+        long peakMemoryBytes,
+        StageStats rootStage
+        )
     {
         #region Public Properties
 
-        public StatementState State { get; }
+        public StatementState State { get; } = (StatementState)Enum.Parse(typeof(StatementState), state);
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool Queued { get; }
+        public bool Queued { get; } = queued;
 
-        public bool Scheduled { get; }
+        public bool Scheduled { get; } = scheduled;
 
-        public int Nodes { get; }
+        public int Nodes { get; } = nodes;
 
-        public int TotalSplits { get; }
+        public int TotalSplits { get; } = totalSplits;
 
-        public int QueuedSplits { get; }
+        public int QueuedSplits { get; } = queuedSplits;
 
-        public int RunningSplits { get; }
+        public int RunningSplits { get; } = runningSplits;
 
-        public int CompletedSplits { get; }
+        public int CompletedSplits { get; } = completedSplits;
 
-        public Int64 UserTimeMillis { get; }
+        public long UserTimeMillis { get; } = userTimeMillis;
 
-        public Int64 CpuTimeMillis { get; }
+        public long CpuTimeMillis { get; } = cpuTimeMillis;
 
-        public Int64 WallTimeMillis { get; }
+        public long WallTimeMillis { get; } = wallTimeMillis;
 
-        public Int64 QueuedTimeMillis { get; }
+        public long QueuedTimeMillis { get; } = queuedTimeMillis;
 
-        public Int64 ElapsedTimeMillis { get; }
+        public long ElapsedTimeMillis { get; } = elapsedTimeMillis;
 
-        public Int64 ProcessedRows { get; }
+        public long ProcessedRows { get; } = processedRows;
 
-        public Int64 ProcessedBytes { get; }
+        public long ProcessedBytes { get; } = processedBytes;
 
-        public Int64 PeakMemoryBytes { get; }
+        public long PeakMemoryBytes { get; } = peakMemoryBytes;
 
-        public StageStats RootStage { get; }
+        public StageStats RootStage { get; } = rootStage;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
@@ -51,60 +72,19 @@ namespace TrinoClient.Model.Client
         {
             get
             {
-                if (!this.Scheduled || this.TotalSplits == 0)
+                if (!Scheduled || TotalSplits == 0)
                 {
                     return 0;
                 }
                 else
                 {
-                    return Math.Min(100, (this.CompletedSplits * 100.0) / this.TotalSplits);
+                    return Math.Min(100, CompletedSplits * 100.0 / TotalSplits);
                 }
             }
         }
 
         #endregion
-
         #region Constructor
-
-        [JsonConstructor]
-        public StatementStats(
-            string state,
-            bool queued,
-            bool scheduled,
-            int nodes,
-            int totalSplits,
-            int queuedSplits,
-            int runningSplits,
-            int completedSplits,
-            long userTimeMillis,
-            long cpuTimeMillis,
-            long wallTimeMillis,
-            long queuedTimeMillis,
-            long elapsedTimeMillis,
-            long processedRows,
-            long processedBytes,
-            long peakMemoryBytes,
-            StageStats rootStage
-        )
-        {
-            this.State = (StatementState)Enum.Parse(typeof(StatementState), state);
-            this.Queued = queued;
-            this.Scheduled = scheduled;
-            this.Nodes = nodes;
-            this.TotalSplits = totalSplits;
-            this.QueuedSplits = queuedSplits;
-            this.RunningSplits = runningSplits;
-            this.CompletedSplits = completedSplits;
-            this.UserTimeMillis = userTimeMillis;
-            this.CpuTimeMillis = cpuTimeMillis;
-            this.WallTimeMillis = wallTimeMillis;
-            this.QueuedTimeMillis = queuedTimeMillis;
-            this.ElapsedTimeMillis = elapsedTimeMillis;
-            this.ProcessedRows = processedRows;
-            this.ProcessedBytes = processedBytes;
-            this.PeakMemoryBytes = peakMemoryBytes;
-            this.RootStage = rootStage;
-        }
 
         #endregion
 
@@ -113,23 +93,23 @@ namespace TrinoClient.Model.Client
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("state", this.State)
-                .Add("queued", this.Queued)
-                .Add("scheduled", this.Scheduled)
-                .Add("nodes", this.Nodes)
-                .Add("totalSplits", this.TotalSplits)
-                .Add("queuedSplits", this.QueuedSplits)
-                .Add("runningSplits", this.RunningSplits)
-                .Add("completedSplits", this.CompletedSplits)
-                .Add("userTimeMillis", this.UserTimeMillis)
-                .Add("cpuTimeMillis", this.CpuTimeMillis)
-                .Add("wallTimeMillis", this.WallTimeMillis)
-                .Add("queuedTimeMillis", this.QueuedTimeMillis)
-                .Add("elapsedTimeMillis", this.ElapsedTimeMillis)
-                .Add("processedRows", this.ProcessedRows)
-                .Add("processedBytes", this.ProcessedBytes)
-                .Add("peakMemoryBytes", this.PeakMemoryBytes)
-                .Add("rootStage", this.RootStage)
+                .Add("state", State)
+                .Add("queued", Queued)
+                .Add("scheduled", Scheduled)
+                .Add("nodes", Nodes)
+                .Add("totalSplits", TotalSplits)
+                .Add("queuedSplits", QueuedSplits)
+                .Add("runningSplits", RunningSplits)
+                .Add("completedSplits", CompletedSplits)
+                .Add("userTimeMillis", UserTimeMillis)
+                .Add("cpuTimeMillis", CpuTimeMillis)
+                .Add("wallTimeMillis", WallTimeMillis)
+                .Add("queuedTimeMillis", QueuedTimeMillis)
+                .Add("elapsedTimeMillis", ElapsedTimeMillis)
+                .Add("processedRows", ProcessedRows)
+                .Add("processedBytes", ProcessedBytes)
+                .Add("peakMemoryBytes", PeakMemoryBytes)
+                .Add("rootStage", RootStage)
                 .ToString();
         }
 

@@ -23,8 +23,8 @@ namespace TrinoClient.Model.SPI
             ParameterCheck.NotNullOrEmpty(schemaName, "schemaName");
             ParameterCheck.NotNullOrEmpty(tableName, "tableName");
 
-            this.SchemaName = schemaName.ToLower();
-            this.TableName = tableName.ToLower();
+            SchemaName = schemaName.ToLower();
+            TableName = tableName.ToLower();
         }
 
         #endregion
@@ -33,7 +33,7 @@ namespace TrinoClient.Model.SPI
 
         public override string ToString()
         {
-            return $"{this.SchemaName}.{this.TableName}";
+            return $"{SchemaName}.{TableName}";
         }
 
         #endregion

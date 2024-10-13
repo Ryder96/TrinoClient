@@ -25,9 +25,9 @@ namespace TrinoClient.Model.SPI
             ParameterCheck.OutOfRange(code >= 0, "code", "The code cannot be negative.");
             ParameterCheck.NotNullOrEmpty(name, "name");
 
-            this.Code = code;
-            this.Name = name;
-            this.Type = type;
+            Code = code;
+            Name = name;
+            Type = type;
         }
 
         #endregion
@@ -36,7 +36,7 @@ namespace TrinoClient.Model.SPI
 
         public override string ToString()
         {
-            return $"{this.Name}:{this.Code}";
+            return $"{Name}:{Code}";
         }
 
         #endregion

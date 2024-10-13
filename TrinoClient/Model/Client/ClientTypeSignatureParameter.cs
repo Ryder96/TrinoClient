@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.SPI.Type;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Model.Client
 {
@@ -22,39 +22,39 @@ namespace TrinoClient.Model.Client
         [JsonConstructor]
         public ClientTypeSignatureParameter(ParameterKind kind, object value)
         {
-            this.Kind = kind;
-            this.Value = value;
+            Kind = kind;
+            Value = value;
         }
 
         public ClientTypeSignatureParameter(TypeSignatureParameter typeParameterSignature)
         {
-            this.Kind = typeParameterSignature.Kind;
+            Kind = typeParameterSignature.Kind;
 
-            switch (this.Kind)
+            switch (Kind)
             {
                 case ParameterKind.TYPE:
                     {
-                        this.Value = new ClientTypeSignature(typeParameterSignature.GetTypeSignature());
+                        Value = new ClientTypeSignature(typeParameterSignature.GetTypeSignature());
                         break;
                     }
                 case ParameterKind.LONG:
                     {
-                        this.Value = typeParameterSignature.GetLongLiteral();
+                        Value = typeParameterSignature.GetLongLiteral();
                         break;
                     }
                 case ParameterKind.NAMED_TYPE:
                     {
-                        this.Value = typeParameterSignature.GetNamedTypeSignature();
+                        Value = typeParameterSignature.GetNamedTypeSignature();
                         break;
                     }
                 case ParameterKind.VARIABLE:
                     {
-                        this.Value = typeParameterSignature.GetVariable();
+                        Value = typeParameterSignature.GetVariable();
                         break;
                     }
                 default:
                     {
-                        throw new ArgumentException($"Unknown type signature kind {this.Kind}.");
+                        throw new ArgumentException($"Unknown type signature kind {Kind}.");
                     }
             }
         }
@@ -94,7 +94,7 @@ namespace TrinoClient.Model.Client
 
         private object GetValue(ParameterKind expectedParameterKind, System.Type target)
         {
-            return Convert.ChangeType(this.Value, target);
+            return Convert.ChangeType(Value, target);
         }
 
         #endregion

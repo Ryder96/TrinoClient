@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TrinoClient.Model.Sql.Tree
 {
     /// <summary>
     /// From com.facebook.presto.sql.tree.SortItem.java
     /// </summary>
-    public class SortItem : Node
+    public class SortItem(NodeLocation location, object sortKey, Ordering ordering, NullOrdering nullOrdering) : Node(location)
     {
         #region Public Properties
 
         /// <summary>
         /// TODO: Supposed to be Expression
         /// </summary>
-        public dynamic SortKey { get; }
+        public dynamic SortKey { get; } = sortKey;
 
-        public Ordering Ordering { get; }
+        public Ordering Ordering { get; } = ordering;
 
-        public NullOrdering NullOrdering { get; }
+        public NullOrdering NullOrdering { get; } = nullOrdering;
 
         #endregion
 
@@ -25,13 +24,6 @@ namespace TrinoClient.Model.Sql.Tree
 
         public SortItem(object sortKey, Ordering ordering, NullOrdering nullOrdering) : this(null, sortKey, ordering, nullOrdering)
         { }
-
-        public SortItem(NodeLocation location, object sortKey, Ordering ordering, NullOrdering nullOrdering) : base(location)
-        {
-            this.Ordering = ordering;
-            this.NullOrdering = nullOrdering;
-            this.SortKey = sortKey;
-        }
 
         #endregion
 
@@ -44,35 +36,35 @@ namespace TrinoClient.Model.Sql.Tree
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             SortItem Other = (SortItem)obj;
 
-            return Object.Equals(this.SortKey, Other.SortKey) &&
-                    (this.Ordering == Other.Ordering) &&
-                    (this.NullOrdering == Other.NullOrdering);
+            return object.Equals(SortKey, Other.SortKey) &&
+                    (Ordering == Other.Ordering) &&
+                    (NullOrdering == Other.NullOrdering);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.SortKey, this.Ordering, this.NullOrdering);
+            return Hashing.Hash(SortKey, Ordering, NullOrdering);
         }
 
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("sortKey", this.SortKey)
-                .Add("ordering", this.Ordering)
-                .Add("nullOrdering", this.NullOrdering)
+                .Add("sortKey", SortKey)
+                .Add("ordering", Ordering)
+                .Add("nullOrdering", NullOrdering)
                 .ToString();
         }
 
         public override IEnumerable<Node> GetChildren()
         {
-            return new Node[] { this.SortKey };
+            return [SortKey];
         }
 
         #endregion

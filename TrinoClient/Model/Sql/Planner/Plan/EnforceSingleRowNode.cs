@@ -7,21 +7,17 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.EnforceSingleRowNode.java
     /// </summary>
-    public class EnforceSingleRowNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.EnforceSingleRowNode.java
+                                 /// </summary>
+    public class EnforceSingleRowNode(PlanNodeId id, PlanNode source) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Source { get; }
+        public PlanNode Source { get; } = source ?? throw new ArgumentNullException(nameof(source));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public EnforceSingleRowNode(PlanNodeId id, PlanNode source) : base(id)
-        {
-            this.Source = source ?? throw new ArgumentNullException("source");
-        }
 
         #endregion
 
@@ -29,12 +25,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Source.GetOutputSymbols();
+            return Source.GetOutputSymbols();
         }
 
         #endregion

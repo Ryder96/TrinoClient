@@ -1,11 +1,11 @@
-﻿using TrinoClient.Model.Execution.Scheduler;
-using TrinoClient.Model.Operator;
-using TrinoClient.Model.SPI.EventListener;
-using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Model.Execution.Scheduler;
+using TrinoClient.Model.Operator;
+using TrinoClient.Model.SPI.EventListener;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Execution
 {
@@ -109,7 +109,7 @@ namespace TrinoClient.Model.Execution
         {
             get
             {
-                return DataSize.SuccinctBytes(this.OperatorSummaries.Where(x => x.OperatorType != null && x.OperatorType.Equals("tableWriterOperator")).Select(x => x.InputDataSize.ToBytes()).Sum());
+                return DataSize.SuccinctBytes(OperatorSummaries.Where(x => x.OperatorType != null && x.OperatorType.Equals("tableWriterOperator")).Select(x => x.InputDataSize.ToBytes()).Sum());
             }
         }
 
@@ -117,7 +117,7 @@ namespace TrinoClient.Model.Execution
         {
             get
             {
-                return this.OperatorSummaries.Where(x => x.OperatorType != null && x.OperatorType.Equals("tableWriterOperator", StringComparison.OrdinalIgnoreCase)).Select(x => x.InputPositions).Sum();
+                return OperatorSummaries.Where(x => x.OperatorType != null && x.OperatorType.Equals("tableWriterOperator", StringComparison.OrdinalIgnoreCase)).Select(x => x.InputPositions).Sum();
             }
         }
 
@@ -127,13 +127,13 @@ namespace TrinoClient.Model.Execution
         {
             get
             {
-                if (!this.Scheduled || this.TotalDrivers == 0)
+                if (!Scheduled || TotalDrivers == 0)
                 {
                     return 0;
                 }
                 else
                 {
-                    return Math.Min(100, (this.CompletedDrivers * 100.0) / this.TotalDrivers);
+                    return Math.Min(100, CompletedDrivers * 100.0 / TotalDrivers);
                 }
             }
         }
@@ -195,17 +195,17 @@ namespace TrinoClient.Model.Execution
             IEnumerable<OperatorStats> operatorSummaries
             )
         {
-            this.CreateTime = createTime;
-            this.ExecutionStartTime = executionStartTime;
-            this.LastHeartBeat = lastHeartBeat;
-            this.EndTime = endTime;
+            CreateTime = createTime;
+            ExecutionStartTime = executionStartTime;
+            LastHeartBeat = lastHeartBeat;
+            EndTime = endTime;
 
-            this.ElapsedTime = elapsedTime;
-            this.QueuedTime = queuedTime;
-            this.AnalysisTime = analysisTime;
-            this.DistributedPlanningTime = distributedPlanningTime;
-            this.TotalPlanningTime = totalPlanningTime;
-            this.FinishingTime = finishingTime;
+            ElapsedTime = elapsedTime;
+            QueuedTime = queuedTime;
+            AnalysisTime = analysisTime;
+            DistributedPlanningTime = distributedPlanningTime;
+            TotalPlanningTime = totalPlanningTime;
+            FinishingTime = finishingTime;
 
             ParameterCheck.OutOfRange(totalTasks >= 0, "totalTasks", "Total tasks cannot be negative.");
             ParameterCheck.OutOfRange(queuedDrivers >= 0, "queuedDrivers", "Queued drivers cannot be negative.");
@@ -217,40 +217,40 @@ namespace TrinoClient.Model.Execution
             ParameterCheck.OutOfRange(processedInputPositions >= 0, "processedInputPositions", "Processed input positions cannot be negative.");
             ParameterCheck.OutOfRange(outputPositions >= 0, "outputPositions", "Output positions cannot be negative.");
 
-            this.TotalTasks = totalTasks;
-            this.RunningTasks = runningTasks;
-            this.CompletedTasks = completedTasks;
+            TotalTasks = totalTasks;
+            RunningTasks = runningTasks;
+            CompletedTasks = completedTasks;
 
-            this.TotalDrivers = totalDrivers;
-            this.QueuedDrivers = queuedDrivers;
-            this.RunningDrivers = runningDrivers;
-            this.BlockedDrivers = blockedDrivers;
-            this.CompletedDrivers = completedDrivers;
-            this.CumulativeUserMemory = cumulativeUserMemory;
-            this.UserMemoryReservation = userMemoryReservation ?? throw new ArgumentNullException("userMemoryReservation");
-            this.PeakUserMemoryReservation = peakUserMemoryReservation ?? throw new ArgumentNullException("peakUserMemoryReservation");
-            this.PeakTotalMemoryReservation = peakTotalMemoryReservation ?? throw new ArgumentNullException("peakTotalMemoryReservation");
-            this.Scheduled = scheduled;
-            this.TotalScheduledTime = totalScheduledTime;
-            this.TotalCpuTime = totalCpuTime;
-            this.TotalBlockedTime = totalBlockedTime;
-            this.FullyBlocked = fullyBlocked;
-            this.BlockedReasons = blockedReasons ?? throw new ArgumentNullException("blockedReasons");
+            TotalDrivers = totalDrivers;
+            QueuedDrivers = queuedDrivers;
+            RunningDrivers = runningDrivers;
+            BlockedDrivers = blockedDrivers;
+            CompletedDrivers = completedDrivers;
+            CumulativeUserMemory = cumulativeUserMemory;
+            UserMemoryReservation = userMemoryReservation ?? throw new ArgumentNullException(nameof(userMemoryReservation));
+            PeakUserMemoryReservation = peakUserMemoryReservation ?? throw new ArgumentNullException(nameof(peakUserMemoryReservation));
+            PeakTotalMemoryReservation = peakTotalMemoryReservation ?? throw new ArgumentNullException(nameof(peakTotalMemoryReservation));
+            Scheduled = scheduled;
+            TotalScheduledTime = totalScheduledTime;
+            TotalCpuTime = totalCpuTime;
+            TotalBlockedTime = totalBlockedTime;
+            FullyBlocked = fullyBlocked;
+            BlockedReasons = blockedReasons ?? throw new ArgumentNullException(nameof(blockedReasons));
 
-            this.RawInputDataSize = rawInputDataSize ?? throw new ArgumentNullException("rawInputDataSize");
-            this.RawInputPositions = rawInputPositions;
+            RawInputDataSize = rawInputDataSize ?? throw new ArgumentNullException(nameof(rawInputDataSize));
+            RawInputPositions = rawInputPositions;
 
-            this.ProcessedInputDataSize = processedInputDataSize ?? throw new ArgumentNullException("processedInputDataSize");
-            this.ProcessedInputPositions = processedInputPositions;
+            ProcessedInputDataSize = processedInputDataSize ?? throw new ArgumentNullException(nameof(processedInputDataSize));
+            ProcessedInputPositions = processedInputPositions;
 
-            this.OutputDataSize = outputDataSize ?? throw new ArgumentNullException("outputDataSize");
-            this.OutputPositions = outputPositions;
+            OutputDataSize = outputDataSize ?? throw new ArgumentNullException(nameof(outputDataSize));
+            OutputPositions = outputPositions;
 
-            this.PhysicalWrittenDataSize = physicalWrittenDataSize ?? throw new ArgumentNullException("physicalWrittenDataSize");
+            PhysicalWrittenDataSize = physicalWrittenDataSize ?? throw new ArgumentNullException(nameof(physicalWrittenDataSize));
 
-            this.StageGcStatistics = stageGcStatistics ?? throw new ArgumentNullException("stageGcStatistics");
+            StageGcStatistics = stageGcStatistics ?? throw new ArgumentNullException(nameof(stageGcStatistics));
 
-            this.OperatorSummaries = operatorSummaries ?? throw new ArgumentNullException("operatorSummaries");
+            OperatorSummaries = operatorSummaries ?? throw new ArgumentNullException(nameof(operatorSummaries));
 
         }
 

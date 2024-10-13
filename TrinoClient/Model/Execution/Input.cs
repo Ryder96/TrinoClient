@@ -1,7 +1,7 @@
-﻿using TrinoClient.Model.Connector;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.Connector;
 
 namespace TrinoClient.Model.Execution
 {
@@ -33,19 +33,19 @@ namespace TrinoClient.Model.Execution
 
         public Input(ConnectorId connectorId, string schema, string table, IEnumerable<Column> columns, PrestoQueryConnectorInfo connectorInfo = null)
         {
-            if (String.IsNullOrEmpty(schema))
+            if (string.IsNullOrEmpty(schema))
             {
-                throw new ArgumentNullException("schema", "The schema cannot be null or empty.");
+                throw new ArgumentNullException(nameof(schema), "The schema cannot be null or empty.");
             }
 
-            if (String.IsNullOrEmpty(table))
+            if (string.IsNullOrEmpty(table))
             {
-                throw new ArgumentNullException("table", "The table cannot be null or empty.");
+                throw new ArgumentNullException(nameof(table), "The table cannot be null or empty.");
             }
 
-            this.ConnectorId = connectorId ?? throw new ArgumentNullException("connectorId", "The connector id cannot be null.");
-            this.Columns = columns ?? throw new ArgumentNullException("columns", "The columns cannot be null.");
-            this.ConnectorInfo = connectorInfo;
+            ConnectorId = connectorId ?? throw new ArgumentNullException(nameof(connectorId), "The connector id cannot be null.");
+            Columns = columns ?? throw new ArgumentNullException(nameof(columns), "The columns cannot be null.");
+            ConnectorInfo = connectorInfo;
         }
 
         #endregion

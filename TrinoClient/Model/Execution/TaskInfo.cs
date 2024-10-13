@@ -1,57 +1,46 @@
-﻿using TrinoClient.Model.Execution.Buffer;
-using TrinoClient.Model.Operator;
-using TrinoClient.Model.Sql.Planner.Plan;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.Execution.Buffer;
+using TrinoClient.Model.Operator;
+using TrinoClient.Model.Sql.Planner.Plan;
 
 namespace TrinoClient.Model.Execution
 {
     /// <summary>
     /// From com.facebook.presto.execution.TaskInfo.java
     /// </summary>
-    public class TaskInfo
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.execution.TaskInfo.java
+                                 /// </summary>
+    public class TaskInfo(
+        TaskStatus taskStatus,
+        DateTime lastHeartbeat,
+        OutputBufferInfo outputBuffers,
+        HashSet<PlanNodeId> noMoreSplits,
+        TaskStats stats,
+        bool needsPlan,
+        bool complete
+            )
     {
         #region Public Properties
 
-        public TaskStatus TaskStatus { get; }
+        public TaskStatus TaskStatus { get; } = taskStatus ?? throw new ArgumentNullException(nameof(taskStatus));
 
-        public DateTime LastHeartbeat { get; }
+        public DateTime LastHeartbeat { get; } = lastHeartbeat;
 
-        public OutputBufferInfo OutputBuffers { get; }
+        public OutputBufferInfo OutputBuffers { get; } = outputBuffers ?? throw new ArgumentNullException(nameof(outputBuffers));
 
-        public HashSet<PlanNodeId> NoMoreSplits { get; }
+        public HashSet<PlanNodeId> NoMoreSplits { get; } = noMoreSplits ?? throw new ArgumentNullException(nameof(noMoreSplits));
 
-        public TaskStats Stats { get; }
+        public TaskStats Stats { get; } = stats ?? throw new ArgumentNullException(nameof(stats));
 
-        public bool NeedsPlan { get; }
+        public bool NeedsPlan { get; } = needsPlan;
 
-        public bool Complete { get; }
+        public bool Complete { get; } = complete;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public TaskInfo(
-            TaskStatus taskStatus,
-            DateTime lastHeartbeat,
-            OutputBufferInfo outputBuffers,
-            HashSet<PlanNodeId> noMoreSplits,
-            TaskStats stats,
-            bool needsPlan,
-            bool complete
-            )
-        {
-            this.TaskStatus = taskStatus ?? throw new ArgumentNullException("taskStatus");
-            this.LastHeartbeat = lastHeartbeat;
-            this.OutputBuffers = outputBuffers ?? throw new ArgumentNullException("outputBuffers");
-            this.NoMoreSplits = noMoreSplits ?? throw new ArgumentNullException("noMoreSplits");
-            this.Stats = stats ?? throw new ArgumentNullException("stats");
-
-            this.NeedsPlan = needsPlan;
-            this.Complete = complete;
-        }
 
         #endregion
 
@@ -60,8 +49,8 @@ namespace TrinoClient.Model.Execution
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("taskId", this.TaskStatus.TaskId)
-                .Add("state", this.TaskStatus.State.ToString())
+                .Add("taskId", TaskStatus.TaskId)
+                .Add("state", TaskStatus.State.ToString())
                 .ToString();
         }
 
@@ -71,7 +60,7 @@ namespace TrinoClient.Model.Execution
                     TaskStatus.InitialTaskStatus(taskId, location, nodeId),
                     DateTime.Now,
                     new OutputBufferInfo("UNINITIALIZED", BufferState.OPEN, true, true, 0, 0, 0, 0, bufferStates),
-                    new HashSet<PlanNodeId>(),
+                    [],
                     taskStats,
                     true,
                     false
@@ -80,7 +69,7 @@ namespace TrinoClient.Model.Execution
 
         public TaskInfo WithTaskStatus(TaskStatus newTaskStatus)
         {
-            return new TaskInfo(newTaskStatus, this.LastHeartbeat, this.OutputBuffers, this.NoMoreSplits, this.Stats, this.NeedsPlan, this.Complete);
+            return new TaskInfo(newTaskStatus, LastHeartbeat, OutputBuffers, NoMoreSplits, Stats, NeedsPlan, Complete);
         }
 
         #endregion

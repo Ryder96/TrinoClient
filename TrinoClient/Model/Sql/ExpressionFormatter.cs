@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.Sql.Tree;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using TrinoClient.Model.Sql.Tree;
 
 namespace TrinoClient.Model.Sql
 {
@@ -28,14 +28,9 @@ namespace TrinoClient.Model.Sql
 
         #endregion
 
-        public class Formatter : AstVisitor<string, object>
+        public class Formatter(IEnumerable<Expression> parameters) : AstVisitor<string, object>
         {
-            public IEnumerable<Expression> Parameters { get; }
-
-            public Formatter(IEnumerable<Expression> parameters)
-            {
-                this.Parameters = parameters;
-            }
+            public IEnumerable<Expression> Parameters { get; } = parameters;
 
             internal protected override string VisitNode(Node node, object context)
             {
@@ -44,7 +39,7 @@ namespace TrinoClient.Model.Sql
 
             internal protected override string VisitExpression(Expression node, object context)
             {
-                throw new InvalidOperationException($"Not yet implemented: {this.GetType().Name}.visit{node.GetType().Name}.");
+                throw new InvalidOperationException($"Not yet implemented: {GetType().Name}.visit{node.GetType().Name}.");
             }
         }
     }

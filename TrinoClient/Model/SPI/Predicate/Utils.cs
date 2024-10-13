@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.SPI.Block;
+﻿using System;
+using TrinoClient.Model.SPI.Block;
 using TrinoClient.Model.SPI.Type;
-using System;
 
 namespace TrinoClient.Model.SPI.Predicate
 {

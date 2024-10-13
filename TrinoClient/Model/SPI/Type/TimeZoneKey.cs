@@ -1,8 +1,8 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.SPI.Type
 {
@@ -14,11 +14,11 @@ namespace TrinoClient.Model.SPI.Type
     {
         #region Private Fields
 
-        public static readonly TimeZoneKey UTC_KEY = new TimeZoneKey("UTC", 0);
+        public static readonly TimeZoneKey UTC_KEY = new("UTC", 0);
 
-        private static readonly HashSet<TimeZoneKey> TIME_ZONE_KEYS = new HashSet<TimeZoneKey>() {
+        private static readonly HashSet<TimeZoneKey> TIME_ZONE_KEYS = [
            UTC_KEY
-        };
+        ];
 
         #endregion
 
@@ -35,18 +35,18 @@ namespace TrinoClient.Model.SPI.Type
         [JsonConstructor]
         public TimeZoneKey(string id, short key)
         {
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
-                throw new ArgumentNullException("id", "The id cannot be null or empty.");
+                throw new ArgumentNullException(nameof(id), "The id cannot be null or empty.");
             }
 
             if (key < 0)
             {
-                throw new ArgumentOutOfRangeException("key", "The key cannot be less than zero.");
+                throw new ArgumentOutOfRangeException(nameof(key), "The key cannot be less than zero.");
             }
 
-            this.Id = id;
-            this.Key = key;
+            Id = id;
+            Key = key;
         }
 
         #endregion
@@ -57,7 +57,7 @@ namespace TrinoClient.Model.SPI.Type
         {
             if (key > TIME_ZONE_KEYS.Count || TIME_ZONE_KEYS.ElementAt(key) == null)
             {
-                throw new ArgumentOutOfRangeException("key", $"Invalid time zone key {key}.");
+                throw new ArgumentOutOfRangeException(nameof(key), $"Invalid time zone key {key}.");
             }
 
             return TIME_ZONE_KEYS.ElementAt(key);

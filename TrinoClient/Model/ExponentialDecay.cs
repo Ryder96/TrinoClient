@@ -36,7 +36,7 @@ namespace TrinoClient.Model
         {
             if (seconds <= 0)
             {
-                throw new ArgumentOutOfRangeException("seconds", "Seconds must be greater than zero.");
+                throw new ArgumentOutOfRangeException(nameof(seconds), "Seconds must be greater than zero.");
             }
 
             // alpha for a target weight of 1/E at the specified number of seconds

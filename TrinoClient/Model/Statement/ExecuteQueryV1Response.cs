@@ -1,10 +1,10 @@
-﻿using TrinoClient.Model.Client;
-using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TrinoClient.Model.Client;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Statement
 {
@@ -15,7 +15,7 @@ namespace TrinoClient.Model.Statement
     {
         #region Private Properties
 
-        private List<QueryResultsV1> _Responses = new List<QueryResultsV1>();
+        private List<QueryResultsV1> _Responses = [];
 
         #endregion
 
@@ -28,7 +28,7 @@ namespace TrinoClient.Model.Statement
         {
             get
             {
-                return this._Responses;
+                return _Responses;
             }
         }
 
@@ -39,7 +39,7 @@ namespace TrinoClient.Model.Statement
         {
             get
             {
-                return this._Responses.Where(x => x != null && x.Data != null).SelectMany(x => x.GetData()).Where(x => x != null);
+                return _Responses.Where(x => x != null && x.Data != null).SelectMany(x => x.GetData()).Where(x => x != null);
             }
         }
 
@@ -65,30 +65,27 @@ namespace TrinoClient.Model.Statement
 
         internal ExecuteQueryV1Response(IEnumerable<QueryResultsV1> results, bool closed)
         {
-            if (results == null)
-            {
-                throw new ArgumentNullException("results");
-            }
+            ArgumentNullException.ThrowIfNull(results);
 
-            this._Responses = results.ToList();
-            this.QueryClosed = closed;
-            this.LastError = null;
+            _Responses = results.ToList();
+            QueryClosed = closed;
+            LastError = null;
 
-            if (this._Responses.Any())
+            if (_Responses.Count != 0)
             {
                 // The first response may not have any column data, so find the first
                 // resposne that does and pull the columns from that
-                this.Columns = this._Responses.First(x => x.Columns != null).Columns.ToList();
+                Columns = _Responses.First(x => x.Columns != null).Columns.ToList();
             }
             else
             {
-                this.Columns = new Column[0];
+                Columns = [];
             }
         }
 
         internal ExecuteQueryV1Response(IEnumerable<QueryResultsV1> results, bool closed, Exception lastError) : this(results, closed)
         {
-            this.LastError = lastError;
+            LastError = lastError;
         }
 
         #endregion
@@ -103,11 +100,11 @@ namespace TrinoClient.Model.Statement
         /// <returns>The data formatted as CSV with 1 line per index in the IEnumerable</returns>
         public IEnumerable<string> DataToCsv()
         {
-            if (this.Data != null)
+            if (Data != null)
             {
-                foreach (var Item in this.Data)
+                foreach (var Item in Data)
                 {
-                    StringBuilder SB = new StringBuilder();
+                    StringBuilder SB = new();
 
                     foreach (var Column in Item)
                     {
@@ -115,7 +112,7 @@ namespace TrinoClient.Model.Statement
                     }
 
                     // Remove last comma
-                    SB.Length = SB.Length - 1;
+                    SB.Length--;
 
                     yield return SB.ToString();
                 }
@@ -134,7 +131,7 @@ namespace TrinoClient.Model.Statement
         {
             if (Data != null)
             {
-                Dictionary<string, Dictionary<string, object>[]> Wrapper = new Dictionary<string, Dictionary<string, object>[]>
+                Dictionary<string, Dictionary<string, object>[]> Wrapper = new()
                 {
                     { "data", new Dictionary<string, object>[Data.Count()] }
                 };
@@ -146,11 +143,11 @@ namespace TrinoClient.Model.Statement
                     // Keep track of the column number
                     int Counter = 0;
 
-                    Wrapper["data"][RowCounter] = new Dictionary<string, object>();
+                    Wrapper["data"][RowCounter] = [];
 
                     foreach (dynamic Column in Row)
                     {
-                        Column Col = this.Columns[Counter++];
+                        Column Col = Columns[Counter++];
                         object Value = null;
 
                         if (Column != null)

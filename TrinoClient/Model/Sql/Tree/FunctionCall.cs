@@ -6,27 +6,30 @@ namespace TrinoClient.Model.Sql.Tree
     /// <summary>
     /// From com.facebook.presto.sql.tree.FunctionCall.java
     /// </summary>
-    public class FunctionCall : Expression
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.tree.FunctionCall.java
+                                 /// </summary>
+    public class FunctionCall(NodeLocation location, QualifiedName name, Window window, object filter, OrderBy orderBy, bool distinct, IEnumerable<object> arguments) : Expression(location)
     {
         #region Public Properties
 
-        public QualifiedName Name { get; }
+        public QualifiedName Name { get; } = name;
 
-        public Window Window { get; }
-
-        /// <summary>
-        /// TODO: Supposed to be Expression
-        /// </summary>
-        public dynamic Filter { get; }
-
-        public OrderBy OrderBy { get; }
-
-        public bool Distinct { get; }
+        public Window Window { get; } = window;
 
         /// <summary>
         /// TODO: Supposed to be Expression
         /// </summary>
-        public IEnumerable<dynamic> Arguments { get; }
+        public dynamic Filter { get; } = filter;
+
+        public OrderBy OrderBy { get; } = orderBy;
+
+        public bool Distinct { get; } = distinct;
+
+        /// <summary>
+        /// TODO: Supposed to be Expression
+        /// </summary>
+        public IEnumerable<dynamic> Arguments { get; } = arguments;
 
         #endregion
 
@@ -56,39 +59,28 @@ namespace TrinoClient.Model.Sql.Tree
             : this(null, name, window, filter, orderBy, distinct, arguments)
         { }
 
-        [JsonConstructor]
-        public FunctionCall(NodeLocation location, QualifiedName name, Window window, object filter, OrderBy orderBy, bool distinct, IEnumerable<object> arguments) : base(location)
-        {
-            this.Name = name;
-            this.Window = window;
-            this.Filter = filter;
-            this.OrderBy = orderBy;
-            this.Distinct = distinct;
-            this.Arguments = arguments;
-        }
-
         #endregion
 
         #region Public Properties
 
         public override IEnumerable<Node> GetChildren()
         {
-            if (this.Window != null)
+            if (Window != null)
             {
-                yield return this.Window;
+                yield return Window;
             }
 
-            if (this.Filter != null)
+            if (Filter != null)
             {
-                yield return this.Filter;
+                yield return Filter;
             }
 
-            foreach (SortItem Item in this.OrderBy.SortItems)
+            foreach (SortItem Item in OrderBy.SortItems)
             {
                 yield return Item;
             }
 
-            foreach (Expression Item in this.Arguments)
+            foreach (Expression Item in Arguments)
             {
                 yield return Item;
             }
@@ -101,24 +93,24 @@ namespace TrinoClient.Model.Sql.Tree
                 return true;
             }
 
-            if ((obj == null) || (this.GetType() != obj.GetType()))
+            if ((obj == null) || (GetType() != obj.GetType()))
             {
                 return false;
             }
 
             FunctionCall Other = (FunctionCall)obj;
 
-            return object.Equals(this.Name, Other.Name) &&
-                    object.Equals(this.Window, Other.Window) &&
-                    object.Equals(this.Filter, Other.Filter) &&
-                    object.Equals(this.OrderBy, Other.OrderBy) &&
-                    object.Equals(this.Distinct, Other.Distinct) &&
-                    object.Equals(this.Arguments, Other.Arguments);
+            return object.Equals(Name, Other.Name) &&
+                    object.Equals(Window, Other.Window) &&
+                    object.Equals(Filter, Other.Filter) &&
+                    object.Equals(OrderBy, Other.OrderBy) &&
+                    object.Equals(Distinct, Other.Distinct) &&
+                    object.Equals(Arguments, Other.Arguments);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Name, this.Distinct, this.Window, this.Filter, this.OrderBy, this.Arguments);
+            return Hashing.Hash(Name, Distinct, Window, Filter, OrderBy, Arguments);
         }
 
         #endregion

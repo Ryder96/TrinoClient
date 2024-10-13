@@ -1,49 +1,41 @@
-﻿using TrinoClient.Model.Sql.Tree;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Model.Sql.Tree;
 
 namespace TrinoClient.Model.Sql.Planner.Plan
 {
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.ApplyNode.java
     /// </summary>
-    public class ApplyNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.ApplyNode.java
+                                 /// </summary>
+    public class ApplyNode(PlanNodeId id, PlanNode input, PlanNode subquery, Assignments subqueryAssignments, IEnumerable<Symbol> correlation, Node originSubquery) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Input { get; }
+        public PlanNode Input { get; } = input ?? throw new ArgumentNullException(nameof(input));
 
-        public PlanNode SubQuery { get; }
+        public PlanNode SubQuery { get; } = subquery ?? throw new ArgumentNullException(nameof(subquery));
 
-        public IEnumerable<Symbol> Correlation { get; }
+        public IEnumerable<Symbol> Correlation { get; } = correlation ?? throw new ArgumentNullException(nameof(correlation));
 
-        public Assignments SubqueryAssignments { get; }
+        public Assignments SubqueryAssignments { get; } = subqueryAssignments ?? throw new ArgumentNullException(nameof(subqueryAssignments));
 
-        public Node OriginSubquery { get; }
+        public Node OriginSubquery { get; } = originSubquery ?? throw new ArgumentNullException(nameof(originSubquery));
 
         public IEnumerable<Symbol> OutputSymbols
         {
             get
             {
-                return this.Input.GetOutputSymbols().Concat(this.SubqueryAssignments.GetOutputs());
+                return Input.GetOutputSymbols().Concat(SubqueryAssignments.GetOutputs());
             }
         }
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public ApplyNode(PlanNodeId id, PlanNode input, PlanNode subquery, Assignments subqueryAssignments, IEnumerable<Symbol> correlation, Node originSubquery) : base(id)
-        {
-            this.Input = input ?? throw new ArgumentNullException("input");
-            this.SubQuery = subquery ?? throw new ArgumentNullException("subquery");
-            this.SubqueryAssignments = subqueryAssignments ?? throw new ArgumentNullException("subqueryAssignments");
-            this.Correlation = correlation ?? throw new ArgumentNullException("correlation");
-            this.OriginSubquery = originSubquery ?? throw new ArgumentNullException("originSubquery");
-        }
 
         #endregion
 
@@ -51,14 +43,14 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Input;
+            yield return Input;
 
-            yield return this.SubQuery;
+            yield return SubQuery;
         }
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Input.GetOutputSymbols().Concat(this.SubqueryAssignments.GetOutputs());
+            return Input.GetOutputSymbols().Concat(SubqueryAssignments.GetOutputs());
         }
 
         #endregion

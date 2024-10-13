@@ -8,24 +8,19 @@ namespace TrinoClient.Model.Sql.Tree
     /// <summary>
     /// From com.facebook.presto.sql.tree.QualifiedName.java
     /// </summary>
-    public class QualifiedName
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.tree.QualifiedName.java
+                                 /// </summary>
+    public class QualifiedName(IEnumerable<string> originalParts, IEnumerable<string> parts)
     {
         #region Public Properties
 
-        public IEnumerable<string> Parts { get; }
+        public IEnumerable<string> Parts { get; } = parts;
 
-        public IEnumerable<string> OriginalParts { get; }
+        public IEnumerable<string> OriginalParts { get; } = originalParts;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public QualifiedName(IEnumerable<string> originalParts, IEnumerable<string> parts)
-        {
-            this.OriginalParts = originalParts;
-            this.Parts = parts;
-        }
 
         #endregion
 
@@ -33,18 +28,18 @@ namespace TrinoClient.Model.Sql.Tree
 
         public override string ToString()
         {
-            return String.Join(".", this.Parts);
+            return string.Join(".", Parts);
         }
 
         public QualifiedName GetPrefix()
         {
-            if (this.Parts.Count() == 1)
+            if (Parts.Count() == 1)
             {
                 return null;
             }
             else
             {
-                IEnumerable<string> SubList = this.Parts.Take(this.Parts.Count() - 1);
+                IEnumerable<string> SubList = Parts.Take(Parts.Count() - 1);
                 return new QualifiedName(SubList, SubList);
             }
         }

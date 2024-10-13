@@ -8,35 +8,28 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.UnnestNode.java
     /// </summary>
-    public class UnnestNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.UnnestNode.java
+                                 /// </summary>
+    public class UnnestNode(PlanNodeId id, PlanNode source, IEnumerable<Symbol> replicateSymbols, IDictionary<string, List<Symbol>> unnestSymbols, Symbol ordinalitySymbol) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Source { get; }
+        public PlanNode Source { get; } = source ?? throw new ArgumentNullException(nameof(source));
 
-        public IEnumerable<Symbol> ReplicateSymbols { get; }
+        public IEnumerable<Symbol> ReplicateSymbols { get; } = replicateSymbols ?? throw new ArgumentNullException(nameof(replicateSymbols));
 
         /// <summary>
         /// TODO: Key should be Symbol
         /// </summary>
-        public IDictionary<string, List<Symbol>> UnnestSymbols { get; }
+        public IDictionary<string, List<Symbol>> UnnestSymbols { get; } = unnestSymbols ?? throw new ArgumentNullException(nameof(unnestSymbols));
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
-        public Symbol OrdinalitySymbol { get; }
+        public Symbol OrdinalitySymbol { get; } = ordinalitySymbol;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public UnnestNode(PlanNodeId id, PlanNode source, IEnumerable<Symbol> replicateSymbols, IDictionary<string, List<Symbol>> unnestSymbols, Symbol ordinalitySymbol) : base(id)
-        {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.ReplicateSymbols = replicateSymbols ?? throw new ArgumentNullException("replicateSymbols");
-            this.UnnestSymbols = unnestSymbols ?? throw new ArgumentNullException("unnestSymbols");
-            this.OrdinalitySymbol = ordinalitySymbol;
-        }
 
         #endregion
 
@@ -44,11 +37,11 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            IEnumerable<Symbol> Temp = this.ReplicateSymbols.Concat(this.UnnestSymbols.Keys.Select(x => new Symbol(x)));
+            IEnumerable<Symbol> Temp = ReplicateSymbols.Concat(UnnestSymbols.Keys.Select(x => new Symbol(x)));
 
-            if (this.OrdinalitySymbol != null)
+            if (OrdinalitySymbol != null)
             {
-                Temp.Concat(new Symbol[] { this.OrdinalitySymbol });
+                Temp.Concat([OrdinalitySymbol]);
             }
 
             return Temp;
@@ -56,7 +49,7 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

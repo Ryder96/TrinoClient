@@ -5,40 +5,30 @@ namespace TrinoClient.Model.Client
     /// <summary>
     /// From com.facebook.presto.client.QueryError.java
     /// </summary>
-    public class QueryError
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.client.QueryError.java
+                                 /// </summary>
+    public class QueryError(string message, string sqlState, int errorCode, string errorName, string errorType, ErrorLocation errorLocation, FailureInfo failureInfo)
     {
         #region Public Properties
 
-        public string Message { get; }
+        public string Message { get; } = message;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string SqlState { get; }
+        public string SqlState { get; } = sqlState;
 
-        public int ErrorCode { get; }
+        public int ErrorCode { get; } = errorCode;
 
-        public string ErrorName { get; }
+        public string ErrorName { get; } = errorName;
 
-        public string ErrorType { get; }
+        public string ErrorType { get; } = errorType;
 
-        public ErrorLocation ErrorLocation { get; }
+        public ErrorLocation ErrorLocation { get; } = errorLocation;
 
-        public FailureInfo FailureInfo { get; }
+        public FailureInfo FailureInfo { get; } = failureInfo;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public QueryError(string message, string sqlState, int errorCode, string errorName, string errorType, ErrorLocation errorLocation, FailureInfo failureInfo)
-        {
-            this.Message = message;
-            this.SqlState = sqlState;
-            this.ErrorCode = errorCode;
-            this.ErrorName = errorName;
-            this.ErrorType = errorType;
-            this.ErrorLocation = errorLocation;
-            this.FailureInfo = failureInfo;
-        }
 
         #endregion
 
@@ -47,13 +37,13 @@ namespace TrinoClient.Model.Client
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("message", this.Message)
-                .Add("sqlState", this.SqlState)
-                .Add("errorCode", this.ErrorCode)
-                .Add("errorName", this.ErrorName)
-                .Add("errorType", this.ErrorType)
-                .Add("errorLocation", this.ErrorLocation)
-                .Add("failureInfo", this.FailureInfo)
+                .Add("message", Message)
+                .Add("sqlState", SqlState)
+                .Add("errorCode", ErrorCode)
+                .Add("errorName", ErrorName)
+                .Add("errorType", ErrorType)
+                .Add("errorLocation", ErrorLocation)
+                .Add("failureInfo", FailureInfo)
                 .ToString();
         }
 

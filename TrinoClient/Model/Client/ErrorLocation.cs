@@ -23,16 +23,16 @@ namespace TrinoClient.Model.Client
         {
             if (lineNumber < 1)
             {
-                throw new ArgumentOutOfRangeException("lineNumber", "The line number must be at least one.");
+                throw new ArgumentOutOfRangeException(nameof(lineNumber), "The line number must be at least one.");
             }
 
             if (columnNumber < 1)
             {
-                throw new ArgumentOutOfRangeException("columnNumber", "The column number must be at least one.");
+                throw new ArgumentOutOfRangeException(nameof(columnNumber), "The column number must be at least one.");
             }
 
-            this.LineNumber = lineNumber;
-            this.ColumnNumber = columnNumber;
+            LineNumber = lineNumber;
+            ColumnNumber = columnNumber;
         }
 
         #endregion
@@ -42,8 +42,8 @@ namespace TrinoClient.Model.Client
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("lineNumber", this.LineNumber)
-                .Add("columnNumber", this.ColumnNumber)
+                .Add("lineNumber", LineNumber)
+                .Add("columnNumber", ColumnNumber)
                 .ToString();
         }
 

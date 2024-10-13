@@ -8,24 +8,19 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.AssignUniqueId.java
     /// </summary>
-    public class AssignUniqueId : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.AssignUniqueId.java
+                                 /// </summary>
+    public class AssignUniqueId(PlanNodeId id, PlanNode source, Symbol idColumn) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Source { get; }
+        public PlanNode Source { get; } = source ?? throw new ArgumentNullException(nameof(source));
 
-        public Symbol IdColumn { get; }
+        public Symbol IdColumn { get; } = idColumn ?? throw new ArgumentNullException(nameof(idColumn));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public AssignUniqueId(PlanNodeId id, PlanNode source, Symbol idColumn) : base(id)
-        {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.IdColumn = idColumn ?? throw new ArgumentNullException("idColumn");
-        }
 
         #endregion
 
@@ -33,12 +28,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Source.GetOutputSymbols().Concat(new Symbol[] { this.IdColumn });
+            return Source.GetOutputSymbols().Concat([IdColumn]);
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

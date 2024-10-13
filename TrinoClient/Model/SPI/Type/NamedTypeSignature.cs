@@ -5,24 +5,19 @@ namespace TrinoClient.Model.SPI.Type
     /// <summary>
     /// from com.facebook.presto.spi.type.NamedTypeSignature.java
     /// </summary>
-    public class NamedTypeSignature
+    [method: JsonConstructor]    /// <summary>
+                                 /// from com.facebook.presto.spi.type.NamedTypeSignature.java
+                                 /// </summary>
+    public class NamedTypeSignature(string name, TypeSignature typeSignature)
     {
         #region Public Properties
 
-        public string Name { get; }
+        public string Name { get; } = name;
 
-        public TypeSignature TypeSignature { get; }
+        public TypeSignature TypeSignature { get; } = typeSignature;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public NamedTypeSignature(string name, TypeSignature typeSignature)
-        {
-            this.Name = name;
-            this.TypeSignature = typeSignature;
-        }
 
         #endregion
 
@@ -30,7 +25,7 @@ namespace TrinoClient.Model.SPI.Type
 
         public override string ToString()
         {
-            return $"{this.Name} {this.TypeSignature}";
+            return $"{Name} {TypeSignature}";
         }
 
         #endregion

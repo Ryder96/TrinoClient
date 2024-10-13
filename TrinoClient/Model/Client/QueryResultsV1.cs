@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using TrinoClient.Serialization;
+using System.Text;
 using TrinoClient.Model.Client;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Statement
 {
@@ -24,7 +24,7 @@ namespace TrinoClient.Model.Statement
         public string UpdateType { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Int64 UpdateCount { get; set; }
+        public long UpdateCount { get; set; }
 
         #endregion
 
@@ -62,11 +62,11 @@ namespace TrinoClient.Model.Statement
                 throw new ArgumentException("Data present without columns");
             }
 
-            this.PartialCancelUri = partialCancelUri;
-            this.Data = data;
-            this.Stats = stats ?? throw new ArgumentNullException("stats");
-            this.UpdateType = updateType;
-            this.UpdateCount = updateCount;
+            PartialCancelUri = partialCancelUri;
+            Data = data;
+            Stats = stats ?? throw new ArgumentNullException(nameof(stats));
+            UpdateType = updateType;
+            UpdateCount = updateCount;
         }
 
         #endregion
@@ -81,7 +81,7 @@ namespace TrinoClient.Model.Statement
         /// <returns>Any available data from this query result</returns>
         public IEnumerable<List<dynamic>> GetData()
         {
-            return this.Data;
+            return Data;
         }
 
         #endregion
@@ -90,47 +90,47 @@ namespace TrinoClient.Model.Statement
 
         public string GetId()
         {
-            return this.Id;
+            return Id;
         }
 
         public Uri GetInfoUri()
         {
-            return this.InfoUri;
+            return InfoUri;
         }
 
         public Uri GetPartialCancelUri()
         {
-            return this.PartialCancelUri;
+            return PartialCancelUri;
         }
 
         public Uri GetNextUri()
         {
-            return this.NextUri;
+            return NextUri;
         }
 
         public IEnumerable<Column> GetColumns()
         {
-            return this.Columns;
+            return Columns;
         }
 
         public StatementStats GetStats()
         {
-            return this.Stats;
+            return Stats;
         }
 
         public QueryError GetError()
         {
-            return this.Error;
+            return Error;
         }
 
         public string GetUpdateType()
         {
-            return this.UpdateType;
+            return UpdateType;
         }
 
         public long GetUpdateCount()
         {
-            return this.UpdateCount;
+            return UpdateCount;
         }
 
         #endregion
@@ -143,11 +143,11 @@ namespace TrinoClient.Model.Statement
         /// <returns>The data formatted as CSV with 1 line per index in the IEnumerable</returns>
         public IEnumerable<string> DataToCsv()
         {
-            if (this.Data != null)
+            if (Data != null)
             {
-                foreach (var Item in this.Data)
+                foreach (var Item in Data)
                 {
-                    StringBuilder SB = new StringBuilder();
+                    StringBuilder SB = new();
 
                     foreach (var Column in Item)
                     {
@@ -155,7 +155,7 @@ namespace TrinoClient.Model.Statement
                     }
 
                     // Remove last comma
-                    SB.Length = SB.Length - 1;
+                    SB.Length--;
 
                     yield return SB.ToString();
                 }
@@ -172,11 +172,11 @@ namespace TrinoClient.Model.Statement
         /// <returns>The JSON formatted string</returns>
         public string DataToJson()
         {
-            if (this.Data != null && this.Columns != null)
+            if (Data != null && Columns != null)
             {
-                Dictionary<string, Dictionary<string, object>[]> Wrapper = new Dictionary<string, Dictionary<string, object>[]>
+                Dictionary<string, Dictionary<string, object>[]> Wrapper = new()
                 {
-                    { "data", new Dictionary<string, object>[this.Data.Count()] }
+                    { "data", new Dictionary<string, object>[Data.Count()] }
                 };
 
                 Column[] Columns = this.Columns.ToArray();
@@ -187,7 +187,7 @@ namespace TrinoClient.Model.Statement
                     // Keep track of the column number
                     int Counter = 0;
 
-                    Wrapper["data"][RowCounter] = new Dictionary<string, object>();
+                    Wrapper["data"][RowCounter] = [];
 
                     foreach (dynamic Column in Row)
                     {
@@ -214,7 +214,7 @@ namespace TrinoClient.Model.Statement
         {
             ex = null;
 
-            if (!String.IsNullOrEmpty(content))
+            if (!string.IsNullOrEmpty(content))
             {
                 try
                 {

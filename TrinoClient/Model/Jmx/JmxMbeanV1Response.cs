@@ -37,21 +37,21 @@ namespace TrinoClient.Model.Jmx
 
         public JmxMbeanV1Response(string rawContent)
         {
-            this.RawContent = rawContent;
+            RawContent = rawContent;
 
-            if (!String.IsNullOrEmpty(this.RawContent))
+            if (!string.IsNullOrEmpty(RawContent))
             {
                 try
                 {
-                    this.Response = JsonConvert.DeserializeObject<JmxMbeanV1Result>(this.RawContent);
-                    this.DeserializationSucceeded = true;
-                    this.LastError = null;
+                    Response = JsonConvert.DeserializeObject<JmxMbeanV1Result>(RawContent);
+                    DeserializationSucceeded = true;
+                    LastError = null;
                 }
                 catch (Exception e)
                 {
-                    this.DeserializationSucceeded = false;
-                    this.LastError = e;
-                    this.Response = null;
+                    DeserializationSucceeded = false;
+                    LastError = e;
+                    Response = null;
                 }
             }
         }

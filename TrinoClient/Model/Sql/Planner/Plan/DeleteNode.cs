@@ -7,30 +7,23 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.DeleteNode.java
     /// </summary>
-    public class DeleteNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.DeleteNode.java
+                                 /// </summary>
+    public class DeleteNode(PlanNodeId id, PlanNode source, DeleteHandle target, Symbol rowId, IEnumerable<Symbol> outputs) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Source { get; }
+        public PlanNode Source { get; } = source ?? throw new ArgumentNullException(nameof(source));
 
-        public DeleteHandle Target { get; }
+        public DeleteHandle Target { get; } = target ?? throw new ArgumentNullException(nameof(target));
 
-        public Symbol RowId { get; }
+        public Symbol RowId { get; } = rowId ?? throw new ArgumentNullException(nameof(rowId));
 
-        public IEnumerable<Symbol> Outputs { get; }
+        public IEnumerable<Symbol> Outputs { get; } = outputs ?? throw new ArgumentNullException(nameof(outputs));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public DeleteNode(PlanNodeId id, PlanNode source, DeleteHandle target, Symbol rowId, IEnumerable<Symbol> outputs) : base(id)
-        {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.Target = target ?? throw new ArgumentNullException("target");
-            this.RowId = rowId ?? throw new ArgumentNullException("rowId");
-            this.Outputs = outputs ?? throw new ArgumentNullException("outputs");
-        }
 
         #endregion
 
@@ -38,12 +31,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Outputs;
+            return Outputs;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

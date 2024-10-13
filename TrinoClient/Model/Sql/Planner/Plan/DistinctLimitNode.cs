@@ -33,13 +33,13 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         {
             ParameterCheck.OutOfRange(limit >= 0, "The limit cannot be less than zero.");
 
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.Limit = limit;
-            this.Partial = partial;
-            this.DistinctSymbols = distinctSymbols;
-            this.HashSymbol = hashSymbol;
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            Limit = limit;
+            Partial = partial;
+            DistinctSymbols = distinctSymbols;
+            HashSymbol = hashSymbol;
 
-            if (this.HashSymbol != null && this.DistinctSymbols.Contains(this.HashSymbol))
+            if (HashSymbol != null && DistinctSymbols.Contains(HashSymbol))
             {
                 throw new ArgumentException("Distinct symbols should not contain hash symbol.");
             }
@@ -51,18 +51,18 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            if (this.HashSymbol != null)
+            if (HashSymbol != null)
             {
-                return this.DistinctSymbols.Concat(new Symbol[] { this.HashSymbol });
+                return DistinctSymbols.Concat([HashSymbol]);
             }
             else
             {
-                return this.DistinctSymbols;
+                return DistinctSymbols;
             }
         }
 

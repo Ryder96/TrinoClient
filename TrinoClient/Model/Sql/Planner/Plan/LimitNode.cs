@@ -26,8 +26,8 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         {
             ParameterCheck.OutOfRange(count >= 0, "count", "Count cannot be less than 0.");
 
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.Count = count;
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            Count = count;
         }
 
         #endregion
@@ -36,12 +36,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Source.GetOutputSymbols();
+            return Source.GetOutputSymbols();
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

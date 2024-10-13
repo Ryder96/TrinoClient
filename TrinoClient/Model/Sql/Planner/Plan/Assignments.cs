@@ -7,23 +7,17 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.Assignments.java
     /// </summary>
-    public class Assignments
+    public class Assignments(IDictionary<string, dynamic> assignments)
     {
         #region Public Properties
 
         /// <summary>
         /// TODO: Key should be <Symbol, Expression>
         /// </summary>
-        public IDictionary<string, dynamic> assignments { get; }
+        public IDictionary<string, dynamic> assignments { get; } = assignments ?? throw new ArgumentNullException(nameof(assignments));
 
         #endregion
-
         #region Constructors
-
-        public Assignments(IDictionary<string, dynamic> assignments)
-        {
-            this.assignments = assignments ?? throw new ArgumentNullException("assignments");
-        }
 
         #endregion
 
@@ -31,22 +25,22 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public IEnumerable<Symbol> GetOutputs()
         {
-            return this.assignments.Keys.Select(x => new Symbol(x));
+            return assignments.Keys.Select(x => new Symbol(x));
         }
 
         public IEnumerable<dynamic> GetExpressions()
         {
-            return this.assignments.Values;
+            return assignments.Values;
         }
 
         public HashSet<Symbol> GetSymbols()
         {
-            return new HashSet<Symbol>(this.assignments.Keys.Select(x => new Symbol(x)));
+            return new HashSet<Symbol>(assignments.Keys.Select(x => new Symbol(x)));
         }
 
         public int Size()
         {
-            return this.assignments.Count;
+            return assignments.Count;
         }
 
         #endregion

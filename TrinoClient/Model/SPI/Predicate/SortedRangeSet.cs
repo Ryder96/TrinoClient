@@ -1,7 +1,7 @@
-﻿using TrinoClient.Model.SPI.Type;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Model.SPI.Predicate
 {
@@ -20,7 +20,7 @@ namespace TrinoClient.Model.SPI.Predicate
         {
             get
             {
-                return this.LowIndexedRanges.Values;
+                return LowIndexedRanges.Values;
             }
         }
 
@@ -30,12 +30,12 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public SortedRangeSet(IType type, SortedDictionary<Marker, Range> lowIndexedRanges)
         {
-            this.Type = type ?? throw new ArgumentNullException("type");
-            this.LowIndexedRanges = lowIndexedRanges ?? throw new ArgumentNullException("lowIndexedRanges");
+            Type = type ?? throw new ArgumentNullException(nameof(type));
+            LowIndexedRanges = lowIndexedRanges ?? throw new ArgumentNullException(nameof(lowIndexedRanges));
 
-            if (!this.Type.IsOrderable())
+            if (!Type.IsOrderable())
             {
-                throw new ArgumentException($"Type is not orderable: {this.Type.ToString()}.", "type");
+                throw new ArgumentException($"Type is not orderable: {Type.ToString()}.", nameof(type));
             }
 
         }
@@ -46,12 +46,12 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public static SortedRangeSet None(IType type)
         {
-            return CopyOf(type, new Range[0]);
+            return CopyOf(type, []);
         }
 
         public static SortedRangeSet All(IType type)
         {
-            return CopyOf(type, new Range[] { Range.All(type) });
+            return CopyOf(type, [Range.All(type)]);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace TrinoClient.Model.SPI.Predicate
 
             Range Current = null;
 
-            SortedDictionary<Marker, Range> Result = new SortedDictionary<Marker, Range>();
+            SortedDictionary<Marker, Range> Result = [];
 
             foreach (Range Next in ranges)
             {
@@ -103,7 +103,7 @@ namespace TrinoClient.Model.SPI.Predicate
         /// <returns></returns>
         public static SortedRangeSet Of(IType type, object first, params object[] rest)
         {
-            return CopyOf(type, rest.Concat(new object[] { first }).Select(x => Range.Equal(type, x)));
+            return CopyOf(type, rest.Concat([first]).Select(x => Range.Equal(type, x)));
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace TrinoClient.Model.SPI.Predicate
         /// <returns></returns>
         public static SortedRangeSet Of(Range first, params Range[] rest)
         {
-            return CopyOf(first.Type, rest.Concat(new Range[] { first }));
+            return CopyOf(first.Type, rest.Concat([first]));
         }
 
         #endregion
@@ -123,32 +123,32 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public bool IsNone()
         {
-            return !this.LowIndexedRanges.Any();
+            return LowIndexedRanges.Count == 0;
         }
 
         public bool IsAll()
         {
-            return this.LowIndexedRanges.Count == 1 && this.LowIndexedRanges.Values.First().IsAll();
+            return LowIndexedRanges.Count == 1 && LowIndexedRanges.Values.First().IsAll();
         }
 
         public bool IsSingleValue()
         {
-            return this.LowIndexedRanges.Count == 1 && this.LowIndexedRanges.Values.First().IsSingleValue();
+            return LowIndexedRanges.Count == 1 && LowIndexedRanges.Values.First().IsSingleValue();
         }
 
         public object GetSingleValue()
         {
-            if (!this.IsSingleValue())
+            if (!IsSingleValue())
             {
                 throw new IndexOutOfRangeException("SortedRAngeSet does not have just a single value.");
             }
 
-            return this.LowIndexedRanges.Values.First().GetSingleValue();
+            return LowIndexedRanges.Values.First().GetSingleValue();
         }
 
         public bool ContainsValue(object value)
         {
-            return this.IncludesMarker(Marker.Exactly(this.Type, value));
+            return IncludesMarker(Marker.Exactly(Type, value));
         }
 
         public IRanges GetRanges()
@@ -163,46 +163,46 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public T Transform<T>(Func<IRanges, T> rangesFunction, Func<IDiscreteValues, T> valuesFunction, Func<IAllOrNone, T> allOrNoneFunction)
         {
-            return rangesFunction.Invoke(this.GetRanges());
+            return rangesFunction.Invoke(GetRanges());
         }
 
         public void Consume(Consumer<IRanges> rangesConsumer, Consumer<IDiscreteValues> valuesConsumer, Consumer<IAllOrNone> allOrNoneConsumer)
         {
-            rangesConsumer.Accept(this.GetRanges());
+            rangesConsumer.Accept(GetRanges());
         }
 
         public int GetRangeCount()
         {
-            return this.LowIndexedRanges.Count;
+            return LowIndexedRanges.Count;
         }
 
         public IEnumerable<Range> GetOrderedRanges()
         {
-            return this.Ranges;
+            return Ranges;
         }
 
         public Range GetSpan()
         {
-            if (!this.LowIndexedRanges.Any())
+            if (LowIndexedRanges.Count == 0)
             {
                 throw new InvalidOperationException("Cannot get span if no ranges exists");
             }
 
-            return this.LowIndexedRanges.First().Value.Span(this.LowIndexedRanges.Last().Value);
+            return LowIndexedRanges.First().Value.Span(LowIndexedRanges.Last().Value);
         }
 
         public IType GetPrestoType()
         {
-            return this.Type;
+            return Type;
         }
 
         public IValueSet Intersect(IValueSet other)
         {
-            SortedRangeSet OtherRangeSet = this.CheckCompatibility(other);
+            SortedRangeSet OtherRangeSet = CheckCompatibility(other);
 
-            Builder Builder = new Builder(this.Type);
+            Builder Builder = new(Type);
 
-            IEnumerator<Range> Iterator1 = this.GetOrderedRanges().GetEnumerator();
+            IEnumerator<Range> Iterator1 = GetOrderedRanges().GetEnumerator();
             IEnumerator<Range> Iterator2 = OtherRangeSet.GetOrderedRanges().GetEnumerator();
 
             if (Iterator1.MoveNext() && Iterator2.MoveNext())
@@ -243,22 +243,22 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public IValueSet Union(IValueSet other)
         {
-            SortedRangeSet OtherRangeSet = this.CheckCompatibility(other);
+            SortedRangeSet OtherRangeSet = CheckCompatibility(other);
 
-            return new Builder(this.Type)
-                .AddAll(this.GetOrderedRanges())
+            return new Builder(Type)
+                .AddAll(GetOrderedRanges())
                 .AddAll(OtherRangeSet.GetOrderedRanges())
                 .Build();
         }
 
         public IValueSet Union(IEnumerable<IValueSet> valueSets)
         {
-            Builder Builder = new Builder(this.Type);
-            Builder.AddAll(this.GetOrderedRanges());
+            Builder Builder = new(Type);
+            Builder.AddAll(GetOrderedRanges());
 
             foreach (IValueSet Set in valueSets)
             {
-                Builder.AddAll(this.CheckCompatibility(Set).GetOrderedRanges());
+                Builder.AddAll(CheckCompatibility(Set).GetOrderedRanges());
             }
 
             return Builder.Build();
@@ -266,20 +266,20 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public IValueSet Complement()
         {
-            Builder Builder = new Builder(this.Type);
+            Builder Builder = new(Type);
 
-            if (!this.LowIndexedRanges.Any())
+            if (LowIndexedRanges.Count == 0)
             {
-                return Builder.Add(Range.All(this.Type)).Build();
+                return Builder.Add(Range.All(Type)).Build();
             }
 
-            IEnumerable<Range> RangeIterator = this.LowIndexedRanges.Values;
+            IEnumerable<Range> RangeIterator = LowIndexedRanges.Values;
 
             Range FirstRange = RangeIterator.First();
 
             if (!FirstRange.Low.IsLowerUnbounded())
             {
-                Builder.Add(new Range(Marker.LowerUnbounded(this.Type), FirstRange.Low.LesserAdjacent()));
+                Builder.Add(new Range(Marker.LowerUnbounded(Type), FirstRange.Low.LesserAdjacent()));
             }
 
             Range PreviousRange = FirstRange;
@@ -298,7 +298,7 @@ namespace TrinoClient.Model.SPI.Predicate
 
             if (!LastRange.High.IsUpperUnbounded())
             {
-                Builder.Add(new Range(LastRange.High.GreaterAdjacent(), Marker.UpperUnbounded(this.Type)));
+                Builder.Add(new Range(LastRange.High.GreaterAdjacent(), Marker.UpperUnbounded(Type)));
             }
 
             return Builder.Build();
@@ -306,22 +306,22 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public bool Overlaps(IValueSet other)
         {
-            return !this.Intersect(other).IsNone();
+            return !Intersect(other).IsNone();
         }
 
         public bool Contains(IValueSet other)
         {
-            return this.Union(other).Equals(this);
+            return Union(other).Equals(this);
         }
 
         public IValueSet Subtract(IValueSet other)
         {
-            return this.Intersect(other.Complement());
+            return Intersect(other.Complement());
         }
 
         public string ToString(IConnectorSession session)
         {
-            return $"[{String.Join(", ", this.LowIndexedRanges.Values.Select(x => x.ToString(session)))}]";
+            return $"[{string.Join(", ", LowIndexedRanges.Values.Select(x => x.ToString(session)))}]";
         }
 
         public bool IncludesMarker(Marker marker)
@@ -336,12 +336,12 @@ namespace TrinoClient.Model.SPI.Predicate
 
         private SortedRangeSet CheckCompatibility(IValueSet other)
         {
-            if (!this.Type.Equals(other.GetPrestoType()))
+            if (!Type.Equals(other.GetPrestoType()))
             {
-                throw new ArgumentException($"Mismatched types: {this.Type} vs {other.GetPrestoType()}.");
+                throw new ArgumentException($"Mismatched types: {Type} vs {other.GetPrestoType()}.");
             }
 
-            if (!(other is SortedRangeSet))
+            if (other is not SortedRangeSet)
             {
                 throw new ArgumentException($"ValueSet is not a SortedRangeSet: {other.GetType()}.");
             }
@@ -351,9 +351,9 @@ namespace TrinoClient.Model.SPI.Predicate
 
         private void CheckTypeCompatibility(Marker marker)
         {
-            if (!this.Type.Equals(marker.Type))
+            if (!Type.Equals(marker.Type))
             {
-                throw new ArgumentException($"Marker of {marker.Type} does not match SortedRangeSet of {this.Type}.");
+                throw new ArgumentException($"Marker of {marker.Type} does not match SortedRangeSet of {Type}.");
             }
         }
 
@@ -370,21 +370,21 @@ namespace TrinoClient.Model.SPI.Predicate
 
             internal Builder(IType type)
             {
-                this.Type = type ?? throw new ArgumentNullException("type");
+                Type = type ?? throw new ArgumentNullException(nameof(type));
 
-                if (!this.Type.IsOrderable())
+                if (!Type.IsOrderable())
                 {
-                    throw new ArgumentException($"Type is not orderable: {this.Type.ToString()}.");
+                    throw new ArgumentException($"Type is not orderable: {Type.ToString()}.");
                 }
 
-                this.Ranges = new List<Range>();
+                Ranges = [];
             }
 
             internal Builder Add(Range range)
             {
-                if (!this.Type.Equals(range.Type))
+                if (!Type.Equals(range.Type))
                 {
-                    throw new ArgumentException($"Range type {range.Type.ToString()} does not match builder type {this.Type.ToString()}.");
+                    throw new ArgumentException($"Range type {range.Type.ToString()} does not match builder type {Type.ToString()}.");
                 }
 
                 Ranges.Add(range);
@@ -393,23 +393,23 @@ namespace TrinoClient.Model.SPI.Predicate
 
             internal Builder AddAll(IEnumerable<Range> ranges)
             {
-                this.Ranges.AddRange(ranges);
+                Ranges.AddRange(ranges);
 
                 return this;
             }
 
             internal SortedRangeSet Build()
             {
-                this.Ranges.Sort(new Comparison<Range>(delegate (Range x, Range y)
+                Ranges.Sort(new Comparison<Range>(delegate (Range x, Range y)
                 {
                     return x.Low.CompareTo(y.Low);
                 }));
 
-                SortedDictionary<Marker, Range> Result = new SortedDictionary<Marker, Range>();
+                SortedDictionary<Marker, Range> Result = [];
 
                 Range Current = null;
 
-                foreach (Range Next in this.Ranges)
+                foreach (Range Next in Ranges)
                 {
                     if (Current == null)
                     {
@@ -432,7 +432,7 @@ namespace TrinoClient.Model.SPI.Predicate
                     Result.Add(Current.Low, Current);
                 }
 
-                return new SortedRangeSet(this.Type, Result);
+                return new SortedRangeSet(Type, Result);
             }
         }
 

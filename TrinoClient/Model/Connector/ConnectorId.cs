@@ -1,6 +1,6 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Connector
 {
@@ -28,12 +28,12 @@ namespace TrinoClient.Model.Connector
         [JsonConstructor]
         public ConnectorId(string catalogName)
         {
-            if (String.IsNullOrEmpty(catalogName))
+            if (string.IsNullOrEmpty(catalogName))
             {
-                throw new ArgumentNullException("catalogName", "CatalogName cannot be null or empty.");
+                throw new ArgumentNullException(nameof(catalogName), "CatalogName cannot be null or empty.");
             }
 
-            this.CatalogName = catalogName;
+            CatalogName = catalogName;
         }
 
         #endregion
@@ -42,7 +42,7 @@ namespace TrinoClient.Model.Connector
 
         public override string ToString()
         {
-            return this.CatalogName;
+            return CatalogName;
         }
 
         public static bool IsInternalSystemConnector(ConnectorId connectorId)

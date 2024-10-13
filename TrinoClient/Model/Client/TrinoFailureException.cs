@@ -26,14 +26,11 @@ namespace TrinoClient.Model.Client
         [JsonConstructor]
         public TrinoFailureException(string message, string type, IEnumerable<string> stack, FailureInfo cause) : base(message)
         {
-            if (stack == null)
-            {
-                throw new ArgumentNullException("stack");
-            }
+            ArgumentNullException.ThrowIfNull(stack);
 
-            this.Type = type;
-            this.StackTrace = String.Join("\n", stack);
-            this.Cause = cause ?? throw new ArgumentNullException("cause");
+            Type = type;
+            StackTrace = string.Join("\n", stack);
+            Cause = cause ?? throw new ArgumentNullException(nameof(cause));
         }
 
         #endregion

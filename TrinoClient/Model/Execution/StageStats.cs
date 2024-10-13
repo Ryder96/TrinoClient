@@ -1,9 +1,9 @@
-﻿using TrinoClient.Model.Execution.Scheduler;
-using TrinoClient.Model.Operator;
-using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.Execution.Scheduler;
+using TrinoClient.Model.Operator;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Execution
 {
@@ -121,10 +121,10 @@ namespace TrinoClient.Model.Execution
             IEnumerable<OperatorStats> operatorSummaries
             )
         {
-            this.SchedulingComplete = schedulingComplete;
-            this.GetSplitDistribution = getSplitDistribution ?? throw new ArgumentNullException("getSplitDistribution");
-            this.ScheduleTaskDistribution = scheduleTaskDistribution ?? throw new ArgumentNullException("scheduleTaskDistribution");
-            this.AddSplitDistribution = addSplitDistribution ?? throw new ArgumentNullException("addSplitDistribution");
+            SchedulingComplete = schedulingComplete;
+            GetSplitDistribution = getSplitDistribution ?? throw new ArgumentNullException(nameof(getSplitDistribution));
+            ScheduleTaskDistribution = scheduleTaskDistribution ?? throw new ArgumentNullException(nameof(scheduleTaskDistribution));
+            AddSplitDistribution = addSplitDistribution ?? throw new ArgumentNullException(nameof(addSplitDistribution));
 
             ParameterCheck.OutOfRange(totalTasks >= 0, "totalTasks", "The total tasks cannot less than 0.");
             ParameterCheck.OutOfRange(runningTasks >= 0, "runningTasks", "The running tasks cannot less than 0.");
@@ -134,42 +134,42 @@ namespace TrinoClient.Model.Execution
             ParameterCheck.OutOfRange(runningDrivers >= 0, "runningDrivers", "The running drivers cannot less than 0.");
             ParameterCheck.OutOfRange(blockedDrivers >= 0, "blockedDrivers", "The blocked drivers cannot less than 0.");
             ParameterCheck.OutOfRange(completedDrivers >= 0, "completedDrivers", "The completed drivers cannot less than 0.");
-            ParameterCheck.OutOfRange(cumulativeMemory >= 0 && !Double.IsInfinity(cumulativeMemory) && !Double.IsNaN(cumulativeMemory), "cumulativeMemory", "The value of cumulative memory was invalid.");
+            ParameterCheck.OutOfRange(cumulativeMemory >= 0 && !double.IsInfinity(cumulativeMemory) && !double.IsNaN(cumulativeMemory), "cumulativeMemory", "The value of cumulative memory was invalid.");
             ParameterCheck.OutOfRange(rawInputPositions >= 0, "rawInputPositions", "The raw input positions cannot less than 0.");
             ParameterCheck.OutOfRange(processedInputPositions >= 0, "processedInputPositions", "The processed input positions cannot less than 0.");
             ParameterCheck.OutOfRange(outputPositions >= 0, "outputPositions", "The output positions cannot less than 0.");
 
-            this.TotalTasks = totalTasks;
-            this.RunningTasks = runningTasks;
-            this.CompletedTasks = completedTasks;
+            TotalTasks = totalTasks;
+            RunningTasks = runningTasks;
+            CompletedTasks = completedTasks;
 
-            this.TotalDrivers = totalDrivers;
-            this.QueuedDrivers = queuedDrivers;
-            this.RunningDrivers = runningDrivers;
-            this.BlockedDrivers = blockedDrivers;
-            this.CompletedDrivers = completedDrivers;
+            TotalDrivers = totalDrivers;
+            QueuedDrivers = queuedDrivers;
+            RunningDrivers = runningDrivers;
+            BlockedDrivers = blockedDrivers;
+            CompletedDrivers = completedDrivers;
 
-            this.CumulativeMemory = cumulativeMemory;
-            this.TotalMemoryReservation = totalMemoryReservation;// ?? throw new ArgumentNullException("totalMemoryReservation");
-            this.PeakMemoryReservation = peakMemoryReservation;// ?? throw new ArgumentNullException("peakMemoryReservation");
+            CumulativeMemory = cumulativeMemory;
+            TotalMemoryReservation = totalMemoryReservation;// ?? throw new ArgumentNullException("totalMemoryReservation");
+            PeakMemoryReservation = peakMemoryReservation;// ?? throw new ArgumentNullException("peakMemoryReservation");
 
-            this.TotalScheduledTime = totalScheduledTime;
-            this.TotalCpuTime = totalCpuTime;
-            this.TotalUserTime = totalUserTime;
-            this.TotalBlockedTime = totalBlockedTime;
-            this.FullyBlocked = fullyBlocked;
-            this.BlockedReasons = blockedReasons;
+            TotalScheduledTime = totalScheduledTime;
+            TotalCpuTime = totalCpuTime;
+            TotalUserTime = totalUserTime;
+            TotalBlockedTime = totalBlockedTime;
+            FullyBlocked = fullyBlocked;
+            BlockedReasons = blockedReasons;
 
-            this.RawInputDataSize = rawInputDataSize ?? throw new ArgumentNullException("rawInputDataSize");
-            this.RawInputPositions = rawInputPositions;
+            RawInputDataSize = rawInputDataSize ?? throw new ArgumentNullException(nameof(rawInputDataSize));
+            RawInputPositions = rawInputPositions;
 
-            this.ProcessedInputDataSize = processedInputDataSize ?? throw new ArgumentNullException("processedInputDataSize");
-            this.ProcessedInputPositions = processedInputPositions;
+            ProcessedInputDataSize = processedInputDataSize ?? throw new ArgumentNullException(nameof(processedInputDataSize));
+            ProcessedInputPositions = processedInputPositions;
 
-            this.BufferedDataSize = bufferedDataSize ?? throw new ArgumentNullException("bufferedDataSize");
-            this.OutputDataSize = outputDataSize ?? throw new ArgumentNullException("outputDataSize");
-            this.OutputPositions = outputPositions;
-            this.OperatorSummaries = operatorSummaries ?? throw new ArgumentNullException("operatorSummaries");
+            BufferedDataSize = bufferedDataSize ?? throw new ArgumentNullException(nameof(bufferedDataSize));
+            OutputDataSize = outputDataSize ?? throw new ArgumentNullException(nameof(outputDataSize));
+            OutputPositions = outputPositions;
+            OperatorSummaries = operatorSummaries ?? throw new ArgumentNullException(nameof(operatorSummaries));
         }
 
         #endregion

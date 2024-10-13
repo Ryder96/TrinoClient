@@ -1,6 +1,6 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Sql.Planner.Plan
 {
@@ -21,12 +21,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         [JsonConstructor]
         public PlanFragmentId(string id)
         {
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
-                throw new ArgumentNullException("id", "The id cannot be null or empty");
+                throw new ArgumentNullException(nameof(id), "The id cannot be null or empty");
             }
 
-            this.Id = id;
+            Id = id;
         }
 
         #endregion
@@ -35,12 +35,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override string ToString()
         {
-            return this.Id;
+            return Id;
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Id);
+            return Hashing.Hash(Id);
         }
 
         public override bool Equals(object obj)
@@ -50,14 +50,14 @@ namespace TrinoClient.Model.Sql.Planner.Plan
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             PlanFragmentId That = (PlanFragmentId)obj;
 
-            if (!this.Id.Equals(That.Id))
+            if (!Id.Equals(That.Id))
             {
                 return false;
             }

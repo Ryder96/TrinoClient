@@ -1,5 +1,5 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.SPI.Memory
 {
@@ -19,7 +19,7 @@ namespace TrinoClient.Model.SPI.Memory
         {
             ParameterCheck.NotNullOrEmpty(id, "id");
 
-            this.Id = id;
+            Id = id;
         }
 
         #endregion
@@ -28,7 +28,7 @@ namespace TrinoClient.Model.SPI.Memory
 
         public override string ToString()
         {
-            return this.Id;
+            return Id;
         }
 
         #endregion

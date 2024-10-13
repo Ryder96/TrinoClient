@@ -42,15 +42,15 @@ namespace TrinoClient.Model.Client
         {
             if (string.IsNullOrEmpty(type))
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
-            this.Type = type;
-            this.Message = message;
-            this.Cause = cause;
-            this.Suppressed = suppressed ?? throw new ArgumentNullException("suppressed");
-            this.Stack = stack;
-            this.ErrorLocation = errorLocation;
+            Type = type;
+            Message = message;
+            Cause = cause;
+            Suppressed = suppressed ?? throw new ArgumentNullException(nameof(suppressed));
+            Stack = stack;
+            ErrorLocation = errorLocation;
         }
 
         #endregion

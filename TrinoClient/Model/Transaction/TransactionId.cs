@@ -1,6 +1,6 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Transaction
 {
@@ -21,12 +21,12 @@ namespace TrinoClient.Model.Transaction
         [JsonConstructor]
         public TransactionId(Guid uuid)
         {
-            this.UUID = uuid;
+            UUID = uuid;
         }
 
         public TransactionId(string uuid)
         {
-            this.UUID = Guid.Parse(uuid);
+            UUID = Guid.Parse(uuid);
         }
 
         #endregion
@@ -45,12 +45,12 @@ namespace TrinoClient.Model.Transaction
 
         public override string ToString()
         {
-            return this.UUID.ToString();
+            return UUID.ToString();
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.UUID);
+            return Hashing.Hash(UUID);
         }
 
         public override bool Equals(object obj)
@@ -60,14 +60,14 @@ namespace TrinoClient.Model.Transaction
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             TransactionId Other = (TransactionId)obj;
 
-            return this.UUID == Other.UUID;
+            return UUID == Other.UUID;
         }
 
         #endregion

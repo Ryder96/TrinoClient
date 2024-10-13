@@ -3,7 +3,7 @@
     /// <summary>
     /// From com.facebook.presto.spi.block.PageBuilderStatus.java
     /// </summary>
-    public class PageBuilderStatus
+    public class PageBuilderStatus(int maxPageSizeInBytes, int maxBlockSizeInBytes)
     {
         #region Private Fields
 
@@ -21,19 +21,19 @@
 
         #region Public Properties
 
-        public int MaxBlockSizeInBytes { get; }
+        public int MaxBlockSizeInBytes { get; } = maxBlockSizeInBytes;
 
-        public int MaxPageSizeInBytes { get; }
+        public int MaxPageSizeInBytes { get; } = maxPageSizeInBytes;
 
         public bool Full
         {
             get
             {
-                return this._Full || this.SizeInBytes >= this.MaxPageSizeInBytes;
+                return _Full || SizeInBytes >= MaxPageSizeInBytes;
             }
             set
             {
-                this._Full = value;
+                _Full = value;
             }
         }
 
@@ -41,7 +41,7 @@
         {
             get
             {
-                return this._CurrentSize;
+                return _CurrentSize;
             }
         }
 
@@ -53,37 +53,31 @@
         {
         }
 
-        public PageBuilderStatus(int maxPageSizeInBytes, int maxBlockSizeInBytes)
-        {
-            this.MaxPageSizeInBytes = maxPageSizeInBytes;
-            this.MaxBlockSizeInBytes = maxBlockSizeInBytes;
-        }
-
         #endregion
 
         #region Public Methods
 
         public BlockBuilderStatus CreateBlockBuilderStatus()
         {
-            return new BlockBuilderStatus(this, this.MaxBlockSizeInBytes);
+            return new BlockBuilderStatus(this, MaxBlockSizeInBytes);
         }
 
         public void AddBytes(int bytes)
         {
-            this._CurrentSize += bytes;
+            _CurrentSize += bytes;
         }
 
         public bool IsEmpty()
         {
-            return this._CurrentSize == 0;
+            return _CurrentSize == 0;
         }
 
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("maxSizeInBytes", this.MaxPageSizeInBytes)
-                .Add("full", this._Full)
-                .Add("currentSize", this._CurrentSize)
+                .Add("maxSizeInBytes", MaxPageSizeInBytes)
+                .Add("full", _Full)
+                .Add("currentSize", _CurrentSize)
                 .ToString();
         }
 

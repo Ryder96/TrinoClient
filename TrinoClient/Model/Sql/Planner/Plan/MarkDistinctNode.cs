@@ -8,32 +8,25 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.MarkDistinctOperator.java
     /// </summary>
-    public class MarkDistinctNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.MarkDistinctOperator.java
+                                 /// </summary>
+    public class MarkDistinctNode(PlanNodeId id, PlanNode source, Symbol markerSymbol, IEnumerable<Symbol> distinctSymbols, Symbol hashSymbol) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Source { get; }
+        public PlanNode Source { get; } = source;
 
-        public Symbol MarkerSymbol { get; }
+        public Symbol MarkerSymbol { get; } = markerSymbol;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
-        public Symbol HashSymbol { get; }
+        public Symbol HashSymbol { get; } = hashSymbol;
 
-        public IEnumerable<Symbol> DistinctSymbols { get; }
+        public IEnumerable<Symbol> DistinctSymbols { get; } = distinctSymbols ?? throw new ArgumentNullException(nameof(distinctSymbols));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public MarkDistinctNode(PlanNodeId id, PlanNode source, Symbol markerSymbol, IEnumerable<Symbol> distinctSymbols, Symbol hashSymbol) : base(id)
-        {
-            this.Source = source;
-            this.MarkerSymbol = markerSymbol;
-            this.HashSymbol = hashSymbol;
-            this.DistinctSymbols = distinctSymbols ?? throw new ArgumentNullException("distinctSymbols");
-        }
 
         #endregion
 
@@ -41,12 +34,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Source.GetOutputSymbols().Concat(new Symbol[] { this.MarkerSymbol });
+            return Source.GetOutputSymbols().Concat([MarkerSymbol]);
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

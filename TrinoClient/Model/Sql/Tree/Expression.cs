@@ -3,12 +3,10 @@
     /// <summary>
     /// From com.facebook.presto.sql.tree.Expression.java
     /// </summary>
-    public abstract class Expression : Node
+    public abstract class Expression(NodeLocation location) : Node(location)
     {
-        #region Constructors
 
-        protected Expression(NodeLocation location) : base(location)
-        { }
+        #region Constructors
 
         #endregion
 
@@ -21,7 +19,7 @@
 
         public override string ToString()
         {
-            return ExpressionFormatter.FormatExpression(this, new Expression[] { });
+            return ExpressionFormatter.FormatExpression(this, []);
         }
 
         #endregion

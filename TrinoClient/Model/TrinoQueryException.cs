@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.Client;
-using System;
+﻿using System;
 using System.Net;
+using TrinoClient.Model.Client;
 
 namespace TrinoClient.Model
 {
@@ -26,30 +26,24 @@ namespace TrinoClient.Model
 
         public TrinoQueryException(QueryError error) : base(error.Message, HttpStatusCode.OK)
         {
-            if (error == null)
-            {
-                throw new ArgumentNullException("error");
-            }
+            ArgumentNullException.ThrowIfNull(error);
 
-            this.ErrorCode = error.ErrorCode;
-            this.ErrorLocation = error.ErrorLocation;
-            this.ErrorName = error.ErrorName;
-            this.ErrorType = error.ErrorType;
-            this.FailureInfo = error.FailureInfo;
+            ErrorCode = error.ErrorCode;
+            ErrorLocation = error.ErrorLocation;
+            ErrorName = error.ErrorName;
+            ErrorType = error.ErrorType;
+            FailureInfo = error.FailureInfo;
         }
 
         public TrinoQueryException(QueryError error, HttpStatusCode code) : base(error.Message, code)
         {
-            if (error == null)
-            {
-                throw new ArgumentNullException("error");
-            }
+            ArgumentNullException.ThrowIfNull(error);
 
-            this.ErrorCode = error.ErrorCode;
-            this.ErrorLocation = error.ErrorLocation;
-            this.ErrorName = error.ErrorName;
-            this.ErrorType = error.ErrorType;
-            this.FailureInfo = error.FailureInfo;
+            ErrorCode = error.ErrorCode;
+            ErrorLocation = error.ErrorLocation;
+            ErrorName = error.ErrorName;
+            ErrorType = error.ErrorType;
+            FailureInfo = error.FailureInfo;
         }
 
         #endregion

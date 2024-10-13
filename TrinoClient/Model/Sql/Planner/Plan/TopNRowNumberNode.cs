@@ -35,15 +35,15 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         {
             ParameterCheck.OutOfRange(maxRowCountPerPartition > 0, "maxrowCountPerPartition", "Max row count per partition must be greater than 0.");
 
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.Specification = specification ?? throw new ArgumentNullException("specification");
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            Specification = specification ?? throw new ArgumentNullException(nameof(specification));
 
             ParameterCheck.NonNull<OrderingScheme>(Specification.OrderingScheme, "specification", "The specification ordering scheme is absent.");
 
-            this.RowNumberSymbol = rowNumberSymbol;
-            this.MaxRowCountPerPartition = maxRowCountPerPartition;
-            this.Partial = partial;
-            this.HashSymbol = hashSymbol;
+            RowNumberSymbol = rowNumberSymbol;
+            MaxRowCountPerPartition = maxRowCountPerPartition;
+            Partial = partial;
+            HashSymbol = hashSymbol;
         }
 
         #endregion
@@ -52,19 +52,19 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            if (!this.Partial)
+            if (!Partial)
             {
-                return this.Source.GetOutputSymbols().Concat(new Symbol[] { this.RowNumberSymbol });
+                return Source.GetOutputSymbols().Concat([RowNumberSymbol]);
             }
             else
             {
-                return this.Source.GetOutputSymbols();
+                return Source.GetOutputSymbols();
             }
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

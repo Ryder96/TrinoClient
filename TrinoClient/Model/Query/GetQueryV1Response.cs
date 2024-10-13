@@ -1,7 +1,7 @@
-﻿using TrinoClient.Model.Execution;
-using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.Execution;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Query
 {
@@ -43,22 +43,22 @@ namespace TrinoClient.Model.Query
         /// <param name="rawContent">The JSON object of query details</param>
         internal GetQueryV1Response(string rawContent)
         {
-            this.RawContent = rawContent;
+            RawContent = rawContent;
 
-            if (!String.IsNullOrEmpty(this.RawContent))
+            if (!string.IsNullOrEmpty(RawContent))
             {
                 try
                 {
-                    JsonConverter[] Converters = { new PlanNodeConverter() };
-                    this.QueryInfo = JsonConvert.DeserializeObject<QueryInfo>(this.RawContent, new JsonSerializerSettings() { Converters = Converters });
-                    this.DeserializationSucceeded = true;
-                    this.LastError = null;
+                    JsonConverter[] Converters = [new PlanNodeConverter()];
+                    QueryInfo = JsonConvert.DeserializeObject<QueryInfo>(RawContent, new JsonSerializerSettings() { Converters = Converters });
+                    DeserializationSucceeded = true;
+                    LastError = null;
                 }
                 catch (Exception e)
                 {
-                    this.DeserializationSucceeded = false;
-                    this.LastError = e;
-                    this.QueryInfo = null;
+                    DeserializationSucceeded = false;
+                    LastError = e;
+                    QueryInfo = null;
                 }
             }
         }

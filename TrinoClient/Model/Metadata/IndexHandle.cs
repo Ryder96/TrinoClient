@@ -1,39 +1,33 @@
-﻿using TrinoClient.Model.Connector;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.Connector;
 
 namespace TrinoClient.Model.Metadata
 {
     /// <summary>
     /// From com.facebook.presto.metadata.IndexHandle.java
     /// </summary>
-    public sealed class IndexHandle
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.metadata.IndexHandle.java
+                                 /// </summary>
+    public sealed class IndexHandle(ConnectorId connectorId, dynamic transactionHandle, dynamic connectorHandle)
     {
         #region Public Properties
 
-        public ConnectorId ConnectorId { get; }
+        public ConnectorId ConnectorId { get; } = connectorId ?? throw new ArgumentNullException(nameof(connectorId));
 
         /// <summary>
         /// TODO: Supposed to be IConnectorTransactionHandle
         /// </summary>
-        public dynamic TransactionHandle { get; }
+        public dynamic TransactionHandle { get; } = transactionHandle ?? throw new ArgumentNullException(nameof(transactionHandle));
 
         /// <summary>
         /// TODO: Supposed to be IConnectorIndexHandle
         /// </summary>
-        public dynamic ConnectorHandle { get; }
+        public dynamic ConnectorHandle { get; } = connectorHandle ?? throw new ArgumentNullException(nameof(connectorHandle));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public IndexHandle(ConnectorId connectorId, dynamic transactionHandle, dynamic connectorHandle)
-        {
-            this.ConnectorId = connectorId ?? throw new ArgumentNullException("connectorId");
-            this.TransactionHandle = transactionHandle ?? throw new ArgumentNullException("transactionHandle");
-            this.ConnectorHandle = connectorHandle ?? throw new ArgumentNullException("connectorHandle");
-        }
 
         #endregion
 
@@ -41,7 +35,7 @@ namespace TrinoClient.Model.Metadata
 
         public override string ToString()
         {
-            return $"{this.ConnectorId}:{this.TransactionHandle}:{this.ConnectorHandle}";
+            return $"{ConnectorId}:{TransactionHandle}:{ConnectorHandle}";
         }
 
         #endregion

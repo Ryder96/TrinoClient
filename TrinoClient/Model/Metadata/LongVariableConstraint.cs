@@ -5,24 +5,19 @@ namespace TrinoClient.Model.Metadata
     /// <summary>
     /// From com.facebook.presto.metadata.LongVariableConstraint
     /// </summary>
-    public class LongVariableConstraint
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.metadata.LongVariableConstraint
+                                 /// </summary>
+    public class LongVariableConstraint(string name, string expression)
     {
         #region Public Properties
 
-        public string Name { get; }
+        public string Name { get; } = name;
 
-        public string Expression { get; }
+        public string Expression { get; } = expression;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public LongVariableConstraint(string name, string expression)
-        {
-            this.Name = name;
-            this.Expression = expression;
-        }
 
         #endregion
 
@@ -30,7 +25,7 @@ namespace TrinoClient.Model.Metadata
 
         public override string ToString()
         {
-            return $"{this.Name}:{this.Expression}";
+            return $"{Name}:{Expression}";
         }
 
         #endregion

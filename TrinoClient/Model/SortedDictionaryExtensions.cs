@@ -8,7 +8,7 @@ namespace TrinoClient.Model
     {
         private static Tuple<int, int> GetPossibleIndices<TKey, TValue>(SortedDictionary<TKey, TValue> dictionary, TKey key, bool strictlyDifferent, out List<TKey> list)
         {
-            list = dictionary.Keys.ToList();
+            list = [.. dictionary.Keys];
             int index = list.BinarySearch(key, dictionary.Comparer);
             if (index >= 0)
             {

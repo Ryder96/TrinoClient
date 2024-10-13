@@ -1,14 +1,7 @@
-﻿using Newtonsoft.Json;
-using TrinoClient.Interfaces;
-using TrinoClient.Model;
-using TrinoClient.Model.Jmx;
-using TrinoClient.Model.Query;
-using TrinoClient.Model.Statement;
-using TrinoClient.Model.Thread;
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -18,9 +11,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
+using TrinoClient.Interfaces;
+using TrinoClient.Model;
+using TrinoClient.Model.Jmx;
 using TrinoClient.Model.NodeInfo;
+using TrinoClient.Model.Query;
 using TrinoClient.Model.SPI;
+using TrinoClient.Model.Statement;
+using TrinoClient.Model.Thread;
 
 namespace TrinoClient
 {
@@ -36,7 +34,7 @@ namespace TrinoClient
         /// <summary>
         /// The cookie container all of the handlers will use so they all have access to the same cookies
         /// </summary>
-        private CookieContainer Cookies = new CookieContainer();
+        private CookieContainer Cookies = new();
 
         /// <summary>
         /// A normal http handler
@@ -63,38 +61,26 @@ namespace TrinoClient
         /// </summary>
         private void InitializeHttpClients()
         {
-            this.NormalHandler = new HttpClientHandler()
+            NormalHandler = new HttpClientHandler()
             {
                 CookieContainer = Cookies,
                 ServerCertificateCustomValidationCallback = (request, cert, chain, sslPolicyErrors) =>
                 {
-                    //If there is an error with the SSL cert, log it
-                    if (sslPolicyErrors != SslPolicyErrors.None)
-                    {
-                        // Log error
-                    }
-
                     return sslPolicyErrors == SslPolicyErrors.None;
                 }
             };
 
-            this.IgnoreSslErrorHandler = new HttpClientHandler()
+            IgnoreSslErrorHandler = new HttpClientHandler()
             {
                 CookieContainer = Cookies,
                 ServerCertificateCustomValidationCallback = (request, cert, chain, sslPolicyErrors) =>
                 {
-                    //If there is an error with the SSL cert, log it, but let the request continue
-                    if (sslPolicyErrors != SslPolicyErrors.None)
-                    {
-                        // Log error
-                    }
-
                     return true;
                 }
             };
 
-            this.NormalClient = new HttpClient(this.NormalHandler);
-            this.IgnoreSslErrorClient = new HttpClient(this.IgnoreSslErrorHandler);
+            NormalClient = new HttpClient(NormalHandler);
+            IgnoreSslErrorClient = new HttpClient(IgnoreSslErrorHandler);
         }
 
         #endregion
@@ -110,16 +96,16 @@ namespace TrinoClient
         public TrinodbClient()
         {
             // Initialize with defaults
-            this.Configuration = new TrinoClientSessionConfig();
+            Configuration = new TrinoClientSessionConfig();
 
-            this.InitializeHttpClients();
+            InitializeHttpClients();
         }
 
         public TrinodbClient(TrinoClientSessionConfig config)
         {
-            this.Configuration = config ?? throw new ArgumentNullException("config", "The presto client configuration cannot be null.");
+            Configuration = config ?? throw new ArgumentNullException(nameof(config), "The presto client configuration cannot be null.");
 
-            this.InitializeHttpClients();
+            InitializeHttpClients();
         }
 
         #endregion
@@ -148,23 +134,23 @@ namespace TrinoClient
         /// </returns>
         public async Task<ListThreadsV1Response> ListThreads(CancellationToken cancellationToken)
         {
-            HttpClient LocalClient = (this.Configuration.IgnoreSslErrors) ? this.IgnoreSslErrorClient : this.NormalClient;
+            HttpClient LocalClient = Configuration.IgnoreSslErrors ? IgnoreSslErrorClient : NormalClient;
 
-            Uri Path = this.BuildUri("/thread");
+            Uri Path = BuildUri("/thread");
 
-            HttpRequestMessage Request = this.BuildRequest(Path, HttpMethod.Get);
+            HttpRequestMessage Request = BuildRequest(Path, HttpMethod.Get);
 
             HttpResponseMessage Response = await LocalClient.SendAsync(Request, cancellationToken);
 
-            string Json = await Response.Content.ReadAsStringAsync();
+            string Json = await Response.Content.ReadAsStringAsync(cancellationToken);
 
             if (Response.StatusCode != HttpStatusCode.OK)
             {
-                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(), Response.StatusCode);
+                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(cancellationToken), Response.StatusCode);
             }
             else
             {
-                ListThreadsV1Response Result = new ListThreadsV1Response(Json);
+                ListThreadsV1Response Result = new(Json);
 
                 return Result;
             }
@@ -188,30 +174,30 @@ namespace TrinoClient
         /// <returns>The web page html/javascript/css.</returns>
         public async Task<string> GetThreadUIHtml(CancellationToken cancellationToken)
         {
-            HttpClient LocalClient = (this.Configuration.IgnoreSslErrors) ? this.IgnoreSslErrorClient : this.NormalClient;
+            HttpClient LocalClient = Configuration.IgnoreSslErrors ? IgnoreSslErrorClient : NormalClient;
 
-            StringBuilder SB = new StringBuilder();
+            StringBuilder SB = new();
 
-            string Scheme = (this.Configuration.UseSsl) ? "https" : "http";
-            SB.Append($"{Scheme}://{this.Configuration.Host}");
+            string Scheme = Configuration.UseSsl ? "https" : "http";
+            SB.Append($"{Scheme}://{Configuration.Host}");
 
             // Only add non-standard ports
-            if ((Scheme == "http" && this.Configuration.Port != 80) || (Scheme == "https" && this.Configuration.Port != 443))
+            if ((Scheme == "http" && Configuration.Port != 80) || (Scheme == "https" && Configuration.Port != 443))
             {
-                SB.Append($":{this.Configuration.Port}");
+                SB.Append($":{Configuration.Port}");
             }
 
             SB.Append($"/ui/thread");
 
-            Uri Path = new Uri(SB.ToString());
+            Uri Path = new(SB.ToString());
 
             HttpResponseMessage Response = await LocalClient.GetAsync(Path, cancellationToken);
 
-            string Html = await Response.Content.ReadAsStringAsync();
+            string Html = await Response.Content.ReadAsStringAsync(cancellationToken);
 
             if (Response.StatusCode != HttpStatusCode.OK)
             {
-                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(), Response.StatusCode);
+                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(cancellationToken), Response.StatusCode);
             }
             else
             {
@@ -245,69 +231,23 @@ namespace TrinoClient
         /// </returns>
         public async Task<ListNodesV1Response> ListNodes(CancellationToken cancellationToken)
         {
-            HttpClient LocalClient = (this.Configuration.IgnoreSslErrors) ? this.IgnoreSslErrorClient : this.NormalClient;
+            HttpClient LocalClient = Configuration.IgnoreSslErrors ? IgnoreSslErrorClient : NormalClient;
 
-            Uri Path = this.BuildUri("/node");
+            Uri Path = BuildUri("/node");
 
-            HttpRequestMessage Request = this.BuildRequest(Path, HttpMethod.Get);
+            HttpRequestMessage Request = BuildRequest(Path, HttpMethod.Get);
 
             HttpResponseMessage Response = await LocalClient.SendAsync(Request, cancellationToken);
 
-            string Json = await Response.Content.ReadAsStringAsync();
-
-            /*
-             * Response without Failures
-             * 
-             *  [
-             *      {
-             *          "uri":"http://10.209.57.156:8080",
-             *          "recentRequests":25.181940555111073,
-             *          "recentFailures":0.0,
-             *          "recentSuccesses":25.195472984170983,
-             *          "lastRequestTime":"2013-12-22T13:32:44.673-05:00",
-             *          "lastResponseTime":"2013-12-22T13:32:44.677-05:00",
-             *          "age":"14155.28ms",
-             *          "recentFailureRatio":0.0,
-             *          "recentFailuresByType":{}
-             *      }
-             *  ]
-             * 
-             * Response with Failures
-             *  [
-             *      {
-             *          "age": "4.45m",
-             *          "lastFailureInfo": {
-             *              "message": "Connect Timeout",
-             *              "stack": [
-             *                  "org.eclipse.jetty.io.ManagedSelector$ConnectTimeout.run(ManagedSelector.java:683)",
-             *                  ....
-             *                  "java.lang.Thread.run(Thread.java:745)"
-             *              ],
-             *              "suppressed": [],
-             *              "type": "java.net.SocketTimeoutException"
-             *          },
-             *          "lastRequestTime": "2017-08-05T11:53:00.647Z",
-             *          "lastResponseTime": "2017-08-05T11:53:00.647Z",
-             *          "recentFailureRatio": 0.47263053472046446,
-             *          "recentFailures": 2.8445543205610617,
-             *          "recentFailuresByType": {
-             *              "java.net.SocketTimeoutException": 2.8445543205610617
-             *          },
-             *          "recentRequests": 6.018558073577414,
-             *          "recentSuccesses": 3.1746446343010297,
-             *          "uri": "http://172.19.0.3:8080"
-             *      }
-             *  ]
-             * 
-            */
+            string Json = await Response.Content.ReadAsStringAsync(cancellationToken);
 
             if (Response.StatusCode != HttpStatusCode.OK)
             {
-                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(), Response.StatusCode);
+                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(cancellationToken), Response.StatusCode);
             }
             else
             {
-                ListNodesV1Response Result = new ListNodesV1Response(Json);
+                ListNodesV1Response Result = new(Json);
 
                 return Result;
             }
@@ -335,64 +275,34 @@ namespace TrinoClient
         /// </returns>
         public async Task<ListFailedNodesV1Response> ListFailedNodes(CancellationToken cancellationToken)
         {
-            HttpClient LocalClient = (this.Configuration.IgnoreSslErrors) ? this.IgnoreSslErrorClient : this.NormalClient;
+            HttpClient LocalClient = Configuration.IgnoreSslErrors ? IgnoreSslErrorClient : NormalClient;
 
-            StringBuilder SB = new StringBuilder();
+            StringBuilder SB = new();
 
-            string Scheme = (this.Configuration.UseSsl) ? "https" : "http";
-            SB.Append($"{Scheme}://{this.Configuration.Host}");
+            string Scheme = Configuration.UseSsl ? "https" : "http";
+            SB.Append($"{Scheme}://{Configuration.Host}");
 
             // Only add non-standard ports
-            if ((Scheme == "http" && this.Configuration.Port != 80) || (Scheme == "https" && this.Configuration.Port != 443))
+            if ((Scheme == "http" && Configuration.Port != 80) || (Scheme == "https" && Configuration.Port != 443))
             {
-                SB.Append($":{this.Configuration.Port}");
+                SB.Append($":{Configuration.Port}");
             }
 
-            SB.Append($"/{this.GetVersionString(this.Configuration.Version)}/node/failed");
+            SB.Append($"/{GetVersionString(Configuration.Version)}/node/failed");
 
-            Uri Path = new Uri(SB.ToString());
+            Uri Path = new(SB.ToString());
 
             HttpResponseMessage Response = await LocalClient.GetAsync(Path, cancellationToken);
 
-            string Json = await Response.Content.ReadAsStringAsync();
-
-            /*
-             * Response with Failures
-             *  [
-             *      {
-             *          "age": "4.45m",
-             *          "lastFailureInfo": {
-             *              "message": "Connect Timeout",
-             *              "stack": [
-             *                  "org.eclipse.jetty.io.ManagedSelector$ConnectTimeout.run(ManagedSelector.java:683)",
-             *                  ....
-             *                  "java.lang.Thread.run(Thread.java:745)"
-             *              ],
-             *              "suppressed": [],
-             *              "type": "java.net.SocketTimeoutException"
-             *          },
-             *          "lastRequestTime": "2017-08-05T11:53:00.647Z",
-             *          "lastResponseTime": "2017-08-05T11:53:00.647Z",
-             *          "recentFailureRatio": 0.47263053472046446,
-             *          "recentFailures": 2.8445543205610617,
-             *          "recentFailuresByType": {
-             *              "java.net.SocketTimeoutException": 2.8445543205610617
-             *          },
-             *          "recentRequests": 6.018558073577414,
-             *          "recentSuccesses": 3.1746446343010297,
-             *          "uri": "http://172.19.0.3:8080"
-             *      }
-             *  ]
-             * 
-            */
+            string Json = await Response.Content.ReadAsStringAsync(cancellationToken);
 
             if (Response.StatusCode != HttpStatusCode.OK)
             {
-                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(), Response.StatusCode);
+                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(cancellationToken), Response.StatusCode);
             }
             else
             {
-                ListFailedNodesV1Response Result = new ListFailedNodesV1Response(Json);
+                ListFailedNodesV1Response Result = new(Json);
 
                 return Result;
             }
@@ -420,18 +330,18 @@ namespace TrinoClient
         /// <returns>No value is returned, but the method will throw an exception if it was not successful</returns>
         public async Task KillQuery(string queryId, CancellationToken cancellationToken)
         {
-            HttpClient localClient = (this.Configuration.IgnoreSslErrors) ? this.IgnoreSslErrorClient : this.NormalClient;
+            HttpClient localClient = Configuration.IgnoreSslErrors ? IgnoreSslErrorClient : NormalClient;
 
-            Uri Path = this.BuildUri($"/query/{queryId}");
+            Uri Path = BuildUri($"/query/{queryId}");
 
-            HttpRequestMessage Request = this.BuildRequest(Path, HttpMethod.Delete);
+            HttpRequestMessage Request = BuildRequest(Path, HttpMethod.Delete);
 
             HttpResponseMessage Response = await localClient.SendAsync(Request, cancellationToken);
 
             // Expect a 204 response
             if (Response.StatusCode != HttpStatusCode.NoContent)
             {
-                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(), Response.StatusCode);
+                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(cancellationToken), Response.StatusCode);
             }
         }
 
@@ -453,22 +363,22 @@ namespace TrinoClient
         /// <returns>Details on the queries</returns>
         public async Task<ListQueriesV1Response> GetQueries(CancellationToken cancellationToken)
         {
-            HttpClient LocalClient = (this.Configuration.IgnoreSslErrors) ? this.IgnoreSslErrorClient : this.NormalClient;
+            HttpClient LocalClient = Configuration.IgnoreSslErrors ? IgnoreSslErrorClient : NormalClient;
 
-            Uri Path = this.BuildUri($"/query");
+            Uri Path = BuildUri($"/query");
 
-            HttpRequestMessage Request = this.BuildRequest(Path, HttpMethod.Get);
+            HttpRequestMessage Request = BuildRequest(Path, HttpMethod.Get);
 
             HttpResponseMessage Response = await LocalClient.SendAsync(Request, cancellationToken);
 
             // Expect a 200 response
             if (Response.StatusCode != HttpStatusCode.OK)
             {
-                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(), Response.StatusCode);
+                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(cancellationToken), Response.StatusCode);
             }
             else
             {
-                ListQueriesV1Response Results = new ListQueriesV1Response(await Response.Content.ReadAsStringAsync());
+                ListQueriesV1Response Results = new(await Response.Content.ReadAsStringAsync(cancellationToken));
                 return Results;
             }
         }
@@ -491,22 +401,22 @@ namespace TrinoClient
         /// <returns>Detailed summary of the query</returns>
         public async Task<GetQueryV1Response> GetQuery(string queryId, CancellationToken CancellationToken)
         {
-            HttpClient LocalClient = (this.Configuration.IgnoreSslErrors) ? this.IgnoreSslErrorClient : this.NormalClient;
+            HttpClient LocalClient = Configuration.IgnoreSslErrors ? IgnoreSslErrorClient : NormalClient;
 
-            Uri Path = this.BuildUri($"/query/{queryId}");
+            Uri Path = BuildUri($"/query/{queryId}");
 
-            HttpRequestMessage Request = this.BuildRequest(Path, HttpMethod.Get);
+            HttpRequestMessage Request = BuildRequest(Path, HttpMethod.Get);
 
             HttpResponseMessage Response = await LocalClient.GetAsync(Path, CancellationToken);
 
             // Expect a 200 response
             if (Response.StatusCode != HttpStatusCode.OK)
             {
-                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(), Response.StatusCode);
+                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(CancellationToken), Response.StatusCode);
             }
             else
             {
-                GetQueryV1Response Result = new GetQueryV1Response(await Response.Content.ReadAsStringAsync());
+                GetQueryV1Response Result = new(await Response.Content.ReadAsStringAsync(CancellationToken));
                 return Result;
             }
         }
@@ -529,7 +439,7 @@ namespace TrinoClient
         /// <returns>Detailed summary of the query</returns>
         public async Task<GetQueryV1Response> GetQuery(QueryId queryId, CancellationToken cancellationToken)
         {
-            return await this.GetQuery(queryId.ToString(), cancellationToken);
+            return await GetQuery(queryId.ToString(), cancellationToken);
         }
 
         #endregion
@@ -557,306 +467,105 @@ namespace TrinoClient
         public async Task<ExecuteQueryV1Response> ExecuteQueryV1(ExecuteQueryV1Request request, CancellationToken cancellationToken)
         {
             // Check the required configuration items before running the query
-            if (!CheckConfiguration(out Exception Ex))
+            if (!CheckConfiguration(out Exception ex))
             {
-                throw Ex;
+            throw ex;
             }
 
             // Track all of the incremental results as they are returned
-            List<QueryResultsV1> Results = new List<QueryResultsV1>();
+            var results = new List<QueryResultsV1>();
 
-            // Choose the correct client to use for ssl errors
-            HttpClient LocalClient = (this.Configuration.IgnoreSslErrors) ? this.IgnoreSslErrorClient : this.NormalClient;
+            // Choose the correct client to use for SSL errors
+            var localClient = Configuration.IgnoreSslErrors ? IgnoreSslErrorClient : NormalClient;
 
-            // Build the url path
-            Uri Path = this.BuildUri("/statement");
+            // Build the URL path
+            var path = BuildUri("/statement");
 
             // Create a new request to post with the query
-            HttpRequestMessage Request = this.BuildRequest(Path, HttpMethod.Post, new StringContent(request.Query));
+            var httpRequest = BuildRequest(path, HttpMethod.Post, new StringContent(request.Query));
 
             // Add all of the configured headers to the request
-            this.BuildQueryHeaders(ref Request, request.Options);
+            BuildQueryHeaders(ref httpRequest, request.Options);
 
             // Use the stopwatch to measure if we've exceeded the specified timeout
-            Stopwatch SW = new Stopwatch();
-
-            if (this.Configuration.ClientRequestTimeout > 0)
+            var stopwatch = new Stopwatch();
+            if (Configuration.ClientRequestTimeout > 0)
             {
-                SW.Start();
+            stopwatch.Start();
             }
 
-            // This is the original submission result, will contain the nextUri
-            // property to follow in order to get the results
-            HttpResponseMessage ResponseMessage = await this.MakeHttpRequest(LocalClient, Request, cancellationToken: cancellationToken);
+            // This is the original submission result, will contain the nextUri property to follow in order to get the results
+            var responseMessage = await MakeHttpRequest(localClient, httpRequest, cancellationToken: cancellationToken);
 
             // This doesn't really do anything but evaluate the headers right now
-            this.ProcessResponseHeaders(ResponseMessage);
+            ProcessResponseHeaders(responseMessage);
 
-            string Content = await ResponseMessage.Content.ReadAsStringAsync();
+            var content = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
             // If parsing the submission response fails, return and exit
-            if (!QueryResultsV1.TryParse(Content, out QueryResultsV1 Response, out Exception ParseEx))
+            if (!QueryResultsV1.TryParse(content, out var response, out var parseEx))
             {
-                throw new TrinoException($"The query submission response could not be parsed.", Content, ParseEx);
+            throw new TrinoException("The query submission response could not be parsed.", content, parseEx);
+            }
+
+            // Check to make sure there wasn't an error provided
+            if (response.Error != null)
+            {
+            throw new TrinoQueryException(response.Error);
+            }
+
+            results.Add(response);
+
+            // Keep track of the last, non-null URI so we can send a delete request to it at the end
+            var lastUri = path;
+
+            // Recursively fetch results from the next URI
+            await FetchNextResults(localClient, response.NextUri, results, cancellationToken, stopwatch);
+
+            // Explicitly closes the query
+            responseMessage = await localClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, lastUri), cancellationToken);
+
+            // If a 204 is not returned, the query was not successfully closed
+            var closed = responseMessage.StatusCode == HttpStatusCode.NoContent;
+
+            return new ExecuteQueryV1Response(results, closed);
+        }
+        private async Task FetchNextResults(HttpClient localClient, Uri nextUri, List<QueryResultsV1> results, CancellationToken cancellationToken, Stopwatch stopwatch)
+        {
+            if (nextUri == null || (Configuration.ClientRequestTimeout > 0 && stopwatch.Elapsed.TotalSeconds > Configuration.ClientRequestTimeout))
+            {
+            return;
+            }
+
+            // Make the request and get back a valid response, otherwise
+            // the MakeRequest method will throw an exception
+            var request = BuildRequest(nextUri, HttpMethod.Get);
+
+            var responseMessage = await MakeHttpRequest(localClient, request, cancellationToken: cancellationToken);
+
+            ProcessResponseHeaders(responseMessage);
+
+            var content = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
+
+            // Make sure deserialization succeeded
+            if (QueryResultsV1.TryParse(content, out var response, out var parseEx))
+            {
+            results.Add(response);
+
+            // Check to make sure there wasn't an error provided
+            if (response.Error != null)
+            {
+                throw new TrinoQueryException(response.Error);
+            }
+
+            // Recursively fetch results from the next URI
+            await FetchNextResults(localClient, response.NextUri, results, cancellationToken, stopwatch);
             }
             else
             {
-                // Check to make sure there wasn't an error provided
-                if (Response.Error != null)
-                {
-                    throw new TrinoQueryException(Response.Error);
-                }
-
-                Results.Add(Response);
-
-                // Keep track of the last, non-null uri so we can
-                // send a delete request to it at the end
-                Uri LastUri = Path;
-
-                // Hold the new path to request against which will
-                // be updated in the do/while loop
-                Path = Response.NextUri;
-
-                try
-                {
-                    // Keep following the nextUri until it is not sent
-                    // When it is absent in the response, the query has
-                    // finished, use  a while loop since the data may have 
-                    // all been returned in the first request and no nextUri
-                    // property was returned
-                    while (Path != null &&
-                        ((this.Configuration.ClientRequestTimeout > 0) ?
-                        SW.Elapsed.TotalSeconds <= this.Configuration.ClientRequestTimeout :
-                        true
-                        ))
-                    {
-                        // Put a pause in between each call to reduce CPU usage
-                        await Task.Delay(this.Configuration.CheckInterval, cancellationToken);
-
-                        // This is the last non-null uri
-                        LastUri = Path;
-
-                        // Make the request and get back a valid response, otherwise
-                        // the MakeRequest method will throw an exception
-                        Request = BuildRequest(Path, HttpMethod.Get);
-
-                        ResponseMessage = await this.MakeHttpRequest(LocalClient, Request, cancellationToken: cancellationToken);
-
-                        this.ProcessResponseHeaders(ResponseMessage);
-
-                        Content = await ResponseMessage.Content.ReadAsStringAsync();
-
-                        // Make sure deserialization succeeded
-                        if (QueryResultsV1.TryParse(Content, out Response, out ParseEx))
-                        {
-                            Results.Add(Response);
-
-                            // Check to make sure there wasn't an error provided
-                            if (Response.Error != null)
-                            {
-                                throw new TrinoQueryException(Response.Error);
-                            }
-
-                            // Update the path to the returned nextUri (which could be null)
-                            Path = Response.NextUri;
-                        }
-                        else
-                        {
-                            throw new TrinoException("The response from presto could not be deserialized.", Content, ParseEx);
-                        }
-                    }
-
-                    bool Closed = false;
-
-                    // Explicitly closes the query
-                    ResponseMessage = await LocalClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, LastUri), cancellationToken);
-
-                    // If a 204 is not returned, the query was not successfully closed
-                    if (ResponseMessage.StatusCode == HttpStatusCode.NoContent)
-                    {
-                        Closed = true;
-                    }
-
-                    ExecuteQueryV1Response QueryResponse = new ExecuteQueryV1Response(Results, Closed);
-
-                    return QueryResponse;
-                }
-                catch (TrinoException e)
-                {
-                    throw e;
-                }
-                catch (Exception e)
-                {
-                    throw new TrinoException("Submitting the requested query failed.", e);
-                }
+            throw new TrinoException("The response from presto could not be deserialized.", content, parseEx);
             }
         }
-
-        /// <summary>
-        /// This API is not yet available in Presto as of version 0.197
-        /// Submits a statement to Presto for execution. The Presto client
-        /// executes queries on behalf of a user against a catalog and a schema.
-        /// </summary>
-        /// <param name="request">The query execution request</param>
-        /// <returns>
-        /// The final query response object where NextUri was null with all of the data
-        /// retrieved from the data uris.
-        /// </returns>
-        private async Task<ExecuteQueryResponse<QueryResultsV2>> ExecuteQueryV2(ExecuteQueryV2Request request)
-        {
-            return await ExecuteQueryV2(request, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// This API is not yet available in Presto as of version 0.197
-        /// Submits a statement to Presto for execution. The Presto client
-        /// executes queries on behalf of a user against a catalog and a schema.
-        /// </summary>
-        /// <param name="request">The query execution request</param>
-        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
-        /// <returns>
-        /// The final query response object where NextUri was null with all of the data
-        /// retrieved from the data uris.
-        /// </returns>
-        private async Task<ExecuteQueryResponse<QueryResultsV2>> ExecuteQueryV2(ExecuteQueryV2Request request, CancellationToken cancellationToken)
-        {
-            #region Standard Stuff
-
-            // Check the required configuration items before running the query
-            if (!CheckConfiguration(out Exception Ex))
-            {
-                throw Ex;
-            }
-
-            // Choose the correct client to use for ssl errors
-            HttpClient LocalClient = (this.Configuration.IgnoreSslErrors) ? this.IgnoreSslErrorClient : this.NormalClient;
-
-            // Build the url path
-            Uri Path = this.BuildUri("/statement", TrinoApiVersion.V2);
-
-            #endregion
-
-            Uri NextUri = Path;
-            Uri LastUri = NextUri;
-
-            HashSet<Uri> DataUris = new HashSet<Uri>();
-            List<Task> DataResponses = new List<Task>();
-
-            // Each row is represented as a list of dynamic elements, then the 
-            // wrapper list if the collection of those rows
-            ConcurrentBag<List<dynamic>> DataRows = new ConcurrentBag<List<dynamic>>();
-            ExecuteQueryResponse<QueryResultsV2> QueryResponse = null;
-
-            bool FirstRun = true;
-
-            // Each of these requests has to happen in serial because the 
-            // next request depends on the results from the last
-            while (NextUri != null)
-            {
-                // Save the last valid NextUri to send the DELETE 
-                // request to in order to close the query
-                LastUri = NextUri;
-
-                HttpRequestMessage Request;
-
-                if (FirstRun)
-                {
-                    // Create a new request to post with the query
-                    Request = new HttpRequestMessage(HttpMethod.Post, NextUri)
-                    {
-                        Content = new StringContent(request.Query)
-                    };
-
-                    // Add all of the configured headers to the request
-                    this.BuildQueryHeaders(ref Request, request.Options);
-
-                    FirstRun = false;
-                }
-                else
-                {
-                    Request = new HttpRequestMessage(HttpMethod.Get, NextUri);
-                }
-
-                HttpResponseMessage Response = await this.MakeHttpRequest(LocalClient, Request, cancellationToken: cancellationToken);
-
-                string raw = await Response.Content.ReadAsStringAsync();
-
-                QueryResponse = new ExecuteQueryResponse<QueryResultsV2>(raw);
-
-                if (QueryResponse.DeserializationSucceeded)
-                {
-                    if (QueryResponse.Response.DataUris != null)
-                    {
-                        foreach (Uri DataUri in QueryResponse.Response.DataUris)
-                        {
-                            // If we haven't seen the uri yet, add it and then
-                            // kick off a request to grab the data
-                            if (!DataUris.Contains(DataUri))
-                            {
-                                DataUris.Add(DataUri);
-
-                                // Add the response to the concurrent bag collecting the data results
-                                DataResponses.Add(Task.Run(async () =>
-                                {
-                                    Uri NextDataUri = DataUri;
-
-                                    // Client must follow the next uri unti it becomes unavailable
-                                    while (NextDataUri != null)
-                                    {
-                                        HttpRequestMessage DataRequest = new HttpRequestMessage(HttpMethod.Get, NextDataUri);
-                                        HttpResponseMessage DataResponse = await LocalClient.SendAsync(DataRequest, cancellationToken);
-                                        GetDataV2Response DataItem = JsonConvert.DeserializeObject<GetDataV2Response>(await DataResponse.Content.ReadAsStringAsync());
-
-                                        foreach (List<dynamic> Row in DataItem.Data)
-                                        {
-                                            DataRows.Add(Row);
-                                        }
-
-                                        if (DataResponse.Headers.Contains(TrinoHeader.TRINO_DATA_NEXT_URI.Value))
-                                        {
-                                            NextDataUri = new Uri(DataResponse.Headers.GetValues(TrinoHeader.TRINO_DATA_NEXT_URI.Value).First());
-                                        }
-                                        else
-                                        {
-                                            NextDataUri = null;
-                                        }
-                                    }
-                                }));
-                            }
-                        }
-                    }
-
-                    NextUri = QueryResponse.Response.NextUri;
-                }
-                else
-                {
-                    throw new TrinoException("The response from presto could not be deserialized to follow the nextUri.", QueryResponse.LastError);
-                }
-            }
-
-            // When these complete, all of the data row responses will have been
-            // written to the concurrent bag
-            await Task.WhenAll(DataResponses);
-
-            // Write the data from the concurrent bag to a list so that 
-            // the data property now holds all of the rows of our response
-            QueryResponse.Response.Data = DataRows.ToList();
-
-            // Explicitly closes the query
-            HttpResponseMessage ClosureResponse = await LocalClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, LastUri), cancellationToken);
-
-            // If a 204 is not returned, the query was not successfully closed
-            if (ClosureResponse.StatusCode == HttpStatusCode.NoContent)
-            {
-                QueryResponse.QueryClosed = true;
-            }
-
-            return QueryResponse;
-        }
-
-        #endregion
-
-        #region JMX
 
         /// <summary>
         /// Gets details about a specified Jmx Mbean
@@ -883,22 +592,22 @@ namespace TrinoClient
             }
 
             // Build the url path
-            Uri Path = this.BuildUri($"/jmx/mbean/{request.ObjectName}");
+            Uri Path = BuildUri($"/jmx/mbean/{request.ObjectName}");
 
             // Create a new request to post with the query
-            HttpRequestMessage Request = this.BuildRequest(Path, HttpMethod.Get);
+            HttpRequestMessage Request = BuildRequest(Path, HttpMethod.Get);
 
             // Submit the request for details on the requested object name
-            HttpResponseMessage Response = await this.MakeHttpRequest(Request, cancellationToken);
+            HttpResponseMessage Response = await MakeHttpRequest(Request, cancellationToken);
 
             if (Response.StatusCode != HttpStatusCode.OK)
             {
-                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(), Response.StatusCode);
+                throw new TrinoWebException(await Response.Content.ReadAsStringAsync(cancellationToken), Response.StatusCode);
             }
             else
             {
                 // Generate a new query response object
-                return new JmxMbeanV1Response(await Response.Content.ReadAsStringAsync());
+                return new JmxMbeanV1Response(await Response.Content.ReadAsStringAsync(cancellationToken));
             }
         }
 
@@ -920,7 +629,7 @@ namespace TrinoClient
         /// <returns>The http response message from the request.</returns>
         private async Task<HttpResponseMessage> MakeHttpRequest(HttpRequestMessage request, CancellationToken cancellationToken, uint maxRetries = 5)
         {
-            return await this.MakeHttpRequest(this.Configuration.IgnoreSslErrors ? this.IgnoreSslErrorClient : this.NormalClient, request, cancellationToken, maxRetries);
+            return await MakeHttpRequest(Configuration.IgnoreSslErrors ? IgnoreSslErrorClient : NormalClient, request, cancellationToken, maxRetries);
         }
 
 
@@ -934,7 +643,7 @@ namespace TrinoClient
         /// <param name="maxRetries">The maximum number of times the method will try to contact the server
         /// if a service unavailable response code is returned.</param>
         /// <returns>The http response message from the request.</returns>
-        private async Task<HttpResponseMessage> MakeHttpRequest(HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken, uint maxRetries = 5)
+        private static async Task<HttpResponseMessage> MakeHttpRequest(HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken, uint maxRetries = 5)
         {
             HttpResponseMessage response = null;
             uint Counter = 0;
@@ -979,30 +688,30 @@ namespace TrinoClient
         /// <returns></returns>
         private Uri BuildUri(string relativePath, TrinoApiVersion version)
         {
-            if (String.IsNullOrEmpty(relativePath))
+            if (string.IsNullOrEmpty(relativePath))
             {
-                throw new ArgumentNullException("relativePath", "The relative path in the url being constructed cannot be null or empty.");
+                throw new ArgumentNullException(nameof(relativePath), "The relative path in the url being constructed cannot be null or empty.");
             }
 
-            StringBuilder SB = new StringBuilder();
+            StringBuilder SB = new();
 
-            string Scheme = (this.Configuration.UseSsl) ? "https" : "http";
-            SB.Append($"{Scheme}://{this.Configuration.Host}");
+            string Scheme = Configuration.UseSsl ? "https" : "http";
+            SB.Append($"{Scheme}://{Configuration.Host}");
 
             // Only add non-standard ports
-            if ((Scheme == "http" && this.Configuration.Port != 80) || (Scheme == "https" && this.Configuration.Port != 443))
+            if ((Scheme == "http" && Configuration.Port != 80) || (Scheme == "https" && Configuration.Port != 443))
             {
-                SB.Append($":{this.Configuration.Port}");
+                SB.Append($":{Configuration.Port}");
             }
 
-            if (!relativePath.StartsWith("/"))
+            if (!relativePath.StartsWith('/'))
             {
                 relativePath = $"/{relativePath}";
             }
 
-            SB.Append($"/{this.GetVersionString(version)}{relativePath}");
+            SB.Append($"/{GetVersionString(version)}{relativePath}");
 
-            Uri Path = new Uri(SB.ToString());
+            Uri Path = new(SB.ToString());
 
             return Path;
         }
@@ -1014,7 +723,7 @@ namespace TrinoClient
         /// <returns></returns>
         private Uri BuildUri(string relativePath)
         {
-            return BuildUri(relativePath, this.Configuration.Version);
+            return BuildUri(relativePath, Configuration.Version);
         }
 
         /// <summary>
@@ -1024,13 +733,13 @@ namespace TrinoClient
         /// <returns>True if the configuration is consistent, false if not</returns>
         private bool CheckConfiguration(out Exception ex)
         {
-            if (String.IsNullOrEmpty(this.Configuration.User))
+            if (string.IsNullOrEmpty(Configuration.User))
             {
                 ex = new ArgumentNullException("user", "The user was not specified.");
                 return false;
             }
 
-            if (String.IsNullOrEmpty(this.Configuration.Catalog) && !String.IsNullOrEmpty(this.Configuration.Schema))
+            if (string.IsNullOrEmpty(Configuration.Catalog) && !string.IsNullOrEmpty(Configuration.Schema))
             {
                 ex = new ArgumentException("The Schema cannot be set without setting the catalog.");
                 return false;
@@ -1051,36 +760,36 @@ namespace TrinoClient
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             // Timezone will always be set
-            request.Headers.Add(TrinoHeader.TRINO_TIME_ZONE.Value, this.Configuration.TimeZone.Id);
+            request.Headers.Add(TrinoHeader.TRINO_TIME_ZONE.Value, Configuration.TimeZone.Id);
 
             // Catalog
-            if (!String.IsNullOrEmpty(this.Configuration.Catalog))
+            if (!string.IsNullOrEmpty(Configuration.Catalog))
             {
-                request.Headers.Add(TrinoHeader.TRINO_CATALOG.Value, this.Configuration.Catalog);
+                request.Headers.Add(TrinoHeader.TRINO_CATALOG.Value, Configuration.Catalog);
             }
 
             // Schema
-            if (!String.IsNullOrEmpty(this.Configuration.Schema))
+            if (!string.IsNullOrEmpty(Configuration.Schema))
             {
-                request.Headers.Add(TrinoHeader.TRINO_SCHEMA.Value, this.Configuration.Schema);
+                request.Headers.Add(TrinoHeader.TRINO_SCHEMA.Value, Configuration.Schema);
             }
 
             // ClientInfo
-            if (!String.IsNullOrEmpty(this.Configuration.ClientInfo))
+            if (!string.IsNullOrEmpty(Configuration.ClientInfo))
             {
-                request.Headers.Add(TrinoHeader.TRINO_CLIENT_INFO.Value, this.Configuration.ClientInfo);
+                request.Headers.Add(TrinoHeader.TRINO_CLIENT_INFO.Value, Configuration.ClientInfo);
             }
 
             // Language
-            if (this.Configuration.Locale != null)
+            if (Configuration.Locale != null)
             {
-                request.Headers.Add(TrinoHeader.TRINO_LANGUAGE.Value, this.Configuration.Locale.Name);
+                request.Headers.Add(TrinoHeader.TRINO_LANGUAGE.Value, Configuration.Locale.Name);
             }
 
             // Session properties
-            if (this.Configuration.Properties != null)
+            if (Configuration.Properties != null)
             {
-                foreach (KeyValuePair<string, string> Property in this.Configuration.Properties)
+                foreach (KeyValuePair<string, string> Property in Configuration.Properties)
                 {
                     request.Headers.Add(TrinoHeader.TRINO_SESSION.Value, $"{Property.Key}={Property.Value}");
                 }
@@ -1089,21 +798,21 @@ namespace TrinoClient
             // Build final set of prepared statements
             IDictionary<string, string> PreparedStatements = new Dictionary<string, string>();
 
-            if (this.Configuration.PreparedStatements != null)
+            if (Configuration.PreparedStatements != null)
             {
-                foreach (KeyValuePair<string, string> Item in this.Configuration.PreparedStatements)
+                foreach (KeyValuePair<string, string> Item in Configuration.PreparedStatements)
                 {
                     PreparedStatements.Add(Item);
                 }
             }
 
             // Build final set of tags
-            HashSet<string> Tags = new HashSet<string>();
+            HashSet<string> Tags = [];
 
-            if (this.Configuration.ClientTags != null)
+            if (Configuration.ClientTags != null)
             {
                 // Client tags are not allowed to have commas in them and have already been checked in the setter
-                foreach (string Tag in this.Configuration.ClientTags)
+                foreach (string Tag in Configuration.ClientTags)
                 {
                     Tags.Add(Tag);
                 }
@@ -1116,10 +825,7 @@ namespace TrinoClient
                 {
                     foreach (string Tag in options.ClientTags)
                     {
-                        if (!Tags.Contains(Tag))
-                        {
-                            Tags.Add(Tag);
-                        }
+                        Tags.Add(Tag);
                     }
                 }
 
@@ -1144,7 +850,7 @@ namespace TrinoClient
                     }
                 }
 
-                if (!String.IsNullOrEmpty(options.TransactionId))
+                if (!string.IsNullOrEmpty(options.TransactionId))
                 {
                     request.Headers.Add(TrinoHeader.TRINO_TRANSACTION_ID.Value, options.TransactionId);
                 }
@@ -1164,9 +870,9 @@ namespace TrinoClient
             }
 
             // If any session or query client tags were provided, add tem
-            if (Tags.Any())
+            if (Tags.Count != 0)
             {
-                request.Headers.Add(TrinoHeader.TRINO_CLIENT_TAGS.Value, String.Join(",", Tags));
+                request.Headers.Add(TrinoHeader.TRINO_CLIENT_TAGS.Value, string.Join(",", Tags));
             }
         }
 
@@ -1175,7 +881,7 @@ namespace TrinoClient
         /// </summary>
         /// <param name="version">The presto api version to get the string value of</param>
         /// <returns>The api version string</returns>
-        private string GetVersionString(TrinoApiVersion version)
+        private static string GetVersionString(TrinoApiVersion version)
         {
             return version.GetType().GetMember(version.ToString()).FirstOrDefault().GetCustomAttribute<DescriptionAttribute>().Description;
         }
@@ -1190,7 +896,7 @@ namespace TrinoClient
         /// <returns></returns>
         private HttpRequestMessage BuildRequest(Uri url, HttpMethod method, HttpContent content = null)
         {
-            HttpRequestMessage request = new HttpRequestMessage(method, url);
+            HttpRequestMessage request = new(method, url);
 
             if (content != null)
             {
@@ -1201,13 +907,13 @@ namespace TrinoClient
             request.Headers.Add("User-Agent", $"trinodb_dotnet_core_sdk/{AssemblyVersion}");
             request.Headers.Add(TrinoHeader.TRINO_SOURCE.Value, "trinodb_dotnet_core_sdk");
 
-            if (!String.IsNullOrEmpty(this.Configuration.User))
+            if (!string.IsNullOrEmpty(Configuration.User))
             {
-                request.Headers.Add(TrinoHeader.TRINO_USER.Value, this.Configuration.User.Replace(":", ""));
+                request.Headers.Add(TrinoHeader.TRINO_USER.Value, Configuration.User.Replace(":", ""));
 
-                if (!String.IsNullOrEmpty(this.Configuration.Password))
+                if (!string.IsNullOrEmpty(Configuration.Password))
                 {
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{this.Configuration.User.Replace(":", "")}:{this.Configuration.Password}")));
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Configuration.User.Replace(":", "")}:{Configuration.Password}")));
                 }
             }
 
@@ -1219,7 +925,7 @@ namespace TrinoClient
         /// </summary>
         /// <param name="response">The http response message from presto</param>
         /// <returns>The collection of values that were set by presto in the http headers</returns>
-        private ResponseHeaderCollection ProcessResponseHeaders(HttpResponseMessage response)
+        private static ResponseHeaderCollection ProcessResponseHeaders(HttpResponseMessage response)
         {
             return new ResponseHeaderCollection(response.Headers);
         }

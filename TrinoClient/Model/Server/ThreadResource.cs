@@ -27,33 +27,27 @@ namespace TrinoClient.Model.Server
 
         #region Internal Classes
 
-        public class Info
+        [method: JsonConstructor]
+        #endregion
+
+        #region Internal Classes
+
+        public class Info(long id, string name, ThreadState state, long lockOwner, IEnumerable<StackLine> stackTrace)
         {
             #region Public Properties
 
-            public long Id { get; }
+            public long Id { get; } = id;
 
-            public string Name { get; }
+            public string Name { get; } = name;
 
-            public ThreadState State { get; }
+            public ThreadState State { get; } = state;
 
-            public long LockOnwer { get; }
+            public long LockOnwer { get; } = lockOwner;
 
-            public IEnumerable<StackLine> StackTrace { get; }
+            public IEnumerable<StackLine> StackTrace { get; } = stackTrace;
 
             #endregion
-
             #region Constructors
-
-            [JsonConstructor]
-            public Info(long id, string name, ThreadState state, long lockOwner, IEnumerable<StackLine> stackTrace)
-            {
-                this.Id = id;
-                this.Name = name;
-                this.State = state;
-                this.LockOnwer = lockOwner;
-                this.StackTrace = stackTrace;
-            }
 
             #endregion
         }

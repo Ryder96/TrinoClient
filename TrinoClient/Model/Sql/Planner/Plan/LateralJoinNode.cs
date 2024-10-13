@@ -1,8 +1,8 @@
-﻿using TrinoClient.Model.Sql.Tree;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Model.Sql.Tree;
 
 namespace TrinoClient.Model.Sql.Planner.Plan
 {
@@ -36,12 +36,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         [JsonConstructor]
         public LateralJoinNode(PlanNodeId id, PlanNode input, PlanNode subquery, IEnumerable<Symbol> correlation, Node originSubquery) : base(id)
         {
-            this.Input = input ?? throw new ArgumentNullException("input");
-            this.Subquery = subquery ?? throw new ArgumentNullException("subquery");
-            this.Correlation = correlation ?? throw new ArgumentNullException("correlation");
-            this.OriginSubquery = originSubquery ?? throw new ArgumentNullException("originSubquery");
+            Input = input ?? throw new ArgumentNullException(nameof(input));
+            Subquery = subquery ?? throw new ArgumentNullException(nameof(subquery));
+            Correlation = correlation ?? throw new ArgumentNullException(nameof(correlation));
+            OriginSubquery = originSubquery ?? throw new ArgumentNullException(nameof(originSubquery));
 
-            ParameterCheck.Check(this.Correlation.All(x => this.Input.GetOutputSymbols().Contains(x)), "Input does not contain symbol from correlation.");
+            ParameterCheck.Check(Correlation.All(x => Input.GetOutputSymbols().Contains(x)), "Input does not contain symbol from correlation.");
         }
 
         #endregion
@@ -50,14 +50,14 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Input.GetOutputSymbols().Concat(this.Subquery.GetOutputSymbols());
+            return Input.GetOutputSymbols().Concat(Subquery.GetOutputSymbols());
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Input;
+            yield return Input;
 
-            yield return this.Subquery;
+            yield return Subquery;
         }
 
         #endregion

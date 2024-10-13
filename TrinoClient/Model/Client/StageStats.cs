@@ -27,15 +27,15 @@ namespace TrinoClient.Model.Client
 
         public int CompletedSplits { get; }
 
-        public Int64 UserTimeMillis { get; }
+        public long UserTimeMillis { get; }
 
-        public Int64 CpuTimeMillis { get; }
+        public long CpuTimeMillis { get; }
 
-        public Int64 WallTimeMillis { get; }
+        public long WallTimeMillis { get; }
 
-        public Int64 ProcessedRows { get; }
+        public long ProcessedRows { get; }
 
-        public Int64 ProcessedBytes { get; }
+        public long ProcessedBytes { get; }
 
         public IEnumerable<StageStats> SubStages { get; }
 
@@ -61,25 +61,25 @@ namespace TrinoClient.Model.Client
             IEnumerable<StageStats> subStages
             )
         {
-            if (String.IsNullOrEmpty(state))
+            if (string.IsNullOrEmpty(state))
             {
-                throw new ArgumentNullException("state");
+                throw new ArgumentNullException(nameof(state));
             }
 
-            this.StageId = stageId;
-            this.State = state;
-            this.Done = done;
-            this.Nodes = nodes;
-            this.TotalSplits = totalSplits;
-            this.QueuedSplits = queuedSplits;
-            this.RunningSplits = runningSplits;
-            this.CompletedSplits = completedSplits;
-            this.UserTimeMillis = userTimeMillis;
-            this.CpuTimeMillis = cpuTimeMillis;
-            this.WallTimeMillis = wallTimeMillis;
-            this.ProcessedRows = processedRows;
-            this.ProcessedBytes = processedBytes;
-            this.SubStages = subStages ?? throw new ArgumentNullException("subStages");
+            StageId = stageId;
+            State = state;
+            Done = done;
+            Nodes = nodes;
+            TotalSplits = totalSplits;
+            QueuedSplits = queuedSplits;
+            RunningSplits = runningSplits;
+            CompletedSplits = completedSplits;
+            UserTimeMillis = userTimeMillis;
+            CpuTimeMillis = cpuTimeMillis;
+            WallTimeMillis = wallTimeMillis;
+            ProcessedRows = processedRows;
+            ProcessedBytes = processedBytes;
+            SubStages = subStages ?? throw new ArgumentNullException(nameof(subStages));
         }
 
         #endregion
@@ -89,19 +89,19 @@ namespace TrinoClient.Model.Client
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("state", this.State)
-                .Add("done", this.Done)
-                .Add("nodes", this.Nodes)
-                .Add("totalSplits", this.TotalSplits)
-                .Add("queuedSplits", this.QueuedSplits)
-                .Add("runningSplits", this.RunningSplits)
-                .Add("completedSplits", this.CompletedSplits)
-                .Add("userTimeMillis", this.UserTimeMillis)
-                .Add("cpuTimeMillis", this.CpuTimeMillis)
-                .Add("wallTimeMillis", this.WallTimeMillis)
-                .Add("processedRows", this.ProcessedRows)
-                .Add("processedBytes", this.ProcessedBytes)
-                .Add("subStages", this.SubStages)
+                .Add("state", State)
+                .Add("done", Done)
+                .Add("nodes", Nodes)
+                .Add("totalSplits", TotalSplits)
+                .Add("queuedSplits", QueuedSplits)
+                .Add("runningSplits", RunningSplits)
+                .Add("completedSplits", CompletedSplits)
+                .Add("userTimeMillis", UserTimeMillis)
+                .Add("cpuTimeMillis", CpuTimeMillis)
+                .Add("wallTimeMillis", WallTimeMillis)
+                .Add("processedRows", ProcessedRows)
+                .Add("processedBytes", ProcessedBytes)
+                .Add("subStages", SubStages)
                 .ToString();
         }
 

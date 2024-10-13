@@ -1,33 +1,28 @@
-﻿using TrinoClient.Model.Connector;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.Connector;
 
 namespace TrinoClient.Model.Metadata
 {
     /// <summary>
     /// From com.facebook.presto.metadata.TableHandle.java
     /// </summary>
-    public class TableHandle
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.metadata.TableHandle.java
+                                 /// </summary>
+    public class TableHandle(ConnectorId connectorId, dynamic connectorHandle)
     {
         #region Public Properties
 
-        public ConnectorId ConnectorId { get; }
+        public ConnectorId ConnectorId { get; } = connectorId ?? throw new ArgumentNullException(nameof(connectorId));
 
         /// <summary>
         /// TODO: Supposed to be an IConnectorTableHandle
         /// </summary>
-        public dynamic ConnectorHandle { get; }
+        public dynamic ConnectorHandle { get; } = connectorHandle ?? throw new ArgumentNullException(nameof(connectorHandle));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public TableHandle(ConnectorId connectorId, dynamic connectorHandle)
-        {
-            this.ConnectorId = connectorId ?? throw new ArgumentNullException("connectorId");
-            this.ConnectorHandle = connectorHandle ?? throw new ArgumentNullException("connectorHandle");
-        }
 
         #endregion
 
@@ -35,7 +30,7 @@ namespace TrinoClient.Model.Metadata
 
         public override string ToString()
         {
-            return $"{this.ConnectorId}:{this.ConnectorHandle}";
+            return $"{ConnectorId}:{ConnectorHandle}";
         }
 
         #endregion

@@ -1,5 +1,5 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.SPI.Connector
 {

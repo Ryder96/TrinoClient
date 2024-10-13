@@ -1,7 +1,7 @@
-﻿using TrinoClient.Model.FailureDetector;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.FailureDetector;
 
 namespace TrinoClient.Model.NodeInfo
 {
@@ -43,21 +43,21 @@ namespace TrinoClient.Model.NodeInfo
         /// <param name="rawContent">The JSON array of nodes</param>
         internal ListNodesV1Response(string rawContent)
         {
-            this.RawContent = rawContent;
+            RawContent = rawContent;
 
-            if (!String.IsNullOrEmpty(this.RawContent))
+            if (!string.IsNullOrEmpty(RawContent))
             {
                 try
                 {
-                    this.Nodes = JsonConvert.DeserializeObject<IEnumerable<HeartbeatFailureDetectorStats>>(this.RawContent);
-                    this.DeserializationSucceeded = true;
-                    this.LastError = null;
+                    Nodes = JsonConvert.DeserializeObject<IEnumerable<HeartbeatFailureDetectorStats>>(RawContent);
+                    DeserializationSucceeded = true;
+                    LastError = null;
                 }
                 catch (Exception e)
                 {
-                    this.DeserializationSucceeded = false;
-                    this.LastError = e;
-                    this.Nodes = null;
+                    DeserializationSucceeded = false;
+                    LastError = e;
+                    Nodes = null;
                 }
             }
         }

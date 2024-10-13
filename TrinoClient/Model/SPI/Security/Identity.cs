@@ -25,8 +25,8 @@ namespace TrinoClient.Model.SPI.Security
         {
             ParameterCheck.NotNullOrEmpty(user, "user");
 
-            this.User = user;
-            this.Principal = principal;
+            User = user;
+            Principal = principal;
         }
 
         #endregion
@@ -40,27 +40,27 @@ namespace TrinoClient.Model.SPI.Security
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             Identity Id = (Identity)obj;
 
-            return Object.Equals(this.User, Id.User);
+            return Object.Equals(User, Id.User);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.User);
+            return Hashing.Hash(User);
         }
 
         public override string ToString()
         {
-            StringBuilder SB = new StringBuilder("Identity{");
-            SB.Append("user='").Append(this.User).Append("\'");
+            StringBuilder SB = new("Identity{");
+            SB.Append("user='").Append(User).Append("\'");
 
-            if (this.Principal != null)
+            if (Principal != null)
             {
                 SB.Append(", prinicipal="); //.Append(this.Principal.Get());
             }

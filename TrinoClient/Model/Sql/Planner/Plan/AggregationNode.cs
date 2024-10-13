@@ -1,9 +1,9 @@
-﻿using TrinoClient.Model.Metadata;
-using TrinoClient.Model.Sql.Tree;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Model.Metadata;
+using TrinoClient.Model.Sql.Tree;
 
 namespace TrinoClient.Model.Sql.Planner.Plan
 {
@@ -49,29 +49,26 @@ namespace TrinoClient.Model.Sql.Planner.Plan
             Symbol hashSymbol,
             Symbol groupIdSymbol) : base(id)
         {
-            this.Source = source;
-            this.Aggregations = aggregations;
+            Source = source;
+            Aggregations = aggregations;
 
-            if (groupingSets == null)
-            {
-                throw new ArgumentNullException("groupingSets");
-            }
+            ArgumentNullException.ThrowIfNull(groupingSets);
 
             if (!groupingSets.Any())
             {
-                throw new ArgumentException("Grouping sets cannot be empty.", "groupingSets");
+                throw new ArgumentException("Grouping sets cannot be empty.", nameof(groupingSets));
             }
 
-            this.GroupingSets = groupingSets;
-            this.Step = step;
-            this.HashSymbol = hashSymbol;
-            this.GroupIdSymbol = groupIdSymbol;
+            GroupingSets = groupingSets;
+            Step = step;
+            HashSymbol = hashSymbol;
+            GroupIdSymbol = groupIdSymbol;
 
-            this.Outputs = this.GetGroupingKeys().Concat(this.Aggregations.Keys.Select(x => new Symbol(x)));
+            Outputs = GetGroupingKeys().Concat(Aggregations.Keys.Select(x => new Symbol(x)));
 
-            if (this.HashSymbol != null)
+            if (HashSymbol != null)
             {
-                this.Outputs = this.Outputs.Concat(new Symbol[] { this.HashSymbol });
+                Outputs = Outputs.Concat([HashSymbol]);
             }
         }
 
@@ -81,11 +78,11 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public IEnumerable<Symbol> GetGroupingKeys()
         {
-            IEnumerable<Symbol> Temp = this.GroupingSets.SelectMany(x => x).Distinct();
+            IEnumerable<Symbol> Temp = GroupingSets.SelectMany(x => x).Distinct();
 
-            if (this.GroupIdSymbol != null)
+            if (GroupIdSymbol != null)
             {
-                return Temp.Concat(new Symbol[] { this.GroupIdSymbol });
+                return Temp.Concat([GroupIdSymbol]);
             }
             else
             {
@@ -95,38 +92,30 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Outputs;
+            return Outputs;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion
 
         #region Internal Classes
 
-        public class Aggregation
+        public class Aggregation(FunctionCall call, Signature signature, Symbol mask)
         {
             #region Public Properties
 
-            public FunctionCall Call { get; }
+            public FunctionCall Call { get; } = call;
 
-            public Signature Signature { get; }
+            public Signature Signature { get; } = signature;
 
-            public Symbol Mask { get; }
+            public Symbol Mask { get; } = mask;
 
             #endregion
-
             #region Constructors
-
-            public Aggregation(FunctionCall call, Signature signature, Symbol mask)
-            {
-                this.Call = call;
-                this.Signature = signature;
-                this.Mask = mask;
-            }
 
             #endregion
         }

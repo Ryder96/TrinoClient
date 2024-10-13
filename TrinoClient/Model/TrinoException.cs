@@ -20,22 +20,22 @@ namespace TrinoClient.Model
 
         public TrinoException(string message) : base(message)
         {
-            this.RawResponseContent = String.Empty;
+            RawResponseContent = string.Empty;
         }
 
         public TrinoException(string message, Exception innerException) : base(message, innerException)
         {
-            this.RawResponseContent = String.Empty;
+            RawResponseContent = string.Empty;
         }
 
         public TrinoException(string message, string rawContent) : base(message)
         {
-            this.RawResponseContent = rawContent;
+            RawResponseContent = rawContent;
         }
 
         public TrinoException(string message, string rawContent, Exception innerException) : base(message, innerException)
         {
-            this.RawResponseContent = rawContent;
+            RawResponseContent = rawContent;
         }
 
         #endregion

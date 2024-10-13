@@ -34,7 +34,7 @@ namespace TrinoClient.Serialization
             {
                 string Temp = reader.Value.ToString();
 
-                return Activator.CreateInstance(objectType, new string[] { Temp });
+                return Activator.CreateInstance(objectType, [Temp]);
             }
             else
             {

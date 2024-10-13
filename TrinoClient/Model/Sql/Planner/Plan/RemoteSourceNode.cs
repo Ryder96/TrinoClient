@@ -7,24 +7,19 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.RemoteSourceNode.java
     /// </summary>
-    public class RemoteSourceNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.RemoteSourceNode.java
+                                 /// </summary>
+    public class RemoteSourceNode(PlanNodeId id, IEnumerable<PlanFragmentId> sourceFragmentIds, IEnumerable<Symbol> outputs) : PlanNode(id)
     {
         #region Public Properties
 
-        public IEnumerable<PlanFragmentId> SourceFragmentIds { get; }
+        public IEnumerable<PlanFragmentId> SourceFragmentIds { get; } = sourceFragmentIds;
 
-        public IEnumerable<Symbol> Outputs { get; }
+        public IEnumerable<Symbol> Outputs { get; } = outputs ?? throw new ArgumentNullException(nameof(outputs));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public RemoteSourceNode(PlanNodeId id, IEnumerable<PlanFragmentId> sourceFragmentIds, IEnumerable<Symbol> outputs) : base(id)
-        {
-            this.SourceFragmentIds = sourceFragmentIds;
-            this.Outputs = outputs ?? throw new ArgumentNullException("outputs");
-        }
 
         #endregion
 
@@ -32,12 +27,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Outputs;
+            return Outputs;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            return new List<PlanNode>();
+            return [];
         }
 
         #endregion

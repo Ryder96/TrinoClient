@@ -49,17 +49,17 @@ namespace TrinoClient.Model.Sql.Planner.Plan
             DistributionType distributionType
             ) : base(id)
         {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.FilteringSource = filteringSource ?? throw new ArgumentNullException("filteringSource");
-            this.SourceJoinSymbol = sourceJoinSymbol ?? throw new ArgumentNullException("sourceJoinSymbol");
-            this.FilteringSourceJoinSymbol = filteringSourceJoinSymbol ?? throw new ArgumentNullException("filteringSourceJoinSymbol");
-            this.SemiJoinOutput = semiJoinOutput ?? throw new ArgumentNullException("semiJoinOutput");
-            this.SourceHashSymbol = sourceHashSymbol;
-            this.FilteringSourceHashSymbol = filteringSourceHashSymbol;
-            this.DistributionType = distributionType;
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            FilteringSource = filteringSource ?? throw new ArgumentNullException(nameof(filteringSource));
+            SourceJoinSymbol = sourceJoinSymbol ?? throw new ArgumentNullException(nameof(sourceJoinSymbol));
+            FilteringSourceJoinSymbol = filteringSourceJoinSymbol ?? throw new ArgumentNullException(nameof(filteringSourceJoinSymbol));
+            SemiJoinOutput = semiJoinOutput ?? throw new ArgumentNullException(nameof(semiJoinOutput));
+            SourceHashSymbol = sourceHashSymbol;
+            FilteringSourceHashSymbol = filteringSourceHashSymbol;
+            DistributionType = distributionType;
 
-            ParameterCheck.Check(this.Source.GetOutputSymbols().Contains(this.SourceJoinSymbol), "Source does not contain join symbol.");
-            ParameterCheck.Check(this.FilteringSource.GetOutputSymbols().Contains(this.FilteringSourceJoinSymbol), "Filtering source does not contain filtering join symbol.");
+            ParameterCheck.Check(Source.GetOutputSymbols().Contains(SourceJoinSymbol), "Source does not contain join symbol.");
+            ParameterCheck.Check(FilteringSource.GetOutputSymbols().Contains(FilteringSourceJoinSymbol), "Filtering source does not contain filtering join symbol.");
         }
 
         #endregion
@@ -68,14 +68,14 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Source.GetOutputSymbols().Concat(new Symbol[] { this.SemiJoinOutput });
+            return Source.GetOutputSymbols().Concat([SemiJoinOutput]);
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
 
-            yield return this.FilteringSource;
+            yield return FilteringSource;
         }
 
         #endregion

@@ -25,11 +25,11 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         [JsonConstructor]
         public OutputNode(PlanNodeId id, PlanNode source, IEnumerable<string> columns, IEnumerable<Symbol> outputs) : base(id)
         {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.Columns = columns ?? throw new ArgumentNullException("columns");
-            this.Outputs = outputs ?? throw new ArgumentNullException("outputs");
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            Columns = columns ?? throw new ArgumentNullException(nameof(columns));
+            Outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
 
-            if (this.Columns.Count() != this.Outputs.Count())
+            if (Columns.Count() != Outputs.Count())
             {
                 throw new ArgumentException("Column names and assignments sizes don't match.");
             }
@@ -41,12 +41,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Outputs;
+            return Outputs;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

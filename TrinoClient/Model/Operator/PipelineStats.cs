@@ -1,9 +1,9 @@
-﻿using TrinoClient.Model.Execution;
-using TrinoClient.Model.Execution.Scheduler;
-using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.Execution;
+using TrinoClient.Model.Execution.Scheduler;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Operator
 {
@@ -148,50 +148,50 @@ namespace TrinoClient.Model.Operator
             ParameterCheck.OutOfRange(processedInputPositions >= 0, "processedInputPositions");
             ParameterCheck.OutOfRange(outputPositions >= 0, "outputPositions");
 
-            this.PipelineId = pipelineId;
+            PipelineId = pipelineId;
 
-            this.FirstStartTime = firstStartTime;
-            this.LastStartTime = lastStartTime;
-            this.LastEndTime = lastEndTime;
+            FirstStartTime = firstStartTime;
+            LastStartTime = lastStartTime;
+            LastEndTime = lastEndTime;
 
-            this.InputPipeline = inputPipeline;
-            this.OutputPipeline = outputPipeline;
+            InputPipeline = inputPipeline;
+            OutputPipeline = outputPipeline;
 
-            this.TotalDrivers = totalDrivers;
-            this.QueuedDrivers = queuedDrivers;
-            this.QueuedPartitionedDrivers = queuedPartitionedDrivers;
-            this.RunningDrivers = runningDrivers;
-            this.RunningPartitionedDrivers = runningPartitionedDrivers;
-            this.BlockedDrivers = blockedDrivers;
-            this.CompletedDrivers = completedDrivers;
+            TotalDrivers = totalDrivers;
+            QueuedDrivers = queuedDrivers;
+            QueuedPartitionedDrivers = queuedPartitionedDrivers;
+            RunningDrivers = runningDrivers;
+            RunningPartitionedDrivers = runningPartitionedDrivers;
+            BlockedDrivers = blockedDrivers;
+            CompletedDrivers = completedDrivers;
 
-            this.UserMemoryReservation = userMemoryReservation ?? throw new ArgumentNullException("userMemoryReservation");
-            this.RevocableMemoryReservation = revocableMemoryReservation ?? throw new ArgumentNullException("revocableMemoryReservation");
-            this.SystemMemoryReservation = systemMemoryReservation ?? throw new ArgumentNullException("systemMemoryReservation");
+            UserMemoryReservation = userMemoryReservation ?? throw new ArgumentNullException(nameof(userMemoryReservation));
+            RevocableMemoryReservation = revocableMemoryReservation ?? throw new ArgumentNullException(nameof(revocableMemoryReservation));
+            SystemMemoryReservation = systemMemoryReservation ?? throw new ArgumentNullException(nameof(systemMemoryReservation));
 
-            this.QueuedTime = queuedTime;
-            this.ElapsedTime = elapsedTime;
-            this.TotalScheduledTime = totalScheduledTime;
+            QueuedTime = queuedTime;
+            ElapsedTime = elapsedTime;
+            TotalScheduledTime = totalScheduledTime;
 
-            this.TotalCpuTime = totalCpuTime;
-            this.TotalUserTime = totalUserTime;
-            this.TotalBlockedTime = totalBlockedTime;
-            this.FullyBlocked = fullyBlocked;
-            this.BlockedReasons = blockedReasons ?? throw new ArgumentNullException("blockedReasons");
+            TotalCpuTime = totalCpuTime;
+            TotalUserTime = totalUserTime;
+            TotalBlockedTime = totalBlockedTime;
+            FullyBlocked = fullyBlocked;
+            BlockedReasons = blockedReasons ?? throw new ArgumentNullException(nameof(blockedReasons));
 
-            this.RawInputDataSize = rawInputDataSize ?? throw new ArgumentNullException("rawInputDataSize");
-            this.RawInputPositions = rawInputPositions;
+            RawInputDataSize = rawInputDataSize ?? throw new ArgumentNullException(nameof(rawInputDataSize));
+            RawInputPositions = rawInputPositions;
 
-            this.ProcessedInputDataSize = processedInputDataSize ?? throw new ArgumentNullException("processedInputDataSize");
-            this.ProcessedInputPositions = processedInputPositions;
+            ProcessedInputDataSize = processedInputDataSize ?? throw new ArgumentNullException(nameof(processedInputDataSize));
+            ProcessedInputPositions = processedInputPositions;
 
-            this.OutputDataSize = outputDataSize ?? throw new ArgumentNullException("outputDataSize");
-            this.OutputPositions = outputPositions;
+            OutputDataSize = outputDataSize ?? throw new ArgumentNullException(nameof(outputDataSize));
+            OutputPositions = outputPositions;
 
-            this.PhysicalWrittenDataSize = physicalWrittenDataSize ?? throw new ArgumentNullException("physicalWrittenDataSize");
+            PhysicalWrittenDataSize = physicalWrittenDataSize ?? throw new ArgumentNullException(nameof(physicalWrittenDataSize));
 
-            this.OperatorSummaries = operatorSummaries ?? throw new ArgumentNullException("operatorSummaries");
-            this.Drivers = drivers ?? throw new ArgumentNullException("drivers");
+            OperatorSummaries = operatorSummaries ?? throw new ArgumentNullException(nameof(operatorSummaries));
+            Drivers = drivers ?? throw new ArgumentNullException(nameof(drivers));
         }
 
         #endregion

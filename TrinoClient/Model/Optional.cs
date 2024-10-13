@@ -36,12 +36,12 @@
 
         public Optional()
         {
-            this.Value = default(T);
+            Value = default(T);
         }
 
         public Optional(T value)
         {
-            this.Value = value;
+            Value = value;
         }
 
         #endregion
@@ -60,7 +60,7 @@
 
         public static Optional<T> OfNullable(T value)
         {
-            return ((value == null) ? Empty() : Of(value));
+            return (value == null) ? Empty() : Of(value);
         }
 
         #endregion
@@ -69,19 +69,19 @@
 
         public bool IsPresent()
         {
-            return this.Value != null;
+            return Value != null;
         }
 
         public T Get()
         {
-            return this.Value;
+            return Value;
         }
 
         public override bool Equals(object obj)
         {
             if (obj is Optional<T>)
             {
-                return this.Equals((Optional<T>)obj);
+                return Equals((Optional<T>)obj);
             }
             else
             {
@@ -91,21 +91,21 @@
 
         public bool Equals(Optional<T> other)
         {
-            if (this.IsPresent() && other.IsPresent())
+            if (IsPresent() && other.IsPresent())
             {
-                return this.Get().Equals(other.Get());
+                return Get().Equals(other.Get());
             }
             else
             {
-                return this.IsPresent() == other.IsPresent();
+                return IsPresent() == other.IsPresent();
             }
         }
 
         public override int GetHashCode()
         {
-            if (this.Value != null)
+            if (Value != null)
             {
-                return Hashing.Hash(this.Value);
+                return Hashing.Hash(Value);
             }
             else
             {

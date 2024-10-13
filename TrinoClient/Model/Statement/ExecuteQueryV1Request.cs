@@ -28,15 +28,15 @@ namespace TrinoClient.Model.Statement
         /// <param name="query">The query statement to execute.</param>
         public ExecuteQueryV1Request(string query)
         {
-            if (String.IsNullOrEmpty(query))
+            if (string.IsNullOrEmpty(query))
             {
-                throw new ArgumentNullException("query", "The query cannot be null or empty.");
+                throw new ArgumentNullException(nameof(query), "The query cannot be null or empty.");
             }
 
             // Trim any trailing semi-colons. Using the REST API, presto doesn't
             // want these and will throw an error if present.
-            this.Query = query.TrimEnd(';');
-            this.ApiVersion = StatementApiVersion.V1;
+            Query = query.TrimEnd(';');
+            ApiVersion = StatementApiVersion.V1;
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace TrinoClient.Model.Statement
         /// <param name="options">The options to use when executing the statement.</param>
         public ExecuteQueryV1Request(string query, QueryOptions options) : this(query)
         {
-            this.Options = options;
+            Options = options;
         }
     }
 }

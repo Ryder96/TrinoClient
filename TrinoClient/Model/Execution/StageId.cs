@@ -1,7 +1,7 @@
-﻿using TrinoClient.Model.SPI;
-using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.SPI;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Execution
 {
@@ -31,20 +31,20 @@ namespace TrinoClient.Model.Execution
                 throw new ArgumentException("The combined id must be a query id and id separated with a '.' character.");
             }
 
-            this.QueryId = new QueryId(Parts[0]);
-            this.Id = Int32.Parse(Parts[1]);
+            QueryId = new QueryId(Parts[0]);
+            Id = int.Parse(Parts[1]);
         }
 
         public StageId(string queryId, int id)
         {
-            this.QueryId = new QueryId(queryId);
-            this.Id = id;
+            QueryId = new QueryId(queryId);
+            Id = id;
         }
 
         public StageId(QueryId queryId, int id)
         {
-            this.QueryId = queryId ?? throw new ArgumentNullException("queryId", "Query id cannot be null.");
-            this.Id = id;
+            QueryId = queryId ?? throw new ArgumentNullException(nameof(queryId), "Query id cannot be null.");
+            Id = id;
         }
 
         #endregion
@@ -53,7 +53,7 @@ namespace TrinoClient.Model.Execution
 
         public override string ToString()
         {
-            return $"{this.QueryId.ToString()}.{this.Id}";
+            return $"{QueryId.ToString()}.{Id}";
         }
 
         #endregion

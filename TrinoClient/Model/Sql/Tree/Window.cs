@@ -7,22 +7,25 @@ namespace TrinoClient.Model.Sql.Tree
     /// <summary>
     /// From com.facebook.presto.sql.tree.Window.java
     /// </summary>
-    public class Window : Node
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.tree.Window.java
+                                 /// </summary>
+    public class Window(NodeLocation location, IEnumerable<object> partitionBy, OrderBy orderBy, WindowFrame frame) : Node(location)
     {
         #region Public Properties
 
         /// <summary>
         /// TODO: Supposed to be Expression
         /// </summary>
-        public IEnumerable<dynamic> PartitionBy { get; }
+        public IEnumerable<dynamic> PartitionBy { get; } = partitionBy ?? throw new ArgumentNullException(nameof(partitionBy));
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
-        public OrderBy OrderBy { get; }
+        public OrderBy OrderBy { get; } = orderBy; // These are actually optional ?? throw new ArgumentNullException("orderBy");
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
-        public WindowFrame Frame { get; }
+        public WindowFrame Frame { get; } = frame; // These are actually optional ?? throw new ArgumentNullException("frame");
 
         #endregion
 
@@ -30,14 +33,6 @@ namespace TrinoClient.Model.Sql.Tree
 
         public Window(IEnumerable<object> partitionBy, OrderBy orderBy, WindowFrame frame) : this(null, partitionBy, orderBy, frame)
         {
-        }
-
-        [JsonConstructor]
-        public Window(NodeLocation location, IEnumerable<object> partitionBy, OrderBy orderBy, WindowFrame frame) : base(location)
-        {
-            this.PartitionBy = partitionBy ?? throw new ArgumentNullException("partitionBy");
-            this.OrderBy = orderBy; // These are actually optional ?? throw new ArgumentNullException("orderBy");
-            this.Frame = frame; // These are actually optional ?? throw new ArgumentNullException("frame");
         }
 
         #endregion
@@ -51,47 +46,47 @@ namespace TrinoClient.Model.Sql.Tree
                 return true;
             }
 
-            if ((obj == null) || (this.GetType() != obj.GetType()))
+            if ((obj == null) || (GetType() != obj.GetType()))
             {
                 return false;
             }
 
             Window Other = (Window)obj;
 
-            return Object.Equals(this.PartitionBy, Other.PartitionBy) &&
-                    Object.Equals(this.OrderBy, Other.OrderBy) &&
-                    Object.Equals(this.Frame, Other.Frame);
+            return Object.Equals(PartitionBy, Other.PartitionBy) &&
+                    Object.Equals(OrderBy, Other.OrderBy) &&
+                    Object.Equals(Frame, Other.Frame);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.PartitionBy, this.OrderBy, this.Frame);
+            return Hashing.Hash(PartitionBy, OrderBy, Frame);
         }
 
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("partitionBy", this.PartitionBy)
-                .Add("orderBy", this.OrderBy)
-                .Add("frame", this.Frame)
+                .Add("partitionBy", PartitionBy)
+                .Add("orderBy", OrderBy)
+                .Add("frame", Frame)
                 .ToString();
         }
 
         public override IEnumerable<Node> GetChildren()
         {
-            foreach (Node Item in this.PartitionBy)
+            foreach (Node Item in PartitionBy)
             {
                 yield return Item;
             }
 
-            if (this.OrderBy != null)
+            if (OrderBy != null)
             {
-                yield return this.OrderBy;
+                yield return OrderBy;
             }
 
-            if (this.Frame != null)
+            if (Frame != null)
             {
-                yield return this.Frame;
+                yield return Frame;
             }
         }
 

@@ -1,9 +1,9 @@
-﻿using TrinoClient.Model.SPI.Type;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Model.Client
 {
@@ -14,7 +14,7 @@ namespace TrinoClient.Model.Client
     {
         #region Private Fields
 
-        private static readonly Regex PATTERN = new Regex(".*(?:[<>,].*)?");
+        private static readonly Regex PATTERN = new(".*(?:[<>,].*)?");
 
         #endregion
 
@@ -27,9 +27,9 @@ namespace TrinoClient.Model.Client
         {
             get
             {
-                List<ClientTypeSignature> Results = new List<ClientTypeSignature>();
+                List<ClientTypeSignature> Results = [];
 
-                foreach (ClientTypeSignatureParameter Arg in this.Arguments)
+                foreach (ClientTypeSignatureParameter Arg in Arguments)
                 {
                     switch (Arg.Kind)
                     {
@@ -45,7 +45,7 @@ namespace TrinoClient.Model.Client
                             }
                         default:
                             {
-                                return new List<ClientTypeSignature>();
+                                return [];
                             }
 
                     }
@@ -60,9 +60,9 @@ namespace TrinoClient.Model.Client
         {
             get
             {
-                List<object> Results = new List<object>();
+                List<object> Results = [];
 
-                foreach (ClientTypeSignatureParameter Arg in this.Arguments)
+                foreach (ClientTypeSignatureParameter Arg in Arguments)
                 {
                     switch (Arg.Kind)
                     {
@@ -73,7 +73,7 @@ namespace TrinoClient.Model.Client
                             }
                         default:
                             {
-                                return new List<object>();
+                                return [];
                             }
 
                     }
@@ -93,16 +93,16 @@ namespace TrinoClient.Model.Client
         {
         }
 
-        public ClientTypeSignature(string rawType, IEnumerable<ClientTypeSignatureParameter> arguments) : this(rawType, new ClientTypeSignature[0], new object[0], arguments)
+        public ClientTypeSignature(string rawType, IEnumerable<ClientTypeSignatureParameter> arguments) : this(rawType, [], [], arguments)
         {
         }
 
         [JsonConstructor]
         public ClientTypeSignature(string rawType, IEnumerable<ClientTypeSignature> typeArguments, IEnumerable<object> literalArguments, IEnumerable<ClientTypeSignatureParameter> arguments)
         {
-            if (String.IsNullOrEmpty(rawType))
+            if (string.IsNullOrEmpty(rawType))
             {
-                throw new ArgumentNullException("rawType");
+                throw new ArgumentNullException(nameof(rawType));
             }
 
             Match RegexMatch = PATTERN.Match(rawType);
@@ -112,25 +112,19 @@ namespace TrinoClient.Model.Client
                 throw new FormatException($"Bad characters in rawType: {rawType}.");
             }
 
-            this.RawType = rawType;
+            RawType = rawType;
 
             if (arguments != null)
             {
-                this.Arguments = arguments;
+                Arguments = arguments;
             }
             else
             {
-                if (typeArguments == null)
-                {
-                    throw new ArgumentNullException("typeArguments");
-                }
+                ArgumentNullException.ThrowIfNull(typeArguments);
 
-                if (literalArguments == null)
-                {
-                    throw new ArgumentNullException("literalArguments");
-                }
+                ArgumentNullException.ThrowIfNull(literalArguments);
 
-                List<ClientTypeSignatureParameter> ConvertedArguments = new List<ClientTypeSignatureParameter>();
+                List<ClientTypeSignatureParameter> ConvertedArguments = [];
 
                 // Talking to a legacy server (< 0.133)
                 if (rawType.Equals(StandardTypes.ROW))
@@ -147,7 +141,7 @@ namespace TrinoClient.Model.Client
 
                     foreach (object Item in literalArguments)
                     {
-                        if (!(Item is string))
+                        if (Item is not string)
                         {
                             throw new ArgumentException($"Expected literal argument {Item}, {Counter} in literalArguments to be a string.");
                         }
@@ -170,7 +164,7 @@ namespace TrinoClient.Model.Client
                     }
                 }
 
-                this.Arguments = ConvertedArguments;
+                Arguments = ConvertedArguments;
             }
         }
 
@@ -186,17 +180,13 @@ namespace TrinoClient.Model.Client
 
         private static TypeSignatureParameter LegacyClientTypeSignatureParameterToTypeSignatureParameter(ClientTypeSignatureParameter parameter)
         {
-            switch (parameter.Kind)
+            return parameter.Kind switch
             {
-                case ParameterKind.LONG:
-                    throw new ArgumentException("Unexpected long type literal returned by legacy server");
-                case ParameterKind.TYPE:
-                    return new TypeSignatureParameter(ToTypeSignature(parameter.GetTypeSignature()));
-                case ParameterKind.NAMED_TYPE:
-                    return new TypeSignatureParameter(parameter.GetNamedTypeSignature());
-                default:
-                    throw new ArgumentException($"Unknown parameter kind {parameter.Kind}.");
-            }
+                ParameterKind.LONG => throw new ArgumentException("Unexpected long type literal returned by legacy server"),
+                ParameterKind.TYPE => new TypeSignatureParameter(ToTypeSignature(parameter.GetTypeSignature())),
+                ParameterKind.NAMED_TYPE => new TypeSignatureParameter(parameter.GetNamedTypeSignature()),
+                _ => throw new ArgumentException($"Unknown parameter kind {parameter.Kind}."),
+            };
         }
 
         #endregion

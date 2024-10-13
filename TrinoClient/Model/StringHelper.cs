@@ -23,8 +23,8 @@ namespace TrinoClient.Model
 
         private StringHelper(Type type)
         {
-            this.Type = type;
-            this.Values = new List<KeyValuePair<string, object>>();
+            Type = type;
+            Values = [];
         }
 
         #endregion
@@ -38,23 +38,23 @@ namespace TrinoClient.Model
 
         public StringHelper Add(string parameterName, object value)
         {
-            this.Values.Add(new KeyValuePair<string, object>(parameterName, value));
+            Values.Add(new KeyValuePair<string, object>(parameterName, value));
             return this;
         }
 
 
         public override string ToString()
         {
-            StringBuilder SB = new StringBuilder();
-            SB.Append($"{this.Type.Name} {{");
+            StringBuilder SB = new();
+            SB.Append($"{Type.Name} {{");
 
-            foreach (KeyValuePair<string, object> Item in this.Values)
+            foreach (KeyValuePair<string, object> Item in Values)
             {
                 object Value = Item.Value;
 
                 if (typeof(IEnumerable).IsAssignableFrom(Value.GetType()))
                 {
-                    SB.Append($"{Item.Key}=[{String.Join(",", (IList)Value)}], ");
+                    SB.Append($"{Item.Key}=[{string.Join(",", (IList)Value)}], ");
                 }
                 else
                 {
@@ -62,7 +62,7 @@ namespace TrinoClient.Model
                 }
             }
 
-            SB.Length = SB.Length - 2; // Remove the last space and comma
+            SB.Length -= 2; // Remove the last space and comma
             SB.Append("}");
 
             return SB.ToString();

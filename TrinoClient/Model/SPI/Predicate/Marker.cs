@@ -1,8 +1,8 @@
-﻿using TrinoClient.Model.SPI.Block;
-using TrinoClient.Model.SPI.Type;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Text;
+using TrinoClient.Model.SPI.Block;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Model.SPI.Predicate
 {
@@ -35,21 +35,21 @@ namespace TrinoClient.Model.SPI.Predicate
         [JsonConstructor]
         public Marker(IType type, IBlock valueBlock, Bound bound)
         {
-            this.ValueBlock = valueBlock ?? throw new ArgumentNullException("valueBlock");
-            this.Bound = bound;
-            this.Type = type;
+            ValueBlock = valueBlock ?? throw new ArgumentNullException(nameof(valueBlock));
+            Bound = bound;
+            Type = type;
 
-            if (!this.Type.IsOrderable())
+            if (!Type.IsOrderable())
             {
                 throw new ArgumentException("Type must be orderable");
             }
 
-            if (this.ValueBlock == null && this.Bound == Bound.EXACTLY)
+            if (ValueBlock == null && Bound == Bound.EXACTLY)
             {
                 throw new ArgumentException("Cannot be equal to unbounded.");
             }
 
-            if (this.ValueBlock != null && this.ValueBlock.GetPositionCount() != 1)
+            if (ValueBlock != null && ValueBlock.GetPositionCount() != 1)
             {
                 throw new ArgumentException("Value block should only have one position.");
             }
@@ -105,34 +105,34 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public object GetValue()
         {
-            if (this.ValueBlock == null)
+            if (ValueBlock == null)
             {
                 throw new InvalidOperationException("No value to get.");
             }
 
-            return Utils.BlockToNativeValue(this.Type, this.ValueBlock);
+            return Utils.BlockToNativeValue(Type, ValueBlock);
         }
 
         public object GetPrintableValue(IConnectorSession session)
         {
-            if (this.ValueBlock == null)
+            if (ValueBlock == null)
             {
                 throw new InvalidOperationException("No value to get.");
             }
 
-            return this.Type.GetObjectValue(session, this.ValueBlock, 0);
+            return Type.GetObjectValue(session, ValueBlock, 0);
         }
 
         public int CompareTo(Marker other)
         {
-            this.CheckTypeCompatibility(other);
+            CheckTypeCompatibility(other);
 
-            if (this.IsUpperUnbounded())
+            if (IsUpperUnbounded())
             {
                 return other.IsUpperUnbounded() ? 0 : 1;
             }
 
-            if (this.IsLowerUnbounded())
+            if (IsLowerUnbounded())
             {
                 return other.IsLowerUnbounded() ? 0 : -1;
             }
@@ -148,19 +148,19 @@ namespace TrinoClient.Model.SPI.Predicate
             }
             // INVARIANT: value and o.value not null
 
-            int Compare = this.Type.CompareTo(this.ValueBlock, 0, other.ValueBlock, 0);
+            int Compare = Type.CompareTo(ValueBlock, 0, other.ValueBlock, 0);
 
             if (Compare == 0)
             {
-                if (this.Bound == other.Bound)
+                if (Bound == other.Bound)
                 {
                     return 0;
                 }
-                if (this.Bound == Bound.BELOW)
+                if (Bound == Bound.BELOW)
                 {
                     return -1;
                 }
-                if (this.Bound == Bound.ABOVE)
+                if (Bound == Bound.ABOVE)
                 {
                     return 1;
                 }
@@ -174,12 +174,12 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public bool IsUpperUnbounded()
         {
-            return this.ValueBlock == null && this.Bound == Bound.BELOW;
+            return ValueBlock == null && Bound == Bound.BELOW;
         }
 
         public bool IsLowerUnbounded()
         {
-            return this.ValueBlock == null && this.Bound == Bound.ABOVE;
+            return ValueBlock == null && Bound == Bound.ABOVE;
         }
 
         /// <summary>
@@ -190,36 +190,36 @@ namespace TrinoClient.Model.SPI.Predicate
         /// <returns></returns>
         public bool IsAdjacent(Marker other)
         {
-            if (this.IsUpperUnbounded() || this.IsLowerUnbounded() || other.IsUpperUnbounded() || other.IsLowerUnbounded())
+            if (IsUpperUnbounded() || IsLowerUnbounded() || other.IsUpperUnbounded() || other.IsLowerUnbounded())
             {
                 return false;
             }
 
-            if (this.Type.CompareTo(this.ValueBlock, 0, other.ValueBlock, 0) != 0)
+            if (Type.CompareTo(ValueBlock, 0, other.ValueBlock, 0) != 0)
             {
                 return false;
             }
 
-            return (this.Bound == Bound.EXACTLY && other.Bound != Bound.EXACTLY) ||
-                   (this.Bound != Bound.EXACTLY && other.Bound == Bound.EXACTLY);
+            return (Bound == Bound.EXACTLY && other.Bound != Bound.EXACTLY) ||
+                   (Bound != Bound.EXACTLY && other.Bound == Bound.EXACTLY);
         }
 
         public Marker GreaterAdjacent()
         {
-            if (this.ValueBlock == null)
+            if (ValueBlock == null)
             {
                 throw new InvalidOperationException("No marker adjacent to unbounded.");
             }
 
-            switch (this.Bound)
+            switch (Bound)
             {
                 case Bound.BELOW:
                     {
-                        return new Marker(this.Type, this.ValueBlock, Bound.EXACTLY);
+                        return new Marker(Type, ValueBlock, Bound.EXACTLY);
                     }
                 case Bound.EXACTLY:
                     {
-                        return new Marker(this.Type, this.ValueBlock, Bound.ABOVE);
+                        return new Marker(Type, ValueBlock, Bound.ABOVE);
                     }
                 case Bound.ABOVE:
                     {
@@ -227,19 +227,19 @@ namespace TrinoClient.Model.SPI.Predicate
                     }
                 default:
                     {
-                        throw new InvalidOperationException($"Unsupported type: {this.Bound.ToString()}");
+                        throw new InvalidOperationException($"Unsupported type: {Bound.ToString()}");
                     }
             }
         }
 
         public Marker LesserAdjacent()
         {
-            if (this.ValueBlock == null)
+            if (ValueBlock == null)
             {
                 throw new InvalidOperationException("No marker adjacent to unbounded.");
             }
 
-            switch (this.Bound)
+            switch (Bound)
             {
                 case Bound.BELOW:
                     {
@@ -248,15 +248,15 @@ namespace TrinoClient.Model.SPI.Predicate
                     }
                 case Bound.EXACTLY:
                     {
-                        return new Marker(this.Type, this.ValueBlock, Bound.BELOW);
+                        return new Marker(Type, ValueBlock, Bound.BELOW);
                     }
                 case Bound.ABOVE:
                     {
-                        return new Marker(this.Type, this.ValueBlock, Bound.EXACTLY);
+                        return new Marker(Type, ValueBlock, Bound.EXACTLY);
                     }
                 default:
                     {
-                        throw new InvalidOperationException($"Unsupported type: {this.Bound.ToString()}");
+                        throw new InvalidOperationException($"Unsupported type: {Bound.ToString()}");
                     }
             }
         }
@@ -265,12 +265,12 @@ namespace TrinoClient.Model.SPI.Predicate
         {
             unchecked
             {
-                int Hash = Hashing.Hash(this.Type, this.Bound);
+                int Hash = Hashing.Hash(Type, Bound);
 
-                if (this.ValueBlock != null)
+                if (ValueBlock != null)
                 {
 
-                    Hash = Hash * 31 + (int)this.Type.Hash(this.ValueBlock, 0);
+                    Hash = Hash * 31 + (int)Type.Hash(ValueBlock, 0);
                 }
 
                 return Hash;
@@ -284,39 +284,39 @@ namespace TrinoClient.Model.SPI.Predicate
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
             Marker Other = (Marker)obj;
 
-            return Object.Equals(this.Type, Other.Type)
-                    && Object.Equals(this.Bound, Other.Bound)
-                    && ((this.ValueBlock != null) == (Other.ValueBlock != null))
-                    && (this.ValueBlock == null || this.Type.EqualTo(this.ValueBlock, 0, Other.ValueBlock, 0));
+            return Object.Equals(Type, Other.Type)
+                    && Object.Equals(Bound, Other.Bound)
+                    && (ValueBlock != null == (Other.ValueBlock != null))
+                    && (ValueBlock == null || Type.EqualTo(ValueBlock, 0, Other.ValueBlock, 0));
         }
 
         public string ToString(IConnectorSession session)
         {
-            StringBuilder SB = new StringBuilder("{");
+            StringBuilder SB = new("{");
 
-            SB.Append("type=").Append(this.Type.ToString());
+            SB.Append("type=").Append(Type.ToString());
             SB.Append(", value=");
 
-            if (this.IsLowerUnbounded())
+            if (IsLowerUnbounded())
             {
                 SB.Append("<min>");
             }
-            else if (this.IsUpperUnbounded())
+            else if (IsUpperUnbounded())
             {
                 SB.Append("<max>");
             }
             else
             {
-                SB.Append(this.GetPrintableValue(session));
+                SB.Append(GetPrintableValue(session));
             }
 
-            SB.Append(", bound=").Append(this.Bound.ToString());
+            SB.Append(", bound=").Append(Bound.ToString());
 
             SB.Append("}");
 
@@ -329,9 +329,9 @@ namespace TrinoClient.Model.SPI.Predicate
 
         private void CheckTypeCompatibility(Marker marker)
         {
-            if (!this.Type.Equals(marker.Type))
+            if (!Type.Equals(marker.Type))
             {
-                throw new ArgumentException($"Mismatched Marker types: {this.Type.ToString()} vs {marker.Type.ToString()}.");
+                throw new ArgumentException($"Mismatched Marker types: {Type.ToString()} vs {marker.Type.ToString()}.");
             }
         }
 

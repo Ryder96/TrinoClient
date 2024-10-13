@@ -7,7 +7,7 @@ using System.Linq;
 namespace TrinoClient.Model.Sql.Planner.Plan
 {
     //[JsonConverter(typeof(PlanNodeConverter))]
-    public abstract class PlanNode
+    public abstract class PlanNode(PlanNodeId id)
     {
         private static readonly Dictionary<Type, PlanNodeType> TypeToDerivedType;
         private static readonly Dictionary<PlanNodeType, Type> DerivedTypeToType;
@@ -73,11 +73,6 @@ namespace TrinoClient.Model.Sql.Planner.Plan
             DerivedTypeToType = TypeToDerivedType.ToDictionary(pair => pair.Value, pair => pair.Key);
         }
 
-        public PlanNode(PlanNodeId id)
-        {
-            this.Id = id ?? throw new ArgumentNullException("id");
-        }
-
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty(PropertyName = "@type")]
         public PlanNodeType NodeType
@@ -86,11 +81,11 @@ namespace TrinoClient.Model.Sql.Planner.Plan
             {
                 // This will return the actual type of the class
                 // from derived classes
-                return TypeToDerivedType[this.GetType()];
+                return TypeToDerivedType[GetType()];
             }
         }
 
-        public PlanNodeId Id { get; set; }
+        public PlanNodeId Id { get; set; } = id ?? throw new ArgumentNullException(nameof(id));
 
         public static Type GetType(PlanNodeType type)
         {

@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.SPI.Type;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Serialization
 {

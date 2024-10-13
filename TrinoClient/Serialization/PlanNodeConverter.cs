@@ -1,7 +1,7 @@
-﻿using TrinoClient.Model.Sql.Planner.Plan;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using TrinoClient.Model.Sql.Planner.Plan;
 
 namespace TrinoClient.Serialization
 {

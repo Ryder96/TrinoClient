@@ -8,37 +8,29 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.RowNumberNode.java
     /// </summary>
-    public class RowNumberNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.RowNumberNode.java
+                                 /// </summary>
+    public class RowNumberNode(PlanNodeId id, PlanNode source, IEnumerable<Symbol> partitionBy, Symbol rowNumberSymbol, int maxRowCountPerPartition, Symbol hashSymbol) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Source { get; }
+        public PlanNode Source { get; } = source ?? throw new ArgumentNullException(nameof(source));
 
-        public IEnumerable<Symbol> PartitionBy { get; }
+        public IEnumerable<Symbol> PartitionBy { get; } = partitionBy ?? throw new ArgumentNullException(nameof(partitionBy));
 
-        public Symbol RowNumberSymbol { get; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        [Optional]
-        public int MaxRowCountPerPartition { get; }
+        public Symbol RowNumberSymbol { get; } = rowNumberSymbol ?? throw new ArgumentNullException(nameof(rowNumberSymbol));
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
-        public Symbol HashSymbol { get; }
+        public int MaxRowCountPerPartition { get; } = maxRowCountPerPartition;
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [Optional]
+        public Symbol HashSymbol { get; } = hashSymbol; // ?? throw new ArgumentNullException("hashSymbol");
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public RowNumberNode(PlanNodeId id, PlanNode source, IEnumerable<Symbol> partitionBy, Symbol rowNumberSymbol, int maxRowCountPerPartition, Symbol hashSymbol) : base(id)
-        {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.PartitionBy = partitionBy ?? throw new ArgumentNullException("partitionBy");
-            this.RowNumberSymbol = rowNumberSymbol ?? throw new ArgumentNullException("rowNumberSymbol");
-            this.MaxRowCountPerPartition = maxRowCountPerPartition;
-            this.HashSymbol = hashSymbol; // ?? throw new ArgumentNullException("hashSymbol");
-        }
 
         #endregion
 
@@ -46,12 +38,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Source.GetOutputSymbols().Concat(new Symbol[] { this.RowNumberSymbol });
+            return Source.GetOutputSymbols().Concat([RowNumberSymbol]);
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

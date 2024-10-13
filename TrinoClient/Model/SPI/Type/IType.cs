@@ -1,5 +1,5 @@
-﻿using TrinoClient.Model.SPI.Block;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TrinoClient.Model.SPI.Block;
 
 namespace TrinoClient.Model.SPI.Type
 {

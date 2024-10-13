@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.Connector;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.Connector;
 
 namespace TrinoClient.Model.Execution
 {
@@ -24,17 +24,17 @@ namespace TrinoClient.Model.Execution
         [JsonConstructor]
         public Output(ConnectorId connectorId, string schema, string table)
         {
-            if (String.IsNullOrEmpty(schema))
+            if (string.IsNullOrEmpty(schema))
             {
-                throw new ArgumentNullException("schema", "Schema cannot be null or empty.");
+                throw new ArgumentNullException(nameof(schema), "Schema cannot be null or empty.");
             }
 
-            if (String.IsNullOrEmpty(table))
+            if (string.IsNullOrEmpty(table))
             {
-                throw new ArgumentNullException("table", "Table cannot be null or empty.");
+                throw new ArgumentNullException(nameof(table), "Table cannot be null or empty.");
             }
 
-            this.ConnectorId = connectorId ?? throw new ArgumentNullException("connectorId", "The connector id cannot be null.");
+            ConnectorId = connectorId ?? throw new ArgumentNullException(nameof(connectorId), "The connector id cannot be null.");
         }
 
         #endregion

@@ -1,7 +1,7 @@
-﻿using TrinoClient.Model.SPI.Type;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Model.Metadata
 {
@@ -40,18 +40,18 @@ namespace TrinoClient.Model.Metadata
             IEnumerable<TypeSignature> argumentTypes,
             bool variableArity)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
-            this.Name = name;
-            this.Kind = kind;
-            this.TypeVariableConstraints = typeVariableConstraints;
-            this.LongVariableConstraints = longVariableConstraints;
-            this.ReturnType = returnType;
-            this.ArgumentTypes = argumentTypes;
-            this.VariableArity = variableArity;
+            Name = name;
+            Kind = kind;
+            TypeVariableConstraints = typeVariableConstraints;
+            LongVariableConstraints = longVariableConstraints;
+            ReturnType = returnType;
+            ArgumentTypes = argumentTypes;
+            VariableArity = variableArity;
         }
 
         #endregion

@@ -8,24 +8,19 @@ namespace TrinoClient.Model.Sql.Planner
     /// <summary>
     /// From com.facebook.presto.sql.planner.Partitioning.java
     /// </summary>
-    public class Partitioning
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.Partitioning.java
+                                 /// </summary>
+    public class Partitioning(PartitioningHandle handle, IEnumerable<ArgumentBinding> arguments)
     {
         #region Public Properties
 
-        public PartitioningHandle Handle { get; }
+        public PartitioningHandle Handle { get; } = handle ?? throw new ArgumentNullException(nameof(handle));
 
-        public IEnumerable<ArgumentBinding> Arguments { get; }
+        public IEnumerable<ArgumentBinding> Arguments { get; } = arguments ?? throw new ArgumentNullException(nameof(arguments));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public Partitioning(PartitioningHandle handle, IEnumerable<ArgumentBinding> arguments)
-        {
-            this.Handle = handle ?? throw new ArgumentNullException("handle");
-            this.Arguments = arguments ?? throw new ArgumentNullException("arguments");
-        }
 
         #endregion
 
@@ -33,14 +28,14 @@ namespace TrinoClient.Model.Sql.Planner
 
         public HashSet<Symbol> GetColumns()
         {
-            return new HashSet<Symbol>(this.Arguments.Where(x => x.IsVariable()).Select(x => x.Column));
+            return new HashSet<Symbol>(Arguments.Where(x => x.IsVariable()).Select(x => x.Column));
         }
 
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("handle", this.Handle)
-                .Add("arguments", this.Arguments)
+                .Add("handle", Handle)
+                .Add("arguments", Arguments)
                 .ToString();
         }
 

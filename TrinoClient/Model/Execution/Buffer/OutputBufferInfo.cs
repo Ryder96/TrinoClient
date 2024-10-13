@@ -6,55 +6,43 @@ namespace TrinoClient.Model.Execution.Buffer
     /// <summary>
     /// From com.facebook.presto.execution.buffer.OutputBufferInfo.java
     /// </summary>
-    public class OutputBufferInfo
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.execution.buffer.OutputBufferInfo.java
+                                 /// </summary>
+    public class OutputBufferInfo(
+        string type,
+        BufferState state,
+        bool canAddBuffers,
+        bool canAddPages,
+        long totalBufferedBytes,
+        long totalBufferedPages,
+        long totalRowsSent,
+        long totalPagesSent,
+        IEnumerable<BufferInfo> buffers
+            )
     {
         #region Public Properties
 
-        public string Type { get; }
+        public string Type { get; } = type;
 
-        public BufferState State { get; }
+        public BufferState State { get; } = state;
 
-        public bool CanAddBuffers { get; }
+        public bool CanAddBuffers { get; } = canAddBuffers;
 
-        public bool CanAddPages { get; }
+        public bool CanAddPages { get; } = canAddPages;
 
-        public long TotalBufferedBytes { get; }
+        public long TotalBufferedBytes { get; } = totalBufferedBytes;
 
-        public long TotalBufferedPages { get; }
+        public long TotalBufferedPages { get; } = totalBufferedPages;
 
-        public long TotalRowsSent { get; }
+        public long TotalRowsSent { get; } = totalRowsSent;
 
-        public long TotalPagesSent { get; }
+        public long TotalPagesSent { get; } = totalPagesSent;
 
-        public IEnumerable<BufferInfo> Buffers { get; }
+        public IEnumerable<BufferInfo> Buffers { get; } = buffers;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public OutputBufferInfo(
-            string type,
-            BufferState state,
-            bool canAddBuffers,
-            bool canAddPages,
-            long totalBufferedBytes,
-            long totalBufferedPages,
-            long totalRowsSent,
-            long totalPagesSent,
-            IEnumerable<BufferInfo> buffers
-            )
-        {
-            this.Type = type;
-            this.State = state;
-            this.CanAddBuffers = canAddBuffers;
-            this.CanAddPages = canAddPages;
-            this.TotalBufferedBytes = totalBufferedBytes;
-            this.TotalBufferedPages = totalBufferedPages;
-            this.TotalRowsSent = totalRowsSent;
-            this.TotalPagesSent = totalPagesSent;
-            this.Buffers = buffers;
-        }
 
         #endregion
 
@@ -63,15 +51,15 @@ namespace TrinoClient.Model.Execution.Buffer
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("type", this.Type)
-                .Add("state", this.State)
-                .Add("canAddBuffers", this.CanAddBuffers)
-                .Add("canAddPages", this.CanAddPages)
-                .Add("totalBufferedBytes", this.TotalBufferedBytes)
-                .Add("totalBufferedPages", this.TotalBufferedPages)
-                .Add("totalRowsSent", this.TotalRowsSent)
-                .Add("totalPagesSent", this.TotalPagesSent)
-                .Add("buffers", this.Buffers)
+                .Add("type", Type)
+                .Add("state", State)
+                .Add("canAddBuffers", CanAddBuffers)
+                .Add("canAddPages", CanAddPages)
+                .Add("totalBufferedBytes", TotalBufferedBytes)
+                .Add("totalBufferedPages", TotalBufferedPages)
+                .Add("totalRowsSent", TotalRowsSent)
+                .Add("totalPagesSent", TotalPagesSent)
+                .Add("buffers", Buffers)
                 .ToString();
         }
 

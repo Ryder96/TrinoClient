@@ -7,33 +7,25 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.ExchangeNode.java
     /// </summary>
-    public class ExchangeNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.ExchangeNode.java
+                                 /// </summary>
+    public class ExchangeNode(PlanNodeId id, ExchangeType type, ExchangeScope scope, PartitioningScheme partitioningScheme, IEnumerable<PlanNode> sources, IEnumerable<List<Symbol>> inputs) : PlanNode(id)
     {
         #region Public Properties
 
-        public ExchangeType Type { get; }
+        public ExchangeType Type { get; } = type;
 
-        public ExchangeScope Scope { get; }
+        public ExchangeScope Scope { get; } = scope;
 
-        public IEnumerable<PlanNode> Sources { get; }
+        public IEnumerable<PlanNode> Sources { get; } = sources ?? throw new ArgumentNullException(nameof(sources));
 
-        public PartitioningScheme PartitioningScheme { get; }
+        public PartitioningScheme PartitioningScheme { get; } = partitioningScheme ?? throw new ArgumentNullException(nameof(partitioningScheme));
 
-        public IEnumerable<List<Symbol>> Inputs { get; }
+        public IEnumerable<List<Symbol>> Inputs { get; } = inputs ?? throw new ArgumentNullException(nameof(inputs));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public ExchangeNode(PlanNodeId id, ExchangeType type, ExchangeScope scope, PartitioningScheme partitioningScheme, IEnumerable<PlanNode> sources, IEnumerable<List<Symbol>> inputs) : base(id)
-        {
-            this.Type = type;
-            this.Scope = scope;
-            this.PartitioningScheme = partitioningScheme ?? throw new ArgumentNullException("partitioningScheme");
-            this.Sources = sources ?? throw new ArgumentNullException("sources");
-            this.Inputs = inputs ?? throw new ArgumentNullException("inputs");
-        }
 
         #endregion
 
@@ -41,12 +33,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            return this.Sources;
+            return Sources;
         }
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.PartitioningScheme.OutputLayout;
+            return PartitioningScheme.OutputLayout;
         }
 
         #endregion

@@ -1,8 +1,8 @@
-﻿using TrinoClient.Model.SPI.Security;
+﻿using Newtonsoft.Json;
+using System.Globalization;
+using TrinoClient.Model.SPI.Security;
 using TrinoClient.Model.SPI.Type;
 using TrinoClient.Serialization;
-using Newtonsoft.Json;
-using System.Globalization;
 
 namespace TrinoClient.Model.SPI
 {

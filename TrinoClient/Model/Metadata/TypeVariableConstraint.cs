@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Text;
 
 namespace TrinoClient.Model.Metadata
@@ -7,30 +6,23 @@ namespace TrinoClient.Model.Metadata
     /// <summary>
     /// From com.facebook.presto.metadata.TypeVariableConstraint.java
     /// </summary>
-    public class TypeVariableConstraint
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.metadata.TypeVariableConstraint.java
+                                 /// </summary>
+    public class TypeVariableConstraint(string name, bool comparableRequired, bool orderableRequired, string variadicBound)
     {
         #region Public Properties
 
-        public string Name { get; }
+        public string Name { get; } = name;
 
-        public bool ComparableRequired { get; }
+        public bool ComparableRequired { get; } = comparableRequired;
 
-        public bool OrderableRequired { get; }
+        public bool OrderableRequired { get; } = orderableRequired;
 
-        public string VariadicBound { get; }
+        public string VariadicBound { get; } = variadicBound;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public TypeVariableConstraint(string name, bool comparableRequired, bool orderableRequired, string variadicBound)
-        {
-            this.Name = name;
-            this.ComparableRequired = comparableRequired;
-            this.OrderableRequired = orderableRequired;
-            this.VariadicBound = variadicBound;
-        }
 
         #endregion
 
@@ -38,21 +30,21 @@ namespace TrinoClient.Model.Metadata
 
         public override string ToString()
         {
-            StringBuilder SB = new StringBuilder(this.Name);
+            StringBuilder SB = new(Name);
 
-            if (this.ComparableRequired)
+            if (ComparableRequired)
             {
                 SB.Append(":comparable");
             }
 
-            if (this.OrderableRequired)
+            if (OrderableRequired)
             {
                 SB.Append(":orderable");
             }
 
-            if (!String.IsNullOrEmpty(this.VariadicBound))
+            if (!string.IsNullOrEmpty(VariadicBound))
             {
-                SB.Append($":{this.VariadicBound}<*>");
+                SB.Append($":{VariadicBound}<*>");
             }
 
             return SB.ToString();

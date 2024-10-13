@@ -6,23 +6,19 @@ namespace TrinoClient.Model.Sql.Tree
     /// <summary>
     /// From com.facebook.presto.sql.tree.Node.java
     /// </summary>
-    public abstract class Node
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.tree.Node.java
+                                 /// </summary>
+    public abstract class Node(NodeLocation location)
     {
         #region Public Properties
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
-        public NodeLocation Location { get; }
+        public NodeLocation Location { get; } = location;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        protected Node(NodeLocation location)
-        {
-            this.Location = location;
-        }
 
         #endregion
 

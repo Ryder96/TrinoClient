@@ -1,9 +1,9 @@
-﻿using TrinoClient.Model.Metadata;
-using TrinoClient.Model.SPI.Predicate;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Model.Metadata;
+using TrinoClient.Model.SPI.Predicate;
 
 namespace TrinoClient.Model.Sql.Planner.Plan
 {
@@ -52,14 +52,14 @@ namespace TrinoClient.Model.Sql.Planner.Plan
             dynamic originalConstraint
             ) : base(id)
         {
-            this.Table = table ?? throw new ArgumentNullException("table");
-            this.OutputSymbols = outputSymbols ?? throw new ArgumentNullException("outputSymbols");
-            this.Assignments = assignments ?? throw new ArgumentNullException("assignments");
-            this.OriginalConstraint = originalConstraint;
-            this.Layout = layout ?? throw new ArgumentNullException("layout");
-            this.CurrentConstraint = currentConstraint ?? throw new ArgumentNullException("currentConstraint");
+            Table = table ?? throw new ArgumentNullException(nameof(table));
+            OutputSymbols = outputSymbols ?? throw new ArgumentNullException(nameof(outputSymbols));
+            Assignments = assignments ?? throw new ArgumentNullException(nameof(assignments));
+            OriginalConstraint = originalConstraint;
+            Layout = layout ?? throw new ArgumentNullException(nameof(layout));
+            CurrentConstraint = currentConstraint ?? throw new ArgumentNullException(nameof(currentConstraint));
 
-            ParameterCheck.Check(this.OutputSymbols.All(x => this.Assignments.Keys.Contains(x.ToString())), "Assignments does not cover all of outputs.");
+            ParameterCheck.Check(OutputSymbols.All(x => Assignments.Keys.Contains(x.ToString())), "Assignments does not cover all of outputs.");
         }
 
         #endregion
@@ -68,12 +68,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.OutputSymbols;
+            return OutputSymbols;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            return new PlanNode[0];
+            return [];
         }
 
         #endregion

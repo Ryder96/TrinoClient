@@ -18,28 +18,28 @@ namespace TrinoClient.Serialization
         private static IDictionary<string, MappingConversionInfo> types = new Dictionary<string, MappingConversionInfo>()
         {
            // Boolean
-            { "boolean",        new MappingConversionInfo(typeof(bool),     input => Boolean.Parse(input)) },
+            { "boolean",        new MappingConversionInfo(typeof(bool),     input => bool.Parse(input)) },
 
             // Integer
-            { "tinyint",        new MappingConversionInfo(typeof(sbyte),    input => SByte.Parse(input)) },
-            { "smallint",       new MappingConversionInfo(typeof(short),    input => Int16.Parse(input)) },
-            { "integer",        new MappingConversionInfo(typeof(int),      input => Int32.Parse(input)) },
-            { "int",            new MappingConversionInfo(typeof(int),      input => Int32.Parse(input)) },
-            { "bigint",         new MappingConversionInfo(typeof(long),     input => Int64.Parse(input)) },
+            { "tinyint",        new MappingConversionInfo(typeof(sbyte),    input => sbyte.Parse(input)) },
+            { "smallint",       new MappingConversionInfo(typeof(short),    input => short.Parse(input)) },
+            { "integer",        new MappingConversionInfo(typeof(int),      input => int.Parse(input)) },
+            { "int",            new MappingConversionInfo(typeof(int),      input => int.Parse(input)) },
+            { "bigint",         new MappingConversionInfo(typeof(long),     input => long.Parse(input)) },
             
             // Floating point
-            { "real",           new MappingConversionInfo(typeof(float),    input => Single.Parse(input)) },
-            { "double",         new MappingConversionInfo(typeof(double),   input => Double.Parse(input)) },
+            { "real",           new MappingConversionInfo(typeof(float),    input => float.Parse(input)) },
+            { "double",         new MappingConversionInfo(typeof(double),   input => double.Parse(input)) },
 
             // Fixed-Precision
-            { "decimal",        new MappingConversionInfo(typeof(decimal),  input => Decimal.Parse(input)) },
+            { "decimal",        new MappingConversionInfo(typeof(decimal),  input => decimal.Parse(input)) },
 
             // String
             { "varchar",        new MappingConversionInfo(typeof(string),   input => input) },
             { "char",           new MappingConversionInfo(typeof(char[]),   input => {
                 if (input.Length == 1)
                 {
-                    return new char[] { Char.Parse(input) };
+                    return new char[] { char.Parse(input) };
                 }
                 else
                 {
@@ -78,7 +78,7 @@ namespace TrinoClient.Serialization
             {"ipaddress",       new MappingConversionInfo(typeof(IPAddress),    input => IPAddress.Parse(input)) }
         };
 
-        public static IDictionary<string, MappingConversionInfo> Types { get => types; set => types=value; }
+        public static IDictionary<string, MappingConversionInfo> Types { get => types; set => types = value; }
 
         /// <summary>
         /// Converts a string input with the provided presto type into

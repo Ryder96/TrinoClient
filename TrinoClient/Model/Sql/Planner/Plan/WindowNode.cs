@@ -44,21 +44,21 @@ namespace TrinoClient.Model.Sql.Planner.Plan
             int preSortedOrderPrefix
             ) : base(id)
         {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.PrePartitionedInputs = prePartitionedInputs;
-            this.Specification = specification ?? throw new ArgumentNullException("specification");
-            this.PreSortedOrderPrefix = preSortedOrderPrefix;
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            PrePartitionedInputs = prePartitionedInputs;
+            Specification = specification ?? throw new ArgumentNullException(nameof(specification));
+            PreSortedOrderPrefix = preSortedOrderPrefix;
 
-            ParameterCheck.Check(this.PrePartitionedInputs.All(x => this.Specification.PartitionBy.Contains(x)), "Prepartitioned inputs must be contained in partitionBy.");
+            ParameterCheck.Check(PrePartitionedInputs.All(x => Specification.PartitionBy.Contains(x)), "Prepartitioned inputs must be contained in partitionBy.");
 
 
             ParameterCheck.Check(preSortedOrderPrefix == 0 ||
-                (this.Specification.OrderingScheme != null && this.PreSortedOrderPrefix <= this.Specification.OrderingScheme.OrderBy.Count()), "Cannot have sorted more symbols than those requested.");
-            ParameterCheck.Check(preSortedOrderPrefix == 0 || this.PrePartitionedInputs.Equals(this.Specification.PartitionBy),
+                (Specification.OrderingScheme != null && PreSortedOrderPrefix <= Specification.OrderingScheme.OrderBy.Count()), "Cannot have sorted more symbols than those requested.");
+            ParameterCheck.Check(preSortedOrderPrefix == 0 || PrePartitionedInputs.Equals(Specification.PartitionBy),
                 "Presorted order prefix can only be greater than zero if all partition symbols are pre-partitioned");
 
-            this.WindowFunctions = windowFunctions ?? throw new ArgumentNullException("windowFunctions");
-            this.HashSymbol = hashSymbol;
+            WindowFunctions = windowFunctions ?? throw new ArgumentNullException(nameof(windowFunctions));
+            HashSymbol = hashSymbol;
         }
 
         #endregion
@@ -67,12 +67,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Source.GetOutputSymbols().Concat(this.WindowFunctions.Keys.Select(x => new Symbol(x)));
+            return Source.GetOutputSymbols().Concat(WindowFunctions.Keys.Select(x => new Symbol(x)));
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

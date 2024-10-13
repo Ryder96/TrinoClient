@@ -7,27 +7,21 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.ExplainAnalyzeNode.java
     /// </summary>
-    public class ExplainAnalyzeNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.ExplainAnalyzeNode.java
+                                 /// </summary>
+    public class ExplainAnalyzeNode(PlanNodeId id, PlanNode source, Symbol outputSymbol, bool verbose) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Source { get; }
+        public PlanNode Source { get; } = source ?? throw new ArgumentNullException(nameof(source));
 
-        public Symbol OutputSymbol { get; }
+        public Symbol OutputSymbol { get; } = outputSymbol ?? throw new ArgumentNullException(nameof(outputSymbol));
 
-        public bool Verbose { get; }
+        public bool Verbose { get; } = verbose;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public ExplainAnalyzeNode(PlanNodeId id, PlanNode source, Symbol outputSymbol, bool verbose) : base(id)
-        {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.OutputSymbol = outputSymbol ?? throw new ArgumentNullException("outputSymbol");
-            this.Verbose = verbose;
-        }
 
         #endregion
 
@@ -35,12 +29,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            yield return this.OutputSymbol;
+            yield return OutputSymbol;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

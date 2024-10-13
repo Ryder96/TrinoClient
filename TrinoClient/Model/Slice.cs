@@ -14,7 +14,7 @@ namespace TrinoClient.Model
 
         private static readonly int INSTANCE_SIZE = 0;
 
-        private static readonly byte[] COMPACT = new byte[0];
+        private static readonly byte[] COMPACT = [];
 
         private static readonly object NOT_COMPACT = null;
 
@@ -79,11 +79,11 @@ namespace TrinoClient.Model
 
         public Slice()
         {
-            this.Base = null;
-            this.Address = 0;
-            this.Size = 0;
-            this.RetainedSize = INSTANCE_SIZE;
-            this.Reference = COMPACT;
+            Base = null;
+            Address = 0;
+            Size = 0;
+            RetainedSize = INSTANCE_SIZE;
+            Reference = COMPACT;
         }
 
         /// <summary>
@@ -92,11 +92,11 @@ namespace TrinoClient.Model
         /// <param name="base"></param>
         public Slice(byte[] @base)
         {
-            this.Base = @base ?? throw new ArgumentNullException("base");
-            this.Address = ARRAY_BYTE_BASE_OFFSET;
-            this.Size = @base.Length;
-            this.RetainedSize = INSTANCE_SIZE + Marshal.SizeOf(@base);
-            this.Reference = COMPACT;
+            Base = @base ?? throw new ArgumentNullException(nameof(@base));
+            Address = ARRAY_BYTE_BASE_OFFSET;
+            Size = @base.Length;
+            RetainedSize = INSTANCE_SIZE + Marshal.SizeOf(@base);
+            Reference = COMPACT;
         }
 
         /// <summary>
@@ -109,11 +109,11 @@ namespace TrinoClient.Model
         {
             ParameterCheck.OutOfRange(offset < @base.Length && offset + length < @base.Length, "offset");
 
-            this.Base = @base ?? throw new ArgumentNullException("base");
-            this.Address = ARRAY_BYTE_BASE_OFFSET + offset;
-            this.Size = length;
-            this.RetainedSize = INSTANCE_SIZE + Marshal.SizeOf(@base);
-            this.Reference = (offset == 0 && length == @base.Length) ? COMPACT : NOT_COMPACT;
+            Base = @base ?? throw new ArgumentNullException(nameof(@base));
+            Address = ARRAY_BYTE_BASE_OFFSET + offset;
+            Size = length;
+            RetainedSize = INSTANCE_SIZE + Marshal.SizeOf(@base);
+            Reference = (offset == 0 && length == @base.Length) ? COMPACT : NOT_COMPACT;
         }
 
         #endregion
@@ -132,15 +132,15 @@ namespace TrinoClient.Model
         /// <returns></returns>
         public bool IsCompact()
         {
-            return this.Reference == COMPACT;
+            return Reference == COMPACT;
         }
 
         public void SetBytes(int index, Slice source)
         {
-            this.SetBytes(index, source, 0, source.Length);
+            SetBytes(index, source, 0, source.Length);
         }
 
-        public void SetBytes(int index, Slice source, int sourceIndex, int length)
+        public static void SetBytes(int index, Slice source, int sourceIndex, int length)
         {
             Preconditions.CheckPositionIndexes(sourceIndex, sourceIndex + length, source.Length);
 
@@ -150,10 +150,10 @@ namespace TrinoClient.Model
 
         public void SetBytes(int index, byte[] source)
         {
-            this.SetBytes(index, source, 0, source.Length);
+            SetBytes(index, source, 0, source.Length);
         }
 
-        public void SetBytes(int index, byte[] source, int sourceIndex, int length)
+        public static void SetBytes(int index, byte[] source, int sourceIndex, int length)
         {
             Preconditions.CheckPositionIndexes(sourceIndex, sourceIndex + length, source.Length);
 

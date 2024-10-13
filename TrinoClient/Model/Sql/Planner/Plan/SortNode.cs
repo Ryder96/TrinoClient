@@ -7,24 +7,19 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.SortNode.java
     /// </summary>
-    public class SortNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.SortNode.java
+                                 /// </summary>
+    public class SortNode(PlanNodeId id, PlanNode source, OrderingScheme orderingScheme) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Source { get; }
+        public PlanNode Source { get; } = source ?? throw new ArgumentNullException(nameof(source));
 
-        public OrderingScheme OrderingScheme { get; }
+        public OrderingScheme OrderingScheme { get; } = orderingScheme ?? throw new ArgumentNullException(nameof(orderingScheme));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public SortNode(PlanNodeId id, PlanNode source, OrderingScheme orderingScheme) : base(id)
-        {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.OrderingScheme = orderingScheme ?? throw new ArgumentNullException("orderingScheme");
-        }
 
         #endregion
 
@@ -32,12 +27,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Source.GetOutputSymbols();
+            return Source.GetOutputSymbols();
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

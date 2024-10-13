@@ -1,34 +1,28 @@
-﻿using TrinoClient.Model.Metadata;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.Metadata;
 
 namespace TrinoClient.Model.Sql.Planner.Plan
 {
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.MetadataDeleteNode.java
     /// </summary>
-    public class MetadataDeleteNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.MetadataDeleteNode.java
+                                 /// </summary>
+    public class MetadataDeleteNode(PlanNodeId id, DeleteHandle target, Symbol output, TableLayoutHandle tableLayout) : PlanNode(id)
     {
         #region Public Properties
 
-        public DeleteHandle Target { get; }
+        public DeleteHandle Target { get; } = target ?? throw new ArgumentNullException(nameof(target));
 
-        public Symbol Output { get; }
+        public Symbol Output { get; } = output ?? throw new ArgumentNullException(nameof(output));
 
-        public TableLayoutHandle TableLayout { get; }
+        public TableLayoutHandle TableLayout { get; } = tableLayout ?? throw new ArgumentNullException(nameof(tableLayout));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public MetadataDeleteNode(PlanNodeId id, DeleteHandle target, Symbol output, TableLayoutHandle tableLayout) : base(id)
-        {
-            this.Target = target ?? throw new ArgumentNullException("target");
-            this.Output = output ?? throw new ArgumentNullException("output");
-            this.TableLayout = tableLayout ?? throw new ArgumentNullException("tableLayout");
-        }
 
         #endregion
 
@@ -36,12 +30,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            yield return this.Output;
+            yield return Output;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            return new List<PlanNode>();
+            return [];
         }
 
         #endregion

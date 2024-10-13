@@ -24,12 +24,12 @@ namespace TrinoClient.Model.Jmx
         /// <param name="objectName"></param>
         public JmxMbeanV1Request(string objectName)
         {
-            if (String.IsNullOrEmpty(objectName))
+            if (string.IsNullOrEmpty(objectName))
             {
-                throw new ArgumentNullException("objectName", "The object name cannot be null or empty.");
+                throw new ArgumentNullException(nameof(objectName), "The object name cannot be null or empty.");
             }
 
-            this.ObjectName = objectName;
+            ObjectName = objectName;
         }
 
         #endregion

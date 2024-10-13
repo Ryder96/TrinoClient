@@ -6,24 +6,19 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.JoinNode.java (internal class EquiJoinClause)
     /// </summary>
-    public class EquiJoinClause
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.JoinNode.java (internal class EquiJoinClause)
+                                 /// </summary>
+    public class EquiJoinClause(Symbol left, Symbol right)
     {
         #region Public Properties
 
-        public Symbol Left { get; }
+        public Symbol Left { get; } = left ?? throw new ArgumentNullException(nameof(left));
 
-        public Symbol Right { get; }
+        public Symbol Right { get; } = right ?? throw new ArgumentNullException(nameof(right));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public EquiJoinClause(Symbol left, Symbol right)
-        {
-            this.Left = left ?? throw new ArgumentNullException("left");
-            this.Right = right ?? throw new ArgumentNullException("right");
-        }
 
         #endregion
 
@@ -31,7 +26,7 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override string ToString()
         {
-            return $"{this.Left.ToString()} = {this.Right.ToString()}";
+            return $"{Left.ToString()} = {Right.ToString()}";
         }
 
         #endregion

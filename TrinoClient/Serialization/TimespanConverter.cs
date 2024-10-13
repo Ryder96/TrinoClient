@@ -20,11 +20,11 @@ namespace TrinoClient.Serialization
          *  2h
          *  1.0ms
          */
-        private Regex TimespanRegex = new Regex("^([0-9]+(?:\\.[0-9]+)?)([a-z]+)$");
+        private Regex TimespanRegex = new("^([0-9]+(?:\\.[0-9]+)?)([a-z]+)$");
 
         public override bool CanConvert(Type objectType)
         {
-            return (objectType == typeof(String));
+            return objectType == typeof(string);
         }
 
         public override bool CanWrite
@@ -51,7 +51,7 @@ namespace TrinoClient.Serialization
 
             if (RegexMatch.Success)
             {
-                decimal Time = Decimal.Parse(RegexMatch.Groups[1].Value);
+                decimal Time = decimal.Parse(RegexMatch.Groups[1].Value);
                 string Format = RegexMatch.Groups[2].Value;
                 decimal Nano = 0;
 

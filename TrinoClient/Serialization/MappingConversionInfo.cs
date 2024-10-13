@@ -2,18 +2,12 @@
 
 namespace TrinoClient.Serialization
 {
-    public class MappingConversionInfo
+    public class MappingConversionInfo(Type type, MappingConversionInfo.PrestoTypeConverter converter)
     {
         public delegate object PrestoTypeConverter(string value);
 
-        public PrestoTypeConverter Converter { get; set; }
+        public PrestoTypeConverter Converter { get; set; } = converter ?? throw new ArgumentNullException("The converter cannot be null.");
 
-        public Type DotNetType { get; set; }
-
-        public MappingConversionInfo(Type type, PrestoTypeConverter converter)
-        {
-            this.Converter = converter ?? throw new ArgumentNullException("The converter cannot be null.");
-            this.DotNetType = type;
-        }
+        public Type DotNetType { get; set; } = type;
     }
 }

@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.SPI.Type;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Model.SPI.Predicate
 {

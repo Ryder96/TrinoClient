@@ -10,7 +10,7 @@ namespace TrinoClient.Model.SPI.Type
     {
         #region Private Fields
 
-        private static Dictionary<string, string> BASE_NAME_ALIAS_TO_CANONICAL = new Dictionary<string, string>();
+        private static Dictionary<string, string> BASE_NAME_ALIAS_TO_CANONICAL = [];
 
         static TypeSignature()
         {
@@ -40,9 +40,9 @@ namespace TrinoClient.Model.SPI.Type
         {
             ParameterCheck.NotNullOrEmpty(@base, "base");
 
-            this.Base = @base;
-            this.Parameters = parameters ?? throw new ArgumentNullException("parameters");
-            this.Calculated = parameters.Any(x => x.IsCalculated());
+            Base = @base;
+            Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+            Calculated = parameters.Any(x => x.IsCalculated());
         }
 
         #endregion
@@ -51,25 +51,25 @@ namespace TrinoClient.Model.SPI.Type
 
         public override string ToString()
         {
-            if (this.Base.Equals(StandardTypes.ROW))
+            if (Base.Equals(StandardTypes.ROW))
             {
                 return "";
             }
-            else if (this.Base.Equals(StandardTypes.VARCHAR) &&
-                this.Parameters.Count() == 1 &&
-                this.Parameters.ElementAt(0).IsLongLiteral() &&
-                this.Parameters.ElementAt(0).GetLongLiteral() == VarcharType.UNBOUNDED_LENGTH
+            else if (Base.Equals(StandardTypes.VARCHAR) &&
+                Parameters.Count() == 1 &&
+                Parameters.ElementAt(0).IsLongLiteral() &&
+                Parameters.ElementAt(0).GetLongLiteral() == VarcharType.UNBOUNDED_LENGTH
                 )
             {
-                return this.Base;
+                return Base;
             }
             else
             {
-                StringBuilder TypeName = new StringBuilder(this.Base);
+                StringBuilder TypeName = new(Base);
 
-                if (this.Parameters.Any())
+                if (Parameters.Any())
                 {
-                    TypeName.Append($"({String.Join(",", this.Parameters.Select(x => x.ToString()))})");
+                    TypeName.Append($"({string.Join(",", Parameters.Select(x => x.ToString()))})");
                 }
 
                 return TypeName.ToString();
@@ -78,7 +78,7 @@ namespace TrinoClient.Model.SPI.Type
 
         public IEnumerable<TypeSignature> GetTypeParametersAsTypeSignatures()
         {
-            foreach (TypeSignatureParameter Parameter in this.Parameters)
+            foreach (TypeSignatureParameter Parameter in Parameters)
             {
                 if (Parameter.Kind != ParameterKind.TYPE)
                 {

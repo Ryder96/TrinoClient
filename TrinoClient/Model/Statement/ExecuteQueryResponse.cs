@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.Client;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.Client;
 
 namespace TrinoClient.Model.Statement
 {
@@ -44,25 +44,25 @@ namespace TrinoClient.Model.Statement
         /// <param name="rawContent">The JSON array of query information</param>
         internal ExecuteQueryResponse(string rawContent, bool closed = false)
         {
-            this.RawContent = rawContent;
+            RawContent = rawContent;
 
-            if (!String.IsNullOrEmpty(this.RawContent))
+            if (!string.IsNullOrEmpty(RawContent))
             {
                 try
                 {
-                    this.Response = JsonConvert.DeserializeObject<T>(this.RawContent);
-                    this.DeserializationSucceeded = true;
-                    this.LastError = null;
+                    Response = JsonConvert.DeserializeObject<T>(RawContent);
+                    DeserializationSucceeded = true;
+                    LastError = null;
                 }
                 catch (Exception e)
                 {
-                    this.DeserializationSucceeded = false;
-                    this.LastError = e;
-                    this.Response = null;
+                    DeserializationSucceeded = false;
+                    LastError = e;
+                    Response = null;
                 }
             }
 
-            this.QueryClosed = closed;
+            QueryClosed = closed;
         }
 
         #endregion

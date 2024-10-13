@@ -24,19 +24,19 @@ namespace TrinoClient.Model.Client
         [JsonConstructor]
         public Column(string name, string type, ClientTypeSignature typeSignature)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
-            if (String.IsNullOrEmpty(type))
+            if (string.IsNullOrEmpty(type))
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
-            this.Name = name;
-            this.Type = type;
-            this.TypeSignature = typeSignature;
+            Name = name;
+            Type = type;
+            TypeSignature = typeSignature;
         }
 
         #endregion

@@ -7,11 +7,11 @@ namespace TrinoClient.Model.SPI.Block
     /// <summary>
     /// From com.facebook.presto.spi.block.BlockBuilderStatus.java
     /// </summary>
-    public class BlockBuilderStatus
+    public class BlockBuilderStatus(PageBuilderStatus pageBuilderStatus, int maxBlockSizeInBytes)
     {
         #region Private Fields
 
-        private PageBuilderStatus _PageBuilderStatus;
+        private PageBuilderStatus _PageBuilderStatus = pageBuilderStatus ?? throw new ArgumentNullException(nameof(pageBuilderStatus));
 
         private int _CurrentSize;
 
@@ -19,7 +19,7 @@ namespace TrinoClient.Model.SPI.Block
 
         #region Public Properties
 
-        public int MaxBlockSizeInBytes { get; }
+        public int MaxBlockSizeInBytes { get; } = maxBlockSizeInBytes;
 
         #endregion
 
@@ -37,22 +37,13 @@ namespace TrinoClient.Model.SPI.Block
         {
         }
 
-        public BlockBuilderStatus(PageBuilderStatus pageBuilderStatus, int maxBlockSizeInBytes)
-        {
-            this._PageBuilderStatus = pageBuilderStatus ?? throw new ArgumentNullException("pageBuilderStatus");
-            this.MaxBlockSizeInBytes = maxBlockSizeInBytes;
-        }
-
         #endregion
 
         #region Private Methods
 
         private static int DeepInstanceSize(System.Type type)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
+            ArgumentNullException.ThrowIfNull(type);
 
             if (type.IsArray)
             {
@@ -93,20 +84,20 @@ namespace TrinoClient.Model.SPI.Block
 
         public void AddBytes(int bytes)
         {
-            this._CurrentSize += bytes;
-            this._PageBuilderStatus.AddBytes(bytes);
+            _CurrentSize += bytes;
+            _PageBuilderStatus.AddBytes(bytes);
 
-            if (this._CurrentSize >= this.MaxBlockSizeInBytes)
+            if (_CurrentSize >= MaxBlockSizeInBytes)
             {
-                this._PageBuilderStatus.Full = true;
+                _PageBuilderStatus.Full = true;
             }
         }
 
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("maxSizeInBytes", this.MaxBlockSizeInBytes)
-                .Add("currentSize", this._CurrentSize)
+                .Add("maxSizeInBytes", MaxBlockSizeInBytes)
+                .Add("currentSize", _CurrentSize)
                 .ToString();
         }
 

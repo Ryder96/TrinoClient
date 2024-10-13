@@ -1,27 +1,30 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace TrinoClient.Model.Sql.Tree
 {
     /// <summary>
     /// From com.facebook.presto.sql.tree.FrameBound.java
     /// </summary>
-    public class FrameBound : Node
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.tree.FrameBound.java
+                                 /// </summary>
+    public class FrameBound(NodeLocation location, FrameBoundType type, dynamic value, dynamic originalValue) : Node(location)
     {
         #region Public Properties
 
-        public FrameBoundType Type { get; }
+        public FrameBoundType Type { get; } = type;
 
         /// <summary>
         /// TODO: Supposed to be Expression
         /// </summary>
-        public dynamic Value { get; }
+        public dynamic Value { get; } = value;
 
         /// <summary>
         /// TODO: Supposed to be Expression
         /// </summary>
-        public dynamic OriginalValue { get; }
+        public dynamic OriginalValue { get; } = originalValue;
 
         #endregion
 
@@ -36,14 +39,6 @@ namespace TrinoClient.Model.Sql.Tree
         public FrameBound(NodeLocation location, FrameBoundType type, dynamic value) : this(location, type, (object)value, (object)value)
         { }
 
-        [JsonConstructor]
-        public FrameBound(NodeLocation location, FrameBoundType type, dynamic value, dynamic originalValue) : base(location)
-        {
-            this.Type = type;
-            this.Value = value;
-            this.OriginalValue = originalValue;
-        }
-
         #endregion
 
         #region Public Methods
@@ -55,31 +50,31 @@ namespace TrinoClient.Model.Sql.Tree
                 return true;
             }
 
-            if ((obj == null) || (this.GetType() != obj.GetType()))
+            if ((obj == null) || (GetType() != obj.GetType()))
             {
                 return false;
             }
             FrameBound Other = (FrameBound)obj;
 
-            return Object.Equals(this.Type, Other.Type) &&
-                    Object.Equals(this.Value, Other.Value);
+            return Object.Equals(Type, Other.Type) &&
+                    object.Equals(Value, Other.Value);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Type, this.Value);
+            return Hashing.Hash(Type, Value);
         }
 
         public override IEnumerable<Node> GetChildren()
         {
-            yield return this.Value;
+            yield return Value;
         }
 
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("type", this.Type)
-                .Add("value", this.Value)
+                .Add("type", Type)
+                .Add("value", Value)
                 .ToString();
         }
 

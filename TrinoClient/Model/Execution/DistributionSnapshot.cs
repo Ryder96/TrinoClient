@@ -5,75 +5,58 @@ namespace TrinoClient.Model.Execution
     /// <summary>
     /// From io.airlift.stats.Distribution.java (internal class DistributionSnapshot)
     /// </summary>
-    public class DistributionSnapshot
+    [method: JsonConstructor]    /// <summary>
+                                 /// From io.airlift.stats.Distribution.java (internal class DistributionSnapshot)
+                                 /// </summary>
+    public class DistributionSnapshot(
+        double maxError,
+        double count,
+        double total,
+        long p01,
+        long p05,
+        long p10,
+        long p25,
+        long p50,
+        long p75,
+        long p90,
+        long p95,
+        long p99,
+        long min,
+        long max
+            )
     {
         #region Public Properties
 
-        public double MaxError { get; }
+        public double MaxError { get; } = maxError;
 
-        public double Count { get; }
+        public double Count { get; } = count;
 
-        public double Total { get; }
+        public double Total { get; } = total;
 
-        public long P01 { get; }
+        public long P01 { get; } = p01;
 
-        public long P05 { get; }
+        public long P05 { get; } = p05;
 
-        public long P10 { get; }
+        public long P10 { get; } = p10;
 
-        public long P25 { get; }
+        public long P25 { get; } = p25;
 
-        public long P50 { get; }
+        public long P50 { get; } = p50;
 
-        public long P75 { get; }
+        public long P75 { get; } = p75;
 
-        public long P90 { get; }
+        public long P90 { get; } = p90;
 
-        public long P95 { get; }
+        public long P95 { get; } = p95;
 
-        public long P99 { get; }
+        public long P99 { get; } = p99;
 
-        public long Min { get; }
+        public long Min { get; } = min;
 
-        public long Max { get; }
+        public long Max { get; } = max;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public DistributionSnapshot(
-            double maxError,
-            double count,
-            double total,
-            long p01,
-            long p05,
-            long p10,
-            long p25,
-            long p50,
-            long p75,
-            long p90,
-            long p95,
-            long p99,
-            long min,
-            long max
-            )
-        {
-            this.MaxError = maxError;
-            this.Count = count;
-            this.Total = total;
-            this.P01 = p01;
-            this.P05 = p05;
-            this.P10 = p10;
-            this.P25 = p25;
-            this.P50 = p50;
-            this.P75 = p75;
-            this.P90 = p90;
-            this.P95 = p95;
-            this.P99 = p99;
-            this.Min = min;
-            this.Max = max;
-        }
 
         #endregion
 
@@ -82,20 +65,20 @@ namespace TrinoClient.Model.Execution
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("maxError", this.MaxError)
-                .Add("count", this.Count)
-                .Add("total", this.Total)
-                .Add("p01", this.P01)
-                .Add("p05", this.P05)
-                .Add("p10", this.P10)
-                .Add("p25", this.P25)
-                .Add("p50", this.P50)
-                .Add("p75", this.P75)
-                .Add("p90", this.P90)
-                .Add("p95", this.P95)
-                .Add("p99", this.P99)
-                .Add("min", this.Min)
-                .Add("mix", this.Max)
+                .Add("maxError", MaxError)
+                .Add("count", Count)
+                .Add("total", Total)
+                .Add("p01", P01)
+                .Add("p05", P05)
+                .Add("p10", P10)
+                .Add("p25", P25)
+                .Add("p50", P50)
+                .Add("p75", P75)
+                .Add("p90", P90)
+                .Add("p95", P95)
+                .Add("p99", P99)
+                .Add("min", Min)
+                .Add("mix", Max)
                 .ToString();
         }
 

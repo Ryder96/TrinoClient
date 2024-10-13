@@ -1,47 +1,38 @@
-﻿using TrinoClient.Model.Client;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TrinoClient.Model.Client;
 
 namespace TrinoClient.Model.Statement
 {
-    public class QueryResultsV2 : QueryResults, IQueryData
+    [method: JsonConstructor]
+    public class QueryResultsV2(
+        string id,
+        Uri infoUri,
+        Uri finalUri,
+        Uri nextUri,
+        bool nextUriDone,
+        IEnumerable<Column> columns,
+        IEnumerable<Uri> dataUris,
+        Actions actions,
+        QueryError error
+            ) : QueryResults(id, infoUri, nextUri, columns, error), IQueryData
     {
         #region Public Properties
 
-        public bool NextUriDone { get; }
+        public bool NextUriDone { get; } = nextUriDone;
 
-        public Uri FinalUri { get; }
+        public Uri FinalUri { get; } = finalUri;
 
-        public IEnumerable<Uri> DataUris { get; }
+        public IEnumerable<Uri> DataUris { get; } = dataUris;
 
-        public Actions Actions { get; }
+        public Actions Actions { get; } = actions;
 
         public IEnumerable<List<dynamic>> Data { get; set; }
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public QueryResultsV2(
-            string id,
-            Uri infoUri,
-            Uri finalUri,
-            Uri nextUri,
-            bool nextUriDone,
-            IEnumerable<Column> columns,
-            IEnumerable<Uri> dataUris,
-            Actions actions,
-            QueryError error
-            ) : base(id, infoUri, nextUri, columns, error)
-        {
-            this.FinalUri = finalUri;
-            this.NextUriDone = nextUriDone;
-            this.DataUris = dataUris;
-            this.Actions = actions;
-        }
 
         #endregion
 
@@ -49,16 +40,16 @@ namespace TrinoClient.Model.Statement
 
         public IEnumerable<List<dynamic>> GetData()
         {
-            return this.Data;
+            return Data;
         }
 
         public IEnumerable<string> DataToCsv()
         {
-            if (this.Data != null)
+            if (Data != null)
             {
-                foreach (var Item in this.Data)
+                foreach (var Item in Data)
                 {
-                    StringBuilder SB = new StringBuilder();
+                    StringBuilder SB = new();
 
                     foreach (var Column in Item)
                     {
@@ -66,7 +57,7 @@ namespace TrinoClient.Model.Statement
                     }
 
                     // Remove last comma
-                    SB.Length = SB.Length - 1;
+                    SB.Length--;
 
                     yield return SB.ToString();
                 }

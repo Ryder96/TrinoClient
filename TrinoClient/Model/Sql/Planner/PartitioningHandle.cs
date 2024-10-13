@@ -1,6 +1,6 @@
-﻿using TrinoClient.Model.Connector;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.Connector;
 
 namespace TrinoClient.Model.Sql.Planner
 {
@@ -36,12 +36,12 @@ namespace TrinoClient.Model.Sql.Planner
         [JsonConstructor]
         public PartitioningHandle(ConnectorId connectorId, dynamic transactionHandle, dynamic connectorHandle)
         {
-            this.ConnectorId = connectorId;
-            this.TransactionHandle = transactionHandle;
-            this.ConnectorHandle = connectorHandle ?? throw new ArgumentNullException("connectorHandle");
+            ConnectorId = connectorId;
+            TransactionHandle = transactionHandle;
+            ConnectorHandle = connectorHandle ?? throw new ArgumentNullException(nameof(connectorHandle));
 
             // If connector id is not null, then it will check the second condition
-            ParameterCheck.Check(this.ConnectorId == null || this.TransactionHandle != null, "Transaction handle required when connector id is present.");
+            ParameterCheck.Check(ConnectorId == null || TransactionHandle != null, "Transaction handle required when connector id is present.");
         }
 
         #endregion
@@ -64,13 +64,13 @@ namespace TrinoClient.Model.Sql.Planner
 
         public override string ToString()
         {
-            if (this.ConnectorId != null)
+            if (ConnectorId != null)
             {
-                return $"{this.ConnectorId.ToString()}:{this.ConnectorHandle.ToString()}";
+                return $"{ConnectorId.ToString()}:{ConnectorHandle.ToString()}";
             }
             else
             {
-                return this.ConnectorHandle.ToString();
+                return ConnectorHandle.ToString();
             }
         }
 

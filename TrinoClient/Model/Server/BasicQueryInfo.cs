@@ -1,8 +1,8 @@
-﻿using TrinoClient.Model.Execution;
+﻿using Newtonsoft.Json;
+using System;
+using TrinoClient.Model.Execution;
 using TrinoClient.Model.SPI;
 using TrinoClient.Model.SPI.Memory;
-using Newtonsoft.Json;
-using System;
 
 namespace TrinoClient.Model.Server
 {
@@ -57,16 +57,16 @@ namespace TrinoClient.Model.Server
         {
             ParameterCheck.NotNullOrEmpty(query, "query");
 
-            this.QueryId = queryId ?? throw new ArgumentNullException("queryId");
-            this.Session = session ?? throw new ArgumentNullException("session");
-            this.State = state;
-            this.MemoryPool = memoryPool;
-            this.ErrorType = errorType;
-            this.ErrorCode = errorCode;
-            this.Scheduled = scheduled;
-            this.Self = self ?? throw new ArgumentNullException("self");
-            this.Query = query;
-            this.QueryStats = queryStats ?? throw new ArgumentNullException("queryStats");
+            QueryId = queryId ?? throw new ArgumentNullException(nameof(queryId));
+            Session = session ?? throw new ArgumentNullException(nameof(session));
+            State = state;
+            MemoryPool = memoryPool;
+            ErrorType = errorType;
+            ErrorCode = errorCode;
+            Scheduled = scheduled;
+            Self = self ?? throw new ArgumentNullException(nameof(self));
+            Query = query;
+            QueryStats = queryStats ?? throw new ArgumentNullException(nameof(queryStats));
         }
 
         public BasicQueryInfo(QueryInfo queryInfo) :
@@ -82,8 +82,8 @@ namespace TrinoClient.Model.Server
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("queryId", this.QueryId)
-                .Add("state", this.State.ToString())
+                .Add("queryId", QueryId)
+                .Add("state", State.ToString())
                 .ToString();
         }
 

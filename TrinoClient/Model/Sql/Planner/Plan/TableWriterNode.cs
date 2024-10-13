@@ -33,18 +33,18 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         [JsonConstructor]
         public TableWriterNode(PlanNodeId id, PlanNode source, WriterTarget target, IEnumerable<Symbol> outputs, IEnumerable<Symbol> columns, IEnumerable<string> columnNames, PartitioningScheme partitioningScheme) : base(id)
         {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.Target = target ?? throw new ArgumentNullException("target");
-            this.Columns = columns ?? throw new ArgumentNullException("columns");
-            this.ColumnNames = columnNames ?? throw new ArgumentNullException("columnNames");
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            Target = target ?? throw new ArgumentNullException(nameof(target));
+            Columns = columns ?? throw new ArgumentNullException(nameof(columns));
+            ColumnNames = columnNames ?? throw new ArgumentNullException(nameof(columnNames));
 
-            if (this.Columns.Count() != this.ColumnNames.Count())
+            if (Columns.Count() != ColumnNames.Count())
             {
                 throw new ArgumentException("Columns and column names sizes don't match.");
             }
 
-            this.Outputs = outputs ?? throw new ArgumentNullException("outputs");
-            this.PartitioningScheme = partitioningScheme;
+            Outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
+            PartitioningScheme = partitioningScheme;
         }
 
         #endregion
@@ -53,12 +53,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Outputs;
+            return Outputs;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

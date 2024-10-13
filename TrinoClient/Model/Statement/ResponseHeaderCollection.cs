@@ -36,16 +36,16 @@ namespace TrinoClient.Model.Statement
             // Extract the catalog and schema
             if (headers.TryGetValues(TrinoHeader.TRINO_SET_CATALOG.Value, out Temp))
             {
-                this.Catalog = Temp.FirstOrDefault();
+                Catalog = Temp.FirstOrDefault();
             }
 
             if (headers.TryGetValues(TrinoHeader.TRINO_SET_SCHEMA.Value, out Temp))
             {
-                this.Schema = Temp.FirstOrDefault();
+                Schema = Temp.FirstOrDefault();
             }
 
             // Extract the session properties
-            this.SessionProperties = new Dictionary<string, string>();
+            SessionProperties = new Dictionary<string, string>();
 
             if (headers.TryGetValues(TrinoHeader.TRINO_SET_SESSION.Value, out Temp))
             {
@@ -58,22 +58,22 @@ namespace TrinoClient.Model.Statement
                         continue;
                     }
 
-                    this.SessionProperties.Add(Parts[0], Parts[1]);
+                    SessionProperties.Add(Parts[0], Parts[1]);
                 }
             }
 
             // Extract the reset session properties
             if (headers.TryGetValues(TrinoHeader.TRINO_CLEAR_SESSION.Value, out Temp))
             {
-                this.ResetSessionProperties = new HashSet<string>(Temp);
+                ResetSessionProperties = new HashSet<string>(Temp);
             }
             else
             {
-                this.ResetSessionProperties = new HashSet<string>();
+                ResetSessionProperties = [];
             }
 
             // Extract added prepare
-            this.AddedPrepare = new Dictionary<string, string>();
+            AddedPrepare = new Dictionary<string, string>();
 
             if (headers.TryGetValues(TrinoHeader.TRINO_ADDED_PREPARE.Value, out Temp))
             {
@@ -93,17 +93,17 @@ namespace TrinoClient.Model.Statement
             // Get the deallocated prepared statements
             if (headers.TryGetValues(TrinoHeader.TRINO_DEALLOCATED_PREPARE.Value, out Temp))
             {
-                this.DeallocatedPreparedStatements = new HashSet<string>(Temp.Select(x => WebUtility.UrlDecode(x)));
+                DeallocatedPreparedStatements = new HashSet<string>(Temp.Select(x => WebUtility.UrlDecode(x)));
             }
             else
             {
-                this.DeallocatedPreparedStatements = new HashSet<string>();
+                DeallocatedPreparedStatements = [];
             }
 
             // Get the started transactionid
             if (headers.TryGetValues(TrinoHeader.TRINO_STARTED_TRANSACTION_ID.Value, out Temp))
             {
-                this.StartedTransactionId = Temp.FirstOrDefault();
+                StartedTransactionId = Temp.FirstOrDefault();
             }
 
             // Check is clear transaction id was set

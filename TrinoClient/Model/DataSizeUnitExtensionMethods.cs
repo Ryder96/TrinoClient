@@ -19,27 +19,27 @@ namespace TrinoClient.Model
                     }
                 case DataSizeUnit.KILOBYTE:
                     {
-                        return (1 << 10);
+                        return 1 << 10;
                     }
                 case DataSizeUnit.MEGABYTE:
                     {
-                        return (1 << 20);
+                        return 1 << 20;
                     }
                 case DataSizeUnit.GIGABYTE:
                     {
-                        return (1 << 30);
+                        return 1 << 30;
                     }
                 case DataSizeUnit.TERABYTE:
                     {
-                        return (1 << 40);
+                        return 1 << 40;
                     }
                 case DataSizeUnit.PETABYTE:
                     {
-                        return (1 << 50);
+                        return 1 << 50;
                     }
                 case DataSizeUnit.EXABYTE:
                     {
-                        return (1 << 60);
+                        return 1 << 60;
                     }
                 default:
                     {

@@ -6,7 +6,7 @@ namespace TrinoClient.Model.Execution
     {
         public static bool IsDone(this StageState state)
         {
-            StageState[] DoneStates = new StageState[] { StageState.FINISHED, StageState.CANCELED, StageState.ABORTED, StageState.FAILED };
+            StageState[] DoneStates = [StageState.FINISHED, StageState.CANCELED, StageState.ABORTED, StageState.FAILED];
 
             return DoneStates.Contains(state);
         }

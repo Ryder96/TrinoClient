@@ -6,17 +6,13 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.UnionNode.java
     /// </summary>
-    public class UnionNode : SetOperationNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.UnionNode.java
+                                 /// </summary>
+    public class UnionNode(PlanNodeId id, IEnumerable<PlanNode> sources, IEnumerable<KeyValuePair<Symbol, Symbol>> outputToInputs, IEnumerable<Symbol> outputs) : SetOperationNode(id, sources, outputToInputs, outputs)
     {
-        #region Public Properties
-
-        #endregion
 
         #region Constructors
-
-        [JsonConstructor]
-        public UnionNode(PlanNodeId id, IEnumerable<PlanNode> sources, IEnumerable<KeyValuePair<Symbol, Symbol>> outputToInputs, IEnumerable<Symbol> outputs) : base(id, sources, outputToInputs, outputs)
-        { }
 
         #endregion
     }

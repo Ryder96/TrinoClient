@@ -1,32 +1,27 @@
-﻿using TrinoClient.Model.SPI.Type;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Model.SPI.Predicate
 {
     /// <summary>
     /// From com.facebook.presto.spi.predicate.Domain.java
     /// </summary>
-    public sealed class Domain
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.spi.predicate.Domain.java
+                                 /// </summary>
+    public sealed class Domain(IValueSet values, bool nullAllowed)
     {
         #region Public Properties
 
-        public IValueSet Values { get; }
+        public IValueSet Values { get; } = values ?? throw new ArgumentNullException(nameof(values));
 
-        public bool NullAllowed { get; }
+        public bool NullAllowed { get; } = nullAllowed;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public Domain(IValueSet values, bool nullAllowed)
-        {
-            this.Values = values ?? throw new ArgumentNullException("values");
-            this.NullAllowed = nullAllowed;
-        }
 
         #endregion
 
@@ -34,95 +29,95 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public IType GetPrestoType()
         {
-            return this.Values.GetPrestoType();
+            return Values.GetPrestoType();
         }
 
         public bool IsNone()
         {
-            return this.Values.IsNone() && !this.NullAllowed;
+            return Values.IsNone() && !NullAllowed;
         }
 
         public bool IsAll()
         {
-            return this.Values.IsAll() && this.NullAllowed;
+            return Values.IsAll() && NullAllowed;
         }
 
         public bool IsSingleValue()
         {
-            return !this.NullAllowed && Values.IsSingleValue();
+            return !NullAllowed && Values.IsSingleValue();
         }
 
         public bool IsNullableSingleValue()
         {
-            if (this.NullAllowed)
+            if (NullAllowed)
             {
-                return this.Values.IsNone();
+                return Values.IsNone();
             }
             else
             {
-                return this.Values.IsSingleValue();
+                return Values.IsSingleValue();
             }
         }
 
         public bool IsOnlyNull()
         {
-            return this.Values.IsNone() && this.NullAllowed;
+            return Values.IsNone() && NullAllowed;
         }
 
         public object GetSingleValue()
         {
-            if (!this.IsSingleValue())
+            if (!IsSingleValue())
             {
                 throw new InvalidOperationException("Domain is not a single value.");
             }
 
-            return this.Values.GetSingleValue();
+            return Values.GetSingleValue();
         }
 
         public object GetNullableSingleValue()
         {
-            if (!this.IsNullableSingleValue())
+            if (!IsNullableSingleValue())
             {
                 throw new InvalidOperationException("Domain is not a nullable single value.");
             }
 
-            if (this.NullAllowed)
+            if (NullAllowed)
             {
                 return null;
             }
             else
             {
-                return this.Values.GetSingleValue();
+                return Values.GetSingleValue();
             }
         }
 
         public bool IncludesNullableValue(object value)
         {
-            return (value == null ? this.NullAllowed : this.Values.ContainsValue(value));
+            return value == null ? NullAllowed : Values.ContainsValue(value);
         }
 
         public bool Overlaps(Domain other)
         {
-            this.CheckCompatibility(other);
-            return !this.Intersect(other).IsNone();
+            CheckCompatibility(other);
+            return !Intersect(other).IsNone();
         }
 
         public bool Contains(Domain other)
         {
-            this.CheckCompatibility(other);
-            return this.Union(other).Equals(this);
+            CheckCompatibility(other);
+            return Union(other).Equals(this);
         }
 
         public Domain Intersect(Domain other)
         {
-            this.CheckCompatibility(other);
-            return new Domain(this.Values.Intersect(other.Values), this.NullAllowed && other.NullAllowed);
+            CheckCompatibility(other);
+            return new Domain(Values.Intersect(other.Values), NullAllowed && other.NullAllowed);
         }
 
         public Domain Union(Domain other)
         {
-            this.CheckCompatibility(other);
-            return new Domain(this.Values.Union(other.Values), this.NullAllowed || other.NullAllowed);
+            CheckCompatibility(other);
+            return new Domain(Values.Union(other.Values), NullAllowed || other.NullAllowed);
         }
 
         public static Domain Union(IEnumerable<Domain> domains)
@@ -146,23 +141,23 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public Domain Complement()
         {
-            return new Domain(this.Values.Complement(), !this.NullAllowed);
+            return new Domain(Values.Complement(), !NullAllowed);
         }
 
         public Domain Substract(Domain other)
         {
-            this.CheckCompatibility(other);
-            return new Domain(this.Values.Subtract(other.Values), this.NullAllowed && !other.NullAllowed);
+            CheckCompatibility(other);
+            return new Domain(Values.Subtract(other.Values), NullAllowed && !other.NullAllowed);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Values, this.NullAllowed);
+            return Hashing.Hash(Values, NullAllowed);
         }
 
         public string ToString(IConnectorSession session)
         {
-            return $"[ {(this.NullAllowed ? "NULL, " : "")}{this.Values.ToString(session)} ]";
+            return $"[ {(NullAllowed ? "NULL, " : "")}{Values.ToString(session)} ]";
         }
 
         public override bool Equals(object obj)
@@ -172,15 +167,15 @@ namespace TrinoClient.Model.SPI.Predicate
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             Domain Other = (Domain)obj;
 
-            return Object.Equals(this.Values, Other.Values) &&
-                    this.NullAllowed == Other.NullAllowed;
+            return Object.Equals(Values, Other.Values) &&
+                    NullAllowed == Other.NullAllowed;
         }
 
         /// <summary>
@@ -189,7 +184,7 @@ namespace TrinoClient.Model.SPI.Predicate
         /// <returns></returns>
         public Domain Simplify()
         {
-            IValueSet SimplifiedValueSet = this.Values.GetValuesProcessor().Transform<IValueSet>(ranges =>
+            IValueSet SimplifiedValueSet = Values.GetValuesProcessor().Transform<IValueSet>(ranges =>
             {
                 if (ranges.GetOrderedRanges().Count() <= 32)
                 {
@@ -205,7 +200,7 @@ namespace TrinoClient.Model.SPI.Predicate
                     return null;
                 }
 
-                return ValueSet.All(this.Values.GetPrestoType());
+                return ValueSet.All(Values.GetPrestoType());
             },
             allOrNone =>
             {
@@ -214,10 +209,10 @@ namespace TrinoClient.Model.SPI.Predicate
 
             if (SimplifiedValueSet == null)
             {
-                SimplifiedValueSet = this.Values;
+                SimplifiedValueSet = Values;
             }
 
-            return Domain.Create(SimplifiedValueSet, this.NullAllowed);
+            return Domain.Create(SimplifiedValueSet, NullAllowed);
         }
 
         #endregion
@@ -275,14 +270,14 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public void CheckCompatibility(Domain domain)
         {
-            if (!this.GetPrestoType().Equals(domain.GetPrestoType()))
+            if (!GetPrestoType().Equals(domain.GetPrestoType()))
             {
-                throw new ArgumentException($"Mismatched domain types: {this.GetPrestoType()} vs {domain.GetPrestoType()}.");
+                throw new ArgumentException($"Mismatched domain types: {GetPrestoType()} vs {domain.GetPrestoType()}.");
             }
 
-            if (this.Values.GetType() != domain.Values.GetType())
+            if (Values.GetType() != domain.Values.GetType())
             {
-                throw new ArgumentException($"Mismatched domain value set types: {this.Values.GetType().Name} vs {domain.Values.GetType().Name}.");
+                throw new ArgumentException($"Mismatched domain value set types: {Values.GetType().Name} vs {domain.Values.GetType().Name}.");
             }
         }
 

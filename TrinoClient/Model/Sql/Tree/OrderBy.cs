@@ -7,11 +7,14 @@ namespace TrinoClient.Model.Sql.Tree
     /// <summary>
     /// From com.facebook.presto.sql.tree.OrderBy.java
     /// </summary>
-    public class OrderBy : Node
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.tree.OrderBy.java
+                                 /// </summary>
+    public class OrderBy(NodeLocation location, IEnumerable<SortItem> sortItems) : Node(location)
     {
         #region Public Properties
 
-        public IEnumerable<SortItem> SortItems { get; }
+        public IEnumerable<SortItem> SortItems { get; } = sortItems ?? throw new ArgumentNullException(nameof(sortItems));
 
         #endregion
 
@@ -19,12 +22,6 @@ namespace TrinoClient.Model.Sql.Tree
 
         public OrderBy(IEnumerable<SortItem> sortItems) : this(null, sortItems)
         { }
-
-        [JsonConstructor]
-        public OrderBy(NodeLocation location, IEnumerable<SortItem> sortItems) : base(location)
-        {
-            this.SortItems = sortItems ?? throw new ArgumentNullException("sortItems");
-        }
 
         #endregion
 
@@ -37,29 +34,29 @@ namespace TrinoClient.Model.Sql.Tree
                 return true;
             }
 
-            if ((obj == null) || (this.GetType() != obj.GetType()))
+            if ((obj == null) || (GetType() != obj.GetType()))
             {
                 return false;
             }
 
             OrderBy Other = (OrderBy)obj;
-            return Object.Equals(this.SortItems, Other.SortItems);
+            return Object.Equals(SortItems, Other.SortItems);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.SortItems);
+            return Hashing.Hash(SortItems);
         }
 
         public override IEnumerable<Node> GetChildren()
         {
-            return this.SortItems;
+            return SortItems;
         }
 
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("sortItems", this.SortItems)
+                .Add("sortItems", SortItems)
                 .ToString();
         }
 

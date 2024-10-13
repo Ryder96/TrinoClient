@@ -1,10 +1,10 @@
-﻿using TrinoClient.Model.Client;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using TrinoClient.Model.Client;
 using TrinoClient.Model.SPI;
 using TrinoClient.Model.SPI.Memory;
 using TrinoClient.Model.Transaction;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 
 namespace TrinoClient.Model.Execution
 {
@@ -123,37 +123,37 @@ namespace TrinoClient.Model.Execution
             string resourceGroupName
             )
         {
-            if (String.IsNullOrEmpty(query))
+            if (string.IsNullOrEmpty(query))
             {
-                throw new ArgumentNullException("query");
+                throw new ArgumentNullException(nameof(query));
             }
 
-            this.QueryId = queryId ?? throw new ArgumentNullException("queryId");
-            this.Session = session ?? throw new ArgumentNullException("session");
-            this.State = state;
-            this.MemoryPool = memoryPool ?? throw new ArgumentNullException("memoryPool");
-            this.Scheduled = scheduled;
-            this.Self = self ?? throw new ArgumentNullException("self");
-            this.FieldNames = fieldNames ?? throw new ArgumentNullException("fieldNames");
-            this.Query = query;
-            this.QueryStats = queryStats ?? throw new ArgumentNullException("queryStats");
-            this.SetCatalog = setCatalog;
-            this.SetSchema = setSchema;
-            this.SetSessionProperties = setSessionProperties ?? throw new ArgumentNullException("setSessionProperties");
-            this.ResetSessionProperties = resetSessionProperties ?? throw new ArgumentNullException("resetSessionProperties");
-            this.AddedPreparedStatements = addedPreparedStatements ?? throw new ArgumentNullException("addedPreparedStatements");
-            this.DeallocatedPreparedStatements = deallocatedPreparedStatemetns; // ?? throw new ArgumentNullException("deallocatedPreparedStatements");
-            this.StartedTransactionId = startedTransactionId;
-            this.ClearTransactionId = clearTransactionId;
-            this.UpdateType = updateType;
-            this.OutputStage = outputStage;
-            this.FailureInfo = failureInfo;
-            this.ErrorType = errorCode == null ? ErrorType.NONE : errorCode.Type;
-            this.ErrorCode = errorCode;
-            this.Inputs = inputs ?? throw new ArgumentNullException("inputs");
-            this.Output = output;
-            this.CompleteInfo = completeInfo;
-            this.ResourceGroupName = resourceGroupName;
+            QueryId = queryId ?? throw new ArgumentNullException(nameof(queryId));
+            Session = session ?? throw new ArgumentNullException(nameof(session));
+            State = state;
+            MemoryPool = memoryPool ?? throw new ArgumentNullException(nameof(memoryPool));
+            Scheduled = scheduled;
+            Self = self ?? throw new ArgumentNullException(nameof(self));
+            FieldNames = fieldNames ?? throw new ArgumentNullException(nameof(fieldNames));
+            Query = query;
+            QueryStats = queryStats ?? throw new ArgumentNullException(nameof(queryStats));
+            SetCatalog = setCatalog;
+            SetSchema = setSchema;
+            SetSessionProperties = setSessionProperties ?? throw new ArgumentNullException(nameof(setSessionProperties));
+            ResetSessionProperties = resetSessionProperties ?? throw new ArgumentNullException(nameof(resetSessionProperties));
+            AddedPreparedStatements = addedPreparedStatements ?? throw new ArgumentNullException(nameof(addedPreparedStatements));
+            DeallocatedPreparedStatements = deallocatedPreparedStatemetns; // ?? throw new ArgumentNullException("deallocatedPreparedStatements");
+            StartedTransactionId = startedTransactionId;
+            ClearTransactionId = clearTransactionId;
+            UpdateType = updateType;
+            OutputStage = outputStage;
+            FailureInfo = failureInfo;
+            ErrorType = errorCode == null ? ErrorType.NONE : errorCode.Type;
+            ErrorCode = errorCode;
+            Inputs = inputs ?? throw new ArgumentNullException(nameof(inputs));
+            Output = output;
+            CompleteInfo = completeInfo;
+            ResourceGroupName = resourceGroupName;
         }
 
         #endregion
@@ -163,9 +163,9 @@ namespace TrinoClient.Model.Execution
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("queryId", this.QueryId)
-                .Add("state", this.State)
-                .Add("fieldNames", this.FieldNames)
+                .Add("queryId", QueryId)
+                .Add("state", State)
+                .Add("fieldNames", FieldNames)
                 .ToString();
         }
 

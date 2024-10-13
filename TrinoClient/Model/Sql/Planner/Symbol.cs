@@ -1,6 +1,6 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Sql.Planner
 {
@@ -23,7 +23,7 @@ namespace TrinoClient.Model.Sql.Planner
         {
             ParameterCheck.NotNullOrEmpty(name, "name");
 
-            this.Name = name;
+            Name = name;
         }
 
         #endregion
@@ -32,12 +32,12 @@ namespace TrinoClient.Model.Sql.Planner
 
         public override string ToString()
         {
-            return this.Name;
+            return Name;
         }
 
         public int CompareTo(Symbol other)
         {
-            return this.Name.CompareTo(other.Name);
+            return Name.CompareTo(other.Name);
         }
 
         #endregion

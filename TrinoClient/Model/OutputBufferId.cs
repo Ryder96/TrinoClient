@@ -1,6 +1,6 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model
 {
@@ -29,20 +29,20 @@ namespace TrinoClient.Model
 
             if (Temp < 0)
             {
-                throw new ArgumentOutOfRangeException("id", "The id cannot be less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(id), "The id cannot be less than 0.");
             }
 
-            this.Id = Temp;
+            Id = Temp;
         }
 
         public OutputBufferId(int id)
         {
             if (id < 0)
             {
-                throw new ArgumentOutOfRangeException("id", "The id cannot be less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(id), "The id cannot be less than 0.");
             }
 
-            this.Id = id;
+            Id = id;
         }
 
         #endregion
@@ -51,7 +51,7 @@ namespace TrinoClient.Model
 
         public override string ToString()
         {
-            return this.Id.ToString();
+            return Id.ToString();
         }
 
         #endregion

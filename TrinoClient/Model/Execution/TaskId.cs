@@ -1,7 +1,7 @@
-﻿using TrinoClient.Model.SPI;
-using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Model.SPI;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Execution
 {
@@ -23,26 +23,26 @@ namespace TrinoClient.Model.Execution
         {
             if (id < 0)
             {
-                throw new ArgumentOutOfRangeException("id", "The id cannot be less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(id), "The id cannot be less than 0.");
             }
 
-            this.FullId = $"{queryId}.{stageId}.{id}";
+            FullId = $"{queryId}.{stageId}.{id}";
         }
 
         public TaskId(StageId stageId, int id)
         {
             if (id < 0)
             {
-                throw new ArgumentOutOfRangeException("id", "The id cannot be less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(id), "The id cannot be less than 0.");
             }
 
-            this.FullId = $"{stageId.QueryId.Id}.{stageId.Id}.{id}";
+            FullId = $"{stageId.QueryId.Id}.{stageId.Id}.{id}";
         }
 
         [JsonConstructor]
         public TaskId(string fullId)
         {
-            this.FullId = fullId;
+            FullId = fullId;
         }
 
         #endregion
@@ -51,22 +51,22 @@ namespace TrinoClient.Model.Execution
 
         public QueryId GetQueryId()
         {
-            return new QueryId(this.FullId.Split('.')[0]);
+            return new QueryId(FullId.Split('.')[0]);
         }
 
         public StageId GetStageId()
         {
-            return new StageId(this.FullId.Split('.')[1]);
+            return new StageId(FullId.Split('.')[1]);
         }
 
         public int GetId()
         {
-            return Int32.Parse(this.FullId.Split('.')[2]);
+            return int.Parse(FullId.Split('.')[2]);
         }
 
         public override string ToString()
         {
-            return this.FullId;
+            return FullId;
         }
 
         #endregion

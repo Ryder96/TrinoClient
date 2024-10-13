@@ -1,9 +1,9 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.SPI.Predicate
 {
@@ -17,9 +17,9 @@ namespace TrinoClient.Model.SPI.Predicate
     {
         #region Private Fields
 
-        private static readonly TupleDomain<T> NONE = new TupleDomain<T>(null);
+        private static readonly TupleDomain<T> NONE = new(null);
 
-        private static readonly TupleDomain<T> ALL = new TupleDomain<T>(new Dictionary<T, Domain>());
+        private static readonly TupleDomain<T> ALL = new(new Dictionary<T, Domain>());
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace TrinoClient.Model.SPI.Predicate
         {
             get
             {
-                return this.Domains.Select(x => new ColumnDomain<T>(x.Key, x.Value));
+                return Domains.Select(x => new ColumnDomain<T>(x.Key, x.Value));
             }
         }
 
@@ -56,11 +56,11 @@ namespace TrinoClient.Model.SPI.Predicate
         {
             if (domains == null || ContainsNoneDomain(domains))
             {
-                this.Domains = null;
+                Domains = null;
             }
             else
             {
-                this.Domains = NormalizeAndCopy(domains);
+                Domains = NormalizeAndCopy(domains);
             }
         }
 
@@ -122,7 +122,7 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public static TupleDomain<T> ColumnWiseUnion(TupleDomain<T> first, TupleDomain<T> second, params TupleDomain<T>[] rest)
         {
-            List<TupleDomain<T>> Domains = new List<TupleDomain<T>>();
+            List<TupleDomain<T>> Domains = [];
 
             if (first != null)
             {
@@ -173,7 +173,7 @@ namespace TrinoClient.Model.SPI.Predicate
             }
 
             // gather all common columns
-            HashSet<T> CommonColumns = new HashSet<T>();
+            HashSet<T> CommonColumns = [];
 
             // first, find a non-none domain
             bool Found = false;
@@ -230,12 +230,12 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public bool IsAll()
         {
-            return this.Domains != null && this.Domains.Count == 0;
+            return Domains != null && Domains.Count == 0;
         }
 
         public bool IsNone()
         {
-            return this.Domains == null;
+            return Domains == null;
         }
 
         /// <summary>
@@ -247,12 +247,12 @@ namespace TrinoClient.Model.SPI.Predicate
         /// <returns></returns>
         public TupleDomain<T> Intersect(TupleDomain<T> other)
         {
-            if (this.IsNone() || other.IsNone())
+            if (IsNone() || other.IsNone())
             {
                 return None();
             }
 
-            IDictionary<T, Domain> Intersected = this.Domains.ToDictionary(x => x.Key, x => x.Value);
+            IDictionary<T, Domain> Intersected = Domains.ToDictionary(x => x.Key, x => x.Value);
 
             foreach (KeyValuePair<T, Domain> Item in other.Domains)
             {
@@ -277,7 +277,7 @@ namespace TrinoClient.Model.SPI.Predicate
         /// <returns></returns>
         public bool Overlaps(TupleDomain<T> other)
         {
-            return !this.Intersect(other).IsNone();
+            return !Intersect(other).IsNone();
         }
 
         /// <summary>
@@ -298,36 +298,36 @@ namespace TrinoClient.Model.SPI.Predicate
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             TupleDomain<T> Other = (TupleDomain<T>)obj;
 
-            return Object.Equals(this.Domains, Other.Domains);
+            return Object.Equals(Domains, Other.Domains);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Domains);
+            return Hashing.Hash(Domains);
         }
 
         public string ToString(IConnectorSession session)
         {
-            StringBuilder Buffer = new StringBuilder("TupleDomain:");
+            StringBuilder Buffer = new("TupleDomain:");
 
-            if (this.IsAll())
+            if (IsAll())
             {
                 Buffer.Append("ALL");
             }
-            else if (this.IsNone())
+            else if (IsNone())
             {
                 Buffer.Append("NONE");
             }
             else
             {
-                Buffer.Append(this.Domains.ToDictionary(x => x.Key, x => x.Value.ToString(session)));
+                Buffer.Append(Domains.ToDictionary(x => x.Key, x => x.Value.ToString(session)));
             }
 
             return Buffer.ToString();
@@ -335,14 +335,14 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public TupleDomain<U> Transform<U>(Func<T, U> function)
         {
-            if (this.Domains == null)
+            if (Domains == null)
             {
                 return TupleDomain<U>.None();
             }
 
             IDictionary<U, Domain> Result = new Dictionary<U, Domain>();
 
-            foreach (KeyValuePair<T, Domain> Entry in this.Domains)
+            foreach (KeyValuePair<T, Domain> Entry in Domains)
             {
                 U Key = function.Invoke(Entry.Key);
 
@@ -364,12 +364,12 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public TupleDomain<T> Simplify()
         {
-            if (this.IsNone())
+            if (IsNone())
             {
                 return this;
             }
 
-            IDictionary<T, Domain> Simplified = this.Domains.ToDictionary(x => x.Key, x => x.Value.Simplify());
+            IDictionary<T, Domain> Simplified = Domains.ToDictionary(x => x.Key, x => x.Value.Simplify());
 
             return WithColumnDomains(Simplified);
         }

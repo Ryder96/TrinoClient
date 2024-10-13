@@ -1,8 +1,8 @@
-﻿using TrinoClient.Model.Execution.Scheduler;
+﻿using Newtonsoft.Json;
+using System;
+using TrinoClient.Model.Execution.Scheduler;
 using TrinoClient.Model.Sql.Planner.Plan;
 using TrinoClient.Serialization;
-using Newtonsoft.Json;
-using System;
 
 namespace TrinoClient.Model.Operator
 {
@@ -181,42 +181,42 @@ namespace TrinoClient.Model.Operator
             ParameterCheck.OutOfRange(inputPositions >= 0, "inputPositions", "Input positions cannot be negative.");
             ParameterCheck.OutOfRange(outputPositions >= 0, "outputPositions", "Output positions cannot be negative.");
 
-            this.OperatorId = operatorId;
-            this.PlanNodeId = planNodeId ?? throw new ArgumentNullException("planNodeId");
-            this.OperatorType = operatorType;
+            OperatorId = operatorId;
+            PlanNodeId = planNodeId ?? throw new ArgumentNullException(nameof(planNodeId));
+            OperatorType = operatorType;
 
-            this.TotalDrivers = totalDrivers;
+            TotalDrivers = totalDrivers;
 
-            this.AddInputCalls = addInputCalls;
-            this.AddInputWall = addInputWall;
-            this.AddInputCpu = addInputCpu;
-            this.AddInputUser = addInputUser;
-            this.InputDataSize = inputDataSize ?? throw new ArgumentNullException("inputDataSize");
-            this.InputPositions = inputPositions;
-            this.SumSquaredInputPositions = sumSquaredInputPositions;
+            AddInputCalls = addInputCalls;
+            AddInputWall = addInputWall;
+            AddInputCpu = addInputCpu;
+            AddInputUser = addInputUser;
+            InputDataSize = inputDataSize ?? throw new ArgumentNullException(nameof(inputDataSize));
+            InputPositions = inputPositions;
+            SumSquaredInputPositions = sumSquaredInputPositions;
 
-            this.GetOutputCalls = getOuputCalls;
-            this.GetOutputWall = getOutputWall;
-            this.GetOutputCpu = getOutputCpu;
-            this.GetOutputUser = getOutputUser;
-            this.OutputDataSize = outputDataSize ?? throw new ArgumentNullException("outputDataSize");
-            this.OutputPositions = outputPositions;
+            GetOutputCalls = getOuputCalls;
+            GetOutputWall = getOutputWall;
+            GetOutputCpu = getOutputCpu;
+            GetOutputUser = getOutputUser;
+            OutputDataSize = outputDataSize ?? throw new ArgumentNullException(nameof(outputDataSize));
+            OutputPositions = outputPositions;
 
-            this.PhysicalWrittenDataSize = physicalWrittenDataSize ?? throw new ArgumentNullException("physicalWrittenDataSize");
+            PhysicalWrittenDataSize = physicalWrittenDataSize ?? throw new ArgumentNullException(nameof(physicalWrittenDataSize));
 
-            this.BlockedWall = blockedWall;
+            BlockedWall = blockedWall;
 
-            this.FinishCalls = finishCalls;
-            this.FinishWall = finishWall;
-            this.FinishCpu = finishCpu;
-            this.FinishUser = finishUser;
+            FinishCalls = finishCalls;
+            FinishWall = finishWall;
+            FinishCpu = finishCpu;
+            FinishUser = finishUser;
 
-            this.UserMemoryReservation = userMemoryReservation ?? throw new ArgumentNullException("userMemoryReservation");
-            this.RevocableMemoryReservation = revocableMemoryReservation ?? throw new ArgumentNullException("revocableMemoryReservation");
-            this.SystemMemoryReservation = systemMemoryReservation ?? throw new ArgumentNullException("systemMemoryReservation");
-            this.BlockedReason = blockedReason;
+            UserMemoryReservation = userMemoryReservation ?? throw new ArgumentNullException(nameof(userMemoryReservation));
+            RevocableMemoryReservation = revocableMemoryReservation ?? throw new ArgumentNullException(nameof(revocableMemoryReservation));
+            SystemMemoryReservation = systemMemoryReservation ?? throw new ArgumentNullException(nameof(systemMemoryReservation));
+            BlockedReason = blockedReason;
 
-            this.Info = info;
+            Info = info;
         }
 
         #endregion
@@ -226,35 +226,35 @@ namespace TrinoClient.Model.Operator
         public OperatorStats Summarize()
         {
             return new OperatorStats(
-                    this.PipelineId,
-                    this.OperatorId,
-                    this.PlanNodeId,
-                    this.OperatorType,
-                    this.TotalDrivers,
-                    this.AddInputCalls,
-                    this.AddInputWall,
-                    this.AddInputCpu,
-                    this.AddInputUser,
-                    this.InputDataSize,
-                    this.InputPositions,
-                    this.SumSquaredInputPositions,
-                    this.GetOutputCalls,
-                    this.GetOutputWall,
-                    this.GetOutputCpu,
-                    this.GetOutputUser,
-                    this.OutputDataSize,
-                    this.OutputPositions,
-                    this.PhysicalWrittenDataSize,
-                    this.BlockedWall,
-                    this.FinishCalls,
-                    this.FinishWall,
-                    this.FinishCpu,
-                    this.FinishUser,
-                    this.UserMemoryReservation,
-                    this.RevocableMemoryReservation,
-                    this.SystemMemoryReservation,
-                    this.BlockedReason,
-                    (this.Info != null /* && this.Info.IsFinal() */) ? this.Info : null);
+                    PipelineId,
+                    OperatorId,
+                    PlanNodeId,
+                    OperatorType,
+                    TotalDrivers,
+                    AddInputCalls,
+                    AddInputWall,
+                    AddInputCpu,
+                    AddInputUser,
+                    InputDataSize,
+                    InputPositions,
+                    SumSquaredInputPositions,
+                    GetOutputCalls,
+                    GetOutputWall,
+                    GetOutputCpu,
+                    GetOutputUser,
+                    OutputDataSize,
+                    OutputPositions,
+                    PhysicalWrittenDataSize,
+                    BlockedWall,
+                    FinishCalls,
+                    FinishWall,
+                    FinishCpu,
+                    FinishUser,
+                    UserMemoryReservation,
+                    RevocableMemoryReservation,
+                    SystemMemoryReservation,
+                    BlockedReason,
+                    (Info != null /* && this.Info.IsFinal() */) ? Info : null);
         }
 
         #endregion

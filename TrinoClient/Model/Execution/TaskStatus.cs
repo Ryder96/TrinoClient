@@ -27,7 +27,7 @@ namespace TrinoClient.Model.Execution
         /// A value larger than any valid value. This value can be used to create
         /// a final local task that is always newer than any remote task.
         /// </summary>
-        private static readonly long MAX_VERSION = Int64.MaxValue;
+        private static readonly long MAX_VERSION = long.MaxValue;
 
         #endregion
 
@@ -87,21 +87,21 @@ namespace TrinoClient.Model.Execution
             ParameterCheck.OutOfRange(queuedPartitionDrivers >= 0, "queuedPartitionDrivers", "The queued partition drivers cannot be less than 0.");
             ParameterCheck.OutOfRange(runningPartitionDrivers >= 0, "runningPartitionDrivers", "The running partition drivers cannot be less than 0.");
 
-            this.TaskId = taskId ?? throw new ArgumentNullException("taskId");
-            this.TaskInstanceId = taskInstanceId;
-            this.Version = version;
-            this.State = state;
-            this.Self = self ?? throw new ArgumentNullException("self");
-            this.NodeId = nodeId;
-            this.CompletedDriverGroups = completedDriverGroups ?? throw new ArgumentNullException("completedDriverGroups");
+            TaskId = taskId ?? throw new ArgumentNullException(nameof(taskId));
+            TaskInstanceId = taskInstanceId;
+            Version = version;
+            State = state;
+            Self = self ?? throw new ArgumentNullException(nameof(self));
+            NodeId = nodeId;
+            CompletedDriverGroups = completedDriverGroups ?? throw new ArgumentNullException(nameof(completedDriverGroups));
 
-            this.QueuedPartitionedDrivers = queuedPartitionDrivers;
-            this.RunningPartitionedDrivers = runningPartitionDrivers;
-            this.OutputBufferOverutilized = outputBufferOverutilized;
-            this.PhysicalWrittenDataSize = physicalWrittenDataSize ?? throw new ArgumentNullException("physicalWrittenDataSize");
-            this.MemoryReservation = memoryReservation ?? throw new ArgumentNullException("memoryReservation");
-            this.SystemMemoryReservation = systemMemoryReservation ?? throw new ArgumentNullException("systemMemoryReservation");
-            this.Failures = failures ?? throw new ArgumentNullException("failures");
+            QueuedPartitionedDrivers = queuedPartitionDrivers;
+            RunningPartitionedDrivers = runningPartitionDrivers;
+            OutputBufferOverutilized = outputBufferOverutilized;
+            PhysicalWrittenDataSize = physicalWrittenDataSize ?? throw new ArgumentNullException(nameof(physicalWrittenDataSize));
+            MemoryReservation = memoryReservation ?? throw new ArgumentNullException(nameof(memoryReservation));
+            SystemMemoryReservation = systemMemoryReservation ?? throw new ArgumentNullException(nameof(systemMemoryReservation));
+            Failures = failures ?? throw new ArgumentNullException(nameof(failures));
         }
 
         #endregion
@@ -111,8 +111,8 @@ namespace TrinoClient.Model.Execution
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("taskId", this.TaskId)
-                .Add("state", this.State)
+                .Add("taskId", TaskId)
+                .Add("state", State)
                 .ToString();
         }
 
@@ -125,8 +125,8 @@ namespace TrinoClient.Model.Execution
                 TaskState.PLANNED,
                 location,
                  Guid.Parse(nodeId),
-                 new HashSet<Lifespan>(),
-                 new ExecutionFailureInfo[0],
+                 [],
+                 [],
                  0,
                  0,
                  false,

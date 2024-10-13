@@ -62,16 +62,16 @@ namespace TrinoClient.Model.Client
             QueryError error
             )
         {
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
-                throw new ArgumentNullException("id");
+                throw new ArgumentNullException(nameof(id));
             }
 
-            this.Id = id;
-            this.InfoUri = infoUri ?? throw new ArgumentNullException("infoUri");
-            this.NextUri = nextUri;
-            this.Columns = columns;
-            this.Error = error;
+            Id = id;
+            InfoUri = infoUri ?? throw new ArgumentNullException(nameof(infoUri));
+            NextUri = nextUri;
+            Columns = columns;
+            Error = error;
         }
 
         #endregion

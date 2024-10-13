@@ -18,7 +18,7 @@ namespace TrinoClient.Model.SPI.Block
 
         private int _InitialSliceOutputSize;
 
-        private bool[] _ValueIsNull = new bool[0];
+        private bool[] _ValueIsNull = [];
 
         private int[] _Offsets = new int[1];
 
@@ -42,13 +42,13 @@ namespace TrinoClient.Model.SPI.Block
 
         public VariableWidthBlockBuilder(BlockBuilderStatus blockBuilderStatus, int expectedEntries, int expectedBytes)
         {
-            this.BlockBuilderStatus = blockBuilderStatus;
+            BlockBuilderStatus = blockBuilderStatus;
 
-            this._InitialEntryCount = expectedEntries;
+            _InitialEntryCount = expectedEntries;
 
-            this._InitialSliceOutputSize = Math.Min(expectedBytes, BlockUtil.MAX_ARRAY_SIZE);
+            _InitialSliceOutputSize = Math.Min(expectedBytes, BlockUtil.MAX_ARRAY_SIZE);
 
-            this.UpdateArraysDataSize();
+            UpdateArraysDataSize();
         }
 
         #endregion
@@ -262,21 +262,21 @@ namespace TrinoClient.Model.SPI.Block
 
         private void UpdateArraysDataSize()
         {
-            this._ArraysRetainedSizeInBytes =  Marshal.SizeOf(this._ValueIsNull) + Marshal.SizeOf(this._Offsets);
+            _ArraysRetainedSizeInBytes = Marshal.SizeOf(_ValueIsNull) + Marshal.SizeOf(_Offsets);
         }
 
         private void InitializeCapacity()
         {
-            if (this.PositionCount != 0 || this._CurrentEntrySize != 0)
+            if (PositionCount != 0 || _CurrentEntrySize != 0)
             {
-                throw new InvalidOperationException($"{this.GetType().Name} was used before initialization");
+                throw new InvalidOperationException($"{GetType().Name} was used before initialization");
             }
 
-            this._Initialized = true;
-            this._ValueIsNull = new bool[this._InitialEntryCount];
-            this._Offsets = new int[this._InitialEntryCount + 1];
-            this._SliceOutput = null; // new DynamicSliceOutput(this._InitialSliceOutputSize);
-            this.UpdateArraysDataSize();
+            _Initialized = true;
+            _ValueIsNull = new bool[_InitialEntryCount];
+            _Offsets = new int[_InitialEntryCount + 1];
+            _SliceOutput = null; // new DynamicSliceOutput(this._InitialSliceOutputSize);
+            UpdateArraysDataSize();
         }
 
         #endregion

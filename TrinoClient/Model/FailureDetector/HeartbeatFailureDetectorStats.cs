@@ -1,8 +1,8 @@
-﻿using TrinoClient.Model.Client;
-using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.Client;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.FailureDetector
 {
@@ -17,9 +17,9 @@ namespace TrinoClient.Model.FailureDetector
     {
         #region Private Fields
 
-        private readonly DecayCounter _RecentRequests = new DecayCounter(ExponentialDecay.OneMinute());
-        private readonly DecayCounter _RecentFailures = new DecayCounter(ExponentialDecay.OneMinute());
-        private readonly DecayCounter _RecentSuccesses = new DecayCounter(ExponentialDecay.OneMinute());
+        private readonly DecayCounter _RecentRequests = new(ExponentialDecay.OneMinute());
+        private readonly DecayCounter _RecentFailures = new(ExponentialDecay.OneMinute());
+        private readonly DecayCounter _RecentSuccesses = new(ExponentialDecay.OneMinute());
 
         #endregion
 
@@ -106,7 +106,7 @@ namespace TrinoClient.Model.FailureDetector
         [JsonConstructor]
         public HeartbeatFailureDetectorStats(Uri uri) : this()
         {
-            this.Uri = uri;
+            Uri = uri;
         }
 
         #endregion
@@ -115,14 +115,14 @@ namespace TrinoClient.Model.FailureDetector
 
         public void RecordStart()
         {
-            this._RecentRequests.Add(1);
-            this.LastRequestTime = new DateTime();
+            _RecentRequests.Add(1);
+            LastRequestTime = new DateTime();
         }
 
         public void RecordSuccess()
         {
-            this._RecentSuccesses.Add(1);
-            this.LastResponseTime = new DateTime();
+            _RecentSuccesses.Add(1);
+            LastResponseTime = new DateTime();
         }
 
         #endregion

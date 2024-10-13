@@ -7,24 +7,19 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.ProjectNode.java
     /// </summary>
-    public class ProjectNode : PlanNode
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.planner.plan.ProjectNode.java
+                                 /// </summary>
+    public class ProjectNode(PlanNodeId id, PlanNode source, Assignments assignments) : PlanNode(id)
     {
         #region Public Properties
 
-        public PlanNode Source { get; }
+        public PlanNode Source { get; } = source ?? throw new ArgumentNullException(nameof(source));
 
-        public Assignments Assignments { get; }
+        public Assignments Assignments { get; } = assignments ?? throw new ArgumentNullException(nameof(assignments));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public ProjectNode(PlanNodeId id, PlanNode source, Assignments assignments) : base(id)
-        {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.Assignments = assignments ?? throw new ArgumentNullException("assignments");
-        }
 
         #endregion
 
@@ -32,12 +27,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Assignments.GetOutputs();
+            return Assignments.GetOutputs();
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

@@ -1,7 +1,7 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Text.RegularExpressions;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.SPI
 {
@@ -13,7 +13,7 @@ namespace TrinoClient.Model.SPI
     {
         #region Private Fields
 
-        private static readonly Regex ID_PATTERN = new Regex("[_a-z0-9]+");
+        private static readonly Regex ID_PATTERN = new("[_a-z0-9]+");
 
         #endregion
 
@@ -30,11 +30,11 @@ namespace TrinoClient.Model.SPI
         {
             if (ValidateId(id))
             {
-                this.Id = id;
+                Id = id;
             }
             else
             {
-                throw new ArgumentException("The provided id is invalid.", "id");
+                throw new ArgumentException("The provided id is invalid.", nameof(id));
             }
         }
 
@@ -44,7 +44,7 @@ namespace TrinoClient.Model.SPI
 
         public override string ToString()
         {
-            return this.Id;
+            return Id;
         }
 
         public static bool ValidateId(string id)

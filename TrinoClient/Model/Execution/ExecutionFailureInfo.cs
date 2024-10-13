@@ -1,8 +1,8 @@
-﻿using TrinoClient.Model.Client;
-using TrinoClient.Model.SPI;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.Client;
+using TrinoClient.Model.SPI;
 
 namespace TrinoClient.Model.Execution
 {
@@ -45,19 +45,19 @@ namespace TrinoClient.Model.Execution
             HostAddress remoteHost
         )
         {
-            if (String.IsNullOrEmpty(type))
+            if (string.IsNullOrEmpty(type))
             {
-                throw new ArgumentNullException("type", "The type cannot be null or empty.");
+                throw new ArgumentNullException(nameof(type), "The type cannot be null or empty.");
             }
 
-            this.Type = type;
-            this.Message = message;
-            this.Cause = cause;
-            this.Suppressed = suppressed ?? throw new ArgumentNullException("suppressed", "Suppressed cannot be null.");
-            this.Stack = stack ?? throw new ArgumentNullException("stack", "Stack cannot be null.");
-            this.ErrorLocation = errorLocation;
-            this.ErrorCode = errorCode;
-            this.RemoteHost = remoteHost;
+            Type = type;
+            Message = message;
+            Cause = cause;
+            Suppressed = suppressed ?? throw new ArgumentNullException(nameof(suppressed), "Suppressed cannot be null.");
+            Stack = stack ?? throw new ArgumentNullException(nameof(stack), "Stack cannot be null.");
+            ErrorLocation = errorLocation;
+            ErrorCode = errorCode;
+            RemoteHost = remoteHost;
         }
 
         #endregion

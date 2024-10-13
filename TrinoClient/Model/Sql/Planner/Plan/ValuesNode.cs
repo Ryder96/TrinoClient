@@ -25,12 +25,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         [JsonConstructor]
         public ValuesNode(PlanNodeId id, IEnumerable<Symbol> outputSymbols, IEnumerable<List<dynamic>> rows) : base(id)
         {
-            this.OutputSymbols = outputSymbols;
-            this.Rows = rows;
+            OutputSymbols = outputSymbols;
+            Rows = rows;
 
             int OutputSymbolsSize = outputSymbols.Count();
 
-            foreach (List<dynamic> Row in this.Rows)
+            foreach (List<dynamic> Row in Rows)
             {
                 ParameterCheck.OutOfRange(Row.Count == OutputSymbolsSize || Row.Count == 0, $"Expected row to have {OutputSymbolsSize} values, but row has {Row.Count} values.");
             }
@@ -42,12 +42,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.OutputSymbols;
+            return OutputSymbols;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            return new PlanNode[0];
+            return [];
         }
 
         #endregion

@@ -69,24 +69,24 @@ namespace TrinoClient.Model.Sql.Planner.Plan
             DistributionType distributionType
             ) : base(id)
         {
-            this.Type = type;
-            this.Left = left ?? throw new ArgumentNullException("left");
-            this.Right = right ?? throw new ArgumentNullException("right");
-            this.Criteria = criteria ?? throw new ArgumentNullException("criteria");
-            this.OutputSymbols = outputSymbols ?? throw new ArgumentNullException("outputSymbols");
-            this.Filter = filter;
-            this.LeftHashSymbol = leftHashSymbol;
-            this.RightHashSymbol = rightHashSymbol;
-            this.DistributionType = distributionType;
+            Type = type;
+            Left = left ?? throw new ArgumentNullException(nameof(left));
+            Right = right ?? throw new ArgumentNullException(nameof(right));
+            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
+            OutputSymbols = outputSymbols ?? throw new ArgumentNullException(nameof(outputSymbols));
+            Filter = filter;
+            LeftHashSymbol = leftHashSymbol;
+            RightHashSymbol = rightHashSymbol;
+            DistributionType = distributionType;
 
-            HashSet<Symbol> InputSymbols = new HashSet<Symbol>(this.Left.GetOutputSymbols().Concat(this.Right.GetOutputSymbols()));
+            HashSet<Symbol> InputSymbols = new(Left.GetOutputSymbols().Concat(Right.GetOutputSymbols()));
 
-            ParameterCheck.Check(this.OutputSymbols.All(x => InputSymbols.Contains(x)), "Left and right join inputs do not contain all output symbols.");
+            ParameterCheck.Check(OutputSymbols.All(x => InputSymbols.Contains(x)), "Left and right join inputs do not contain all output symbols.");
 
-            ParameterCheck.Check(!this.IsCrossJoin() || InputSymbols.Equals(this.OutputSymbols), "Cross join does not support output symbols pruning or reordering.");
+            ParameterCheck.Check(!IsCrossJoin() || InputSymbols.Equals(OutputSymbols), "Cross join does not support output symbols pruning or reordering.");
 
-            ParameterCheck.Check(!(!this.Criteria.Any() && this.LeftHashSymbol != null), "Left hash symbol is only valid in equijoin.");
-            ParameterCheck.Check(!(!this.Criteria.Any() && this.RightHashSymbol != null), "Right hash symbol is only valid in equijoin.");
+            ParameterCheck.Check(!(!Criteria.Any() && LeftHashSymbol != null), "Left hash symbol is only valid in equijoin.");
+            ParameterCheck.Check(!(!Criteria.Any() && RightHashSymbol != null), "Right hash symbol is only valid in equijoin.");
         }
 
         #endregion
@@ -96,19 +96,19 @@ namespace TrinoClient.Model.Sql.Planner.Plan
         public bool IsCrossJoin()
         {
             // Criteria is empty and no filter and join type is inner then it is a cross join
-            return !this.Criteria.Any() && this.Filter == null && this.Type == JoinType.INNER;
+            return !Criteria.Any() && Filter == null && Type == JoinType.INNER;
         }
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.OutputSymbols;
+            return OutputSymbols;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Left;
+            yield return Left;
 
-            yield return this.Right;
+            yield return Right;
         }
 
         #endregion

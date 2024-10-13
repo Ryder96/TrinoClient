@@ -76,7 +76,7 @@ namespace TrinoClient.Model
             }
             else if (size < 0)
             {
-                throw new ArgumentOutOfRangeException("size", $"Negative size: {size}.");
+                throw new ArgumentOutOfRangeException(nameof(size), $"Negative size: {size}.");
             }
             else
             {
@@ -93,7 +93,7 @@ namespace TrinoClient.Model
             }
             else if (size < 0)
             {
-                throw new ArgumentOutOfRangeException("size", $"Negative size: {size}.");
+                throw new ArgumentOutOfRangeException(nameof(size), $"Negative size: {size}.");
             }
             else
             {

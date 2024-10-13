@@ -9,7 +9,7 @@ namespace TrinoClient.Model.SPI.Block
     {
         #region Public Fields
 
-        public static readonly int MAX_ARRAY_SIZE = Int32.MaxValue - 8;
+        public static readonly int MAX_ARRAY_SIZE = int.MaxValue - 8;
 
         #endregion
 
@@ -32,10 +32,7 @@ namespace TrinoClient.Model.SPI.Block
 
         public static void CheckArrayRange(int[] array, int offset, int length)
         {
-            if (array == null)
-            {
-                throw new ArgumentNullException("array");
-            }
+            ArgumentNullException.ThrowIfNull(array);
 
             if (offset < 0 || length < 0 || offset + length > array.Length)
             {

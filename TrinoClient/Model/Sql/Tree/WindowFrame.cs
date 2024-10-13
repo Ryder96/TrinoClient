@@ -7,17 +7,20 @@ namespace TrinoClient.Model.Sql.Tree
     /// <summary>
     /// From com.facebook.presto.sql.tree.WindowFrame.java
     /// </summary>
-    public class WindowFrame : Node
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.sql.tree.WindowFrame.java
+                                 /// </summary>
+    public class WindowFrame(NodeLocation location, WindowFrameType type, FrameBound start, FrameBound end) : Node(location)
     {
         #region Public Properties
 
-        public WindowFrameType Type { get; }
+        public WindowFrameType Type { get; } = type;
 
-        public FrameBound Start { get; }
+        public FrameBound Start { get; } = start ?? throw new ArgumentNullException(nameof(start));
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [Optional]
-        public FrameBound End { get; }
+        public FrameBound End { get; } = end; // this is optional ?? throw new ArgumentNullException("end")
 
         #endregion
 
@@ -27,25 +30,17 @@ namespace TrinoClient.Model.Sql.Tree
         {
         }
 
-        [JsonConstructor]
-        public WindowFrame(NodeLocation location, WindowFrameType type, FrameBound start, FrameBound end) : base(location)
-        {
-            this.Type = type;
-            this.Start = start ?? throw new ArgumentNullException("start");
-            this.End = end; // this is optional ?? throw new ArgumentNullException("end")
-        }
-
         #endregion
 
         #region Public Methods
 
         public override IEnumerable<Node> GetChildren()
         {
-            yield return this.Start;
+            yield return Start;
 
-            if (this.End != null)
+            if (End != null)
             {
-                yield return this.End;
+                yield return End;
             }
         }
 
@@ -56,29 +51,29 @@ namespace TrinoClient.Model.Sql.Tree
                 return true;
             }
 
-            if ((obj == null) || (this.GetType() != obj.GetType()))
+            if ((obj == null) || (GetType() != obj.GetType()))
             {
                 return false;
             }
 
             WindowFrame Other = (WindowFrame)obj;
 
-            return Object.Equals(this.Type, Other.Type) &&
-                    Object.Equals(this.Start, Other.Start) &&
-                    Object.Equals(this.End, Other.End);
+            return Object.Equals(Type, Other.Type) &&
+                    Object.Equals(Start, Other.Start) &&
+                    Object.Equals(End, Other.End);
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Type, this.Start, this.End);
+            return Hashing.Hash(Type, Start, End);
         }
 
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("type", this.Type)
-                .Add("start", this.Start)
-                .Add("end", this.End)
+                .Add("type", Type)
+                .Add("start", Start)
+                .Add("end", End)
                 .ToString();
         }
 

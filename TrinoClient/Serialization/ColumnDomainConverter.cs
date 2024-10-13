@@ -1,7 +1,7 @@
-﻿using TrinoClient.Model.SPI.Predicate;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using TrinoClient.Model.SPI.Predicate;
 
 namespace TrinoClient.Serialization
 {

@@ -1,33 +1,26 @@
-﻿using TrinoClient.Model.SPI.Type;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using TrinoClient.Model.SPI.Type;
 
 namespace TrinoClient.Model.SPI.Predicate
 {
     /// <summary>
     /// From com.facebook.presto.spi.predicate.AllOrNoneValueSet.java
     /// </summary>
-    public class AllOrNoneValueSet : IValueSet, IAllOrNone, IValuesProcessor
+    public class AllOrNoneValueSet(IType type, bool all) : IValueSet, IAllOrNone, IValuesProcessor
     {
         #region Private Fields
 
-        private bool _All;
+        private bool _All = all;
 
         #endregion
 
         #region Public Methods
 
-        public IType Type { get; }
+        public IType Type { get; } = type ?? throw new ArgumentNullException(nameof(type));
 
         #endregion
-
         #region Constructors
-
-        public AllOrNoneValueSet(IType type, bool all)
-        {
-            this.Type = type ?? throw new ArgumentNullException("type");
-            this._All = all;
-        }
 
         #endregion
 
@@ -35,12 +28,12 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public bool IsAll()
         {
-            return this._All;
+            return _All;
         }
 
         public bool IsNone()
         {
-            return !this._All;
+            return !_All;
         }
 
         public bool IsSingleValue()
@@ -55,12 +48,12 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public bool ContainsValue(object value)
         {
-            if (!value.GetType().Equals(this.Type.GetJavaType()))
+            if (!value.GetType().Equals(Type.GetJavaType()))
             {
-                throw new ArgumentException($"Value class {value.GetType().Name} does not match required type, {this.Type}.");
+                throw new ArgumentException($"Value class {value.GetType().Name} does not match required type, {Type}.");
             }
 
-            return this._All;
+            return _All;
         }
 
         public IAllOrNone GetAllOrNone()
@@ -75,20 +68,20 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public T Transform<T>(Func<IRanges, T> rangesFunction, Func<IDiscreteValues, T> valuesFunction, Func<IAllOrNone, T> allOrNoneFunction)
         {
-            return allOrNoneFunction.Invoke(this.GetAllOrNone());
+            return allOrNoneFunction.Invoke(GetAllOrNone());
         }
 
         public void Consume(Consumer<IRanges> rangesConsumer, Consumer<IDiscreteValues> valuesConsumer, Consumer<IAllOrNone> allOrNoneConsumer)
         {
-            allOrNoneConsumer.Accept(this.GetAllOrNone());
+            allOrNoneConsumer.Accept(GetAllOrNone());
         }
 
-        public IValueSet CopyOf(IType type, IEnumerable<Range> values)
+        public static IValueSet CopyOf(IType type, IEnumerable<Range> values)
         {
             return new AllOrNoneValueSet(type, true);
         }
 
-        public IValueSet Of(IType type, object first, params object[] rest)
+        public static IValueSet Of(IType type, object first, params object[] rest)
         {
             return SortedRangeSet.Of(type, first, rest);
         }
@@ -100,19 +93,19 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public IType GetPrestoType()
         {
-            return this.Type;
+            return Type;
         }
 
         public IValueSet Intersect(IValueSet other)
         {
-            AllOrNoneValueSet OtherValueSet = this.CheckCompatibility(other);
-            return new AllOrNoneValueSet(this.Type, this._All && OtherValueSet._All);
+            AllOrNoneValueSet OtherValueSet = CheckCompatibility(other);
+            return new AllOrNoneValueSet(Type, _All && OtherValueSet._All);
         }
 
         public IValueSet Union(IValueSet other)
         {
-            AllOrNoneValueSet OtherValueSet = this.CheckCompatibility(other);
-            return new AllOrNoneValueSet(this.Type, this._All || OtherValueSet._All);
+            AllOrNoneValueSet OtherValueSet = CheckCompatibility(other);
+            return new AllOrNoneValueSet(Type, _All || OtherValueSet._All);
         }
 
         public IValueSet Union(IEnumerable<IValueSet> valueSets)
@@ -129,27 +122,27 @@ namespace TrinoClient.Model.SPI.Predicate
 
         public bool Overlaps(IValueSet other)
         {
-            return !this.Intersect(other).IsNone();
+            return !Intersect(other).IsNone();
         }
 
         public IValueSet Subtract(IValueSet other)
         {
-            return this.Intersect(other.Complement());
+            return Intersect(other.Complement());
         }
 
         public bool Contains(IValueSet other)
         {
-            return this.Union(other).Equals(this);
+            return Union(other).Equals(this);
         }
 
         public IValueSet Complement()
         {
-            return new AllOrNoneValueSet(this.Type, !this._All);
+            return new AllOrNoneValueSet(Type, !_All);
         }
 
         public string ToString(IConnectorSession session)
         {
-            return $"[{(this._All ? "ALL" : "NONE")}]";
+            return $"[{(_All ? "ALL" : "NONE")}]";
         }
 
         public override bool Equals(object obj)
@@ -159,19 +152,19 @@ namespace TrinoClient.Model.SPI.Predicate
                 return true;
             }
 
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
             AllOrNoneValueSet Other = (AllOrNoneValueSet)obj;
-            return Object.Equals(this.Type, Other.Type)
-                    && this._All == Other._All;
+            return Object.Equals(Type, Other.Type)
+                    && _All == Other._All;
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Type, this._All);
+            return Hashing.Hash(Type, _All);
         }
 
         #endregion
@@ -194,12 +187,12 @@ namespace TrinoClient.Model.SPI.Predicate
 
         private AllOrNoneValueSet CheckCompatibility(IValueSet other)
         {
-            if (this.Type.Equals(other.GetPrestoType()))
+            if (Type.Equals(other.GetPrestoType()))
             {
-                throw new ArgumentException($"Mismatched types: {this.Type} vs {other.GetPrestoType()}.");
+                throw new ArgumentException($"Mismatched types: {Type} vs {other.GetPrestoType()}.");
             }
 
-            if (!(other is AllOrNoneValueSet))
+            if (other is not AllOrNoneValueSet)
             {
                 throw new ArgumentException($"ValueSet is not a AllOrNoneValueSet: {other.GetType().Name}.");
             }

@@ -1,6 +1,6 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.SPI.Predicate
 {
@@ -11,24 +11,17 @@ namespace TrinoClient.Model.SPI.Predicate
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [JsonConverter(typeof(ColumnDomainConverter<>))]
-    public class ColumnDomain<T>
+    [method: JsonConstructor]
+    public class ColumnDomain<T>(T column, Domain domain)
     {
         #region Public Properties
 
-        public T Column { get; }
+        public T Column { get; } = column;
 
-        public Domain Domain { get; }
+        public Domain Domain { get; } = domain ?? throw new ArgumentNullException(nameof(domain));
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public ColumnDomain(T column, Domain domain)
-        {
-            this.Column = column;
-            this.Domain = domain ?? throw new ArgumentNullException("domain");
-        }
 
         #endregion
     }

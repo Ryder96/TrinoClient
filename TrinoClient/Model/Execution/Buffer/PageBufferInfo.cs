@@ -5,33 +5,25 @@ namespace TrinoClient.Model.Execution.Buffer
     /// <summary>
     /// From com.facebook.presto.execution.buffer.PageBufferInfo.java
     /// </summary>
-    public class PageBufferInfo
+    [method: JsonConstructor]    /// <summary>
+                                 /// From com.facebook.presto.execution.buffer.PageBufferInfo.java
+                                 /// </summary>
+    public class PageBufferInfo(int partition, long bufferedPages, long bufferedBytes, long rowsAdded, long pagesAdded)
     {
         #region Public Properties
 
-        public int Partition { get; }
+        public int Partition { get; } = partition;
 
-        public long BufferedPages { get; }
+        public long BufferedPages { get; } = bufferedPages;
 
-        public long BufferedBytes { get; }
+        public long BufferedBytes { get; } = bufferedBytes;
 
-        public long RowsAdded { get; }
+        public long RowsAdded { get; } = rowsAdded;
 
-        public long PagesAdded { get; }
+        public long PagesAdded { get; } = pagesAdded;
 
         #endregion
-
         #region Constructors
-
-        [JsonConstructor]
-        public PageBufferInfo(int partition, long bufferedPages, long bufferedBytes, long rowsAdded, long pagesAdded)
-        {
-            this.Partition = partition;
-            this.BufferedPages = bufferedPages;
-            this.BufferedBytes = bufferedBytes;
-            this.RowsAdded = rowsAdded;
-            this.PagesAdded = pagesAdded;
-        }
 
         #endregion
 
@@ -40,11 +32,11 @@ namespace TrinoClient.Model.Execution.Buffer
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("partition", this.Partition)
-                .Add("bufferedPages", this.BufferedPages)
-                .Add("bufferedBytes", this.BufferedBytes)
-                .Add("rowsAdded", this.RowsAdded)
-                .Add("pagesAdded", this.PagesAdded)
+                .Add("partition", Partition)
+                .Add("bufferedPages", BufferedPages)
+                .Add("bufferedBytes", BufferedBytes)
+                .Add("rowsAdded", RowsAdded)
+                .Add("pagesAdded", PagesAdded)
                 .ToString();
         }
 

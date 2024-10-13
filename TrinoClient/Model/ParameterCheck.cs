@@ -30,7 +30,7 @@ namespace TrinoClient.Model
 
         public static void NotNullOrEmpty(string value, string parameterName, string message = "")
         {
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentNullException(parameterName, message);
             }

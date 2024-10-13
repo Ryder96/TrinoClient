@@ -1,11 +1,11 @@
-﻿using TrinoClient.Model.Jmx;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using TrinoClient.Model.Jmx;
 using TrinoClient.Model.NodeInfo;
 using TrinoClient.Model.Query;
 using TrinoClient.Model.SPI;
 using TrinoClient.Model.Statement;
 using TrinoClient.Model.Thread;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace TrinoClient.Interfaces
 {

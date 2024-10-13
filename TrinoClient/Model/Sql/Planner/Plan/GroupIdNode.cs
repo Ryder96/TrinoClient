@@ -41,13 +41,13 @@ namespace TrinoClient.Model.Sql.Planner.Plan
             Symbol groupIdSymbol
             ) : base(id)
         {
-            this.Source = source ?? throw new ArgumentNullException("source");
-            this.GroupingSets = groupingSets ?? throw new ArgumentNullException("groupingSets");
-            this.GroupingSetMappings = groupingSetMappings ?? throw new ArgumentNullException("groupingSetMappings");
-            this.ArgumentMappings = argumentMappings ?? throw new ArgumentNullException("argumentMappings");
-            this.GroupIdSymbol = groupIdSymbol ?? throw new ArgumentNullException("groupIdSymbol");
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+            GroupingSets = groupingSets ?? throw new ArgumentNullException(nameof(groupingSets));
+            GroupingSetMappings = groupingSetMappings ?? throw new ArgumentNullException(nameof(groupingSetMappings));
+            ArgumentMappings = argumentMappings ?? throw new ArgumentNullException(nameof(argumentMappings));
+            GroupIdSymbol = groupIdSymbol ?? throw new ArgumentNullException(nameof(groupIdSymbol));
 
-            if (this.GroupingSetMappings.Keys.Intersect(this.ArgumentMappings.Keys).Any())
+            if (GroupingSetMappings.Keys.Intersect(ArgumentMappings.Keys).Any())
             {
                 throw new ArgumentException("The argument outputs and grouping outputs must be a disjoint set.");
             }
@@ -59,12 +59,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.GroupingSets.SelectMany(x => x).Concat(this.ArgumentMappings.Keys.Select(x => new Symbol(x))).Concat(new Symbol[] { this.GroupIdSymbol });
+            return GroupingSets.SelectMany(x => x).Concat(ArgumentMappings.Keys.Select(x => new Symbol(x))).Concat([GroupIdSymbol]);
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            yield return this.Source;
+            yield return Source;
         }
 
         #endregion

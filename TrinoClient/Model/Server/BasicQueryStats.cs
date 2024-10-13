@@ -1,9 +1,9 @@
-﻿using TrinoClient.Model.Execution;
-using TrinoClient.Model.Execution.Scheduler;
-using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using TrinoClient.Model.Execution;
+using TrinoClient.Model.Execution.Scheduler;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model.Server
 {
@@ -76,24 +76,24 @@ namespace TrinoClient.Model.Server
             ParameterCheck.OutOfRange(runningDrivers >= 0, "runningDrivers", "Running drivers cannot be negative.");
             ParameterCheck.OutOfRange(completedDrivers >= 0, "completedDrivers", "Completed drivers cannot be negative.");
 
-            this.CreateTime = createTime;
-            this.EndTime = endTime;
+            CreateTime = createTime;
+            EndTime = endTime;
 
-            this.ElapsedTime = elapsedTime;
+            ElapsedTime = elapsedTime;
 
-            this.TotalDrivers = totalDrivers;
-            this.QueuedDrivers = queuedDrivers;
-            this.RunningDrivers = runningDrivers;
-            this.CompletedDrivers = completedDrivers;
+            TotalDrivers = totalDrivers;
+            QueuedDrivers = queuedDrivers;
+            RunningDrivers = runningDrivers;
+            CompletedDrivers = completedDrivers;
 
-            this.CumulativeUserMemory = cumulativeUserMemory;
-            this.UserMemoryReservation = userMemoryReservation;
-            this.PeakMemoryReservation = peakUserMemoryReservation;
-            this.TotalCpuTime = totalCpuTime;
+            CumulativeUserMemory = cumulativeUserMemory;
+            UserMemoryReservation = userMemoryReservation;
+            PeakMemoryReservation = peakUserMemoryReservation;
+            TotalCpuTime = totalCpuTime;
 
-            this.FullyBlocked = fullyBlocked;
-            this.BlockedReasons = blockedReasons ?? throw new ArgumentNullException("blockedReasons");
-            this.ProgressPercentage = progressPercentage;
+            FullyBlocked = fullyBlocked;
+            BlockedReasons = blockedReasons ?? throw new ArgumentNullException(nameof(blockedReasons));
+            ProgressPercentage = progressPercentage;
         }
 
         public BasicQueryStats(QueryStats queryStats) : this(

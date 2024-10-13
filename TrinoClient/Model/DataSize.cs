@@ -1,6 +1,6 @@
-﻿using TrinoClient.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using TrinoClient.Serialization;
 
 namespace TrinoClient.Model
 {
@@ -20,23 +20,23 @@ namespace TrinoClient.Model
         [JsonConstructor]
         public DataSize(double size, DataSizeUnit unit)
         {
-            if (Double.IsInfinity(size))
+            if (double.IsInfinity(size))
             {
-                throw new ArgumentOutOfRangeException("size", "The size is infinity.");
+                throw new ArgumentOutOfRangeException(nameof(size), "The size is infinity.");
             }
 
-            if (Double.IsNaN(size))
+            if (double.IsNaN(size))
             {
-                throw new ArgumentOutOfRangeException("size", "The size is NaN.");
+                throw new ArgumentOutOfRangeException(nameof(size), "The size is NaN.");
             }
 
             if (size < 0)
             {
-                throw new ArgumentOutOfRangeException("size", "The size is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(size), "The size is less than 0.");
             }
 
-            this.Size = size;
-            this.Unit = unit;
+            Size = size;
+            Unit = unit;
         }
 
         #endregion
@@ -59,7 +59,7 @@ namespace TrinoClient.Model
 
             foreach (DataSizeUnit UnitToTest in Enum.GetValues(typeof(DataSizeUnit)))
             {
-                if (this.GetValue(UnitToTest) >= 1.0)
+                if (GetValue(UnitToTest) >= 1.0)
                 {
                     UnitToUse = UnitToTest;
                 }
@@ -69,34 +69,34 @@ namespace TrinoClient.Model
                 }
             }
 
-            return this.ConvertTo(UnitToUse);
+            return ConvertTo(UnitToUse);
         }
 
         public DataSize ConvertTo(DataSizeUnit unit)
         {
-            return new DataSize(this.GetValue(unit), unit);
+            return new DataSize(GetValue(unit), unit);
         }
 
         public override string ToString()
         {
-            return $"{this.Size.ToString("0.##")}{this.Unit.GetUnitString()}";
+            return $"{Size.ToString("0.##")}{Unit.GetUnitString()}";
         }
 
         public double GetValue(DataSizeUnit unit)
         {
-            return this.Size * (this.Unit.GetFactor() * (1.0 / unit.GetFactor()));
+            return Size * (Unit.GetFactor() * (1.0 / unit.GetFactor()));
         }
 
         public int CompareTo(DataSize other)
         {
-            return this.GetValue(DataSizeUnit.BYTE).CompareTo(other.GetValue(DataSizeUnit.BYTE));
+            return GetValue(DataSizeUnit.BYTE).CompareTo(other.GetValue(DataSizeUnit.BYTE));
         }
 
         public long ToBytes()
         {
-            double Bytes = this.GetValue(DataSizeUnit.BYTE);
+            double Bytes = GetValue(DataSizeUnit.BYTE);
 
-            ParameterCheck.Check(Bytes <= Int64.MaxValue, "Size in bytes is too large to be represented in bytes as a long.");
+            ParameterCheck.Check(Bytes <= long.MaxValue, "Size in bytes is too large to be represented in bytes as a long.");
 
             return (long)Bytes;
         }

@@ -1,24 +1,19 @@
-﻿using TrinoClient.Model.SPI.Block;
-using System;
+﻿using System;
+using TrinoClient.Model.SPI.Block;
 
 namespace TrinoClient.Model.SPI.Type
 {
     /// <summary>
     /// From com.facebook.spi.type.AbstractVariableWidthType.java
     /// </summary>
-    public abstract class AbstractVariableWidthType : AbstractType, IVariableWidthType
+    public abstract class AbstractVariableWidthType(TypeSignature signature, System.Type type) : AbstractType(signature, type), IVariableWidthType
     {
         #region Private Fields
 
         private static readonly int EXPECTED_BYTES_PER_ENTRY = 32;
 
         #endregion
-
         #region Constructors
-
-        protected AbstractVariableWidthType(TypeSignature signature, System.Type type) : base(signature, type)
-        {
-        }
 
         #endregion
 
@@ -41,14 +36,14 @@ namespace TrinoClient.Model.SPI.Type
 
             return new VariableWidthBlockBuilder(
                 blockBuilderStatus,
-                (expectedBytesPerEntry == 0 ? expectedEntries : Math.Min(expectedEntries, MaxBlockSizeInBytes / expectedBytesPerEntry)),
+                expectedBytesPerEntry == 0 ? expectedEntries : Math.Min(expectedEntries, MaxBlockSizeInBytes / expectedBytesPerEntry),
                 ExpectedBytes
                 );
         }
 
         public override IBlockBuilder CreateBlockBuilder(BlockBuilderStatus blockBuilderStatus, int expectedEntries)
         {
-            return this.CreateBlockBuilder(blockBuilderStatus, expectedEntries, EXPECTED_BYTES_PER_ENTRY);
+            return CreateBlockBuilder(blockBuilderStatus, expectedEntries, EXPECTED_BYTES_PER_ENTRY);
         }
 
         #endregion

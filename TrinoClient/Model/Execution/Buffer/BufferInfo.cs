@@ -29,19 +29,19 @@ namespace TrinoClient.Model.Execution.Buffer
         {
             if (bufferedPages < 0)
             {
-                throw new ArgumentOutOfRangeException("bufferedPages", "The buffered pages cannot be less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bufferedPages), "The buffered pages cannot be less than 0.");
             }
 
             if (pagesSent < 0)
             {
-                throw new ArgumentOutOfRangeException("pagesSent", "The pages sent cannot be less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(pagesSent), "The pages sent cannot be less than 0.");
             }
 
-            this.BufferId = bufferId ?? throw new ArgumentNullException("bufferId");
-            this.PagesSent = pagesSent;
-            this.PageBufferInfo = pageBufferInfo ?? throw new ArgumentNullException("pageBufferInfo");
-            this.Finished = finished;
-            this.BufferedPages = bufferedPages;
+            BufferId = bufferId ?? throw new ArgumentNullException(nameof(bufferId));
+            PagesSent = pagesSent;
+            PageBufferInfo = pageBufferInfo ?? throw new ArgumentNullException(nameof(pageBufferInfo));
+            Finished = finished;
+            BufferedPages = bufferedPages;
         }
 
         #endregion
@@ -51,11 +51,11 @@ namespace TrinoClient.Model.Execution.Buffer
         public override string ToString()
         {
             return StringHelper.Build(this)
-                .Add("bufferId", this.BufferId)
-                .Add("finished", this.Finished)
-                .Add("bufferedPages", this.BufferedPages)
-                .Add("pagesSent", this.PagesSent)
-                .Add("pageBufferInfo", this.PageBufferInfo)
+                .Add("bufferId", BufferId)
+                .Add("finished", Finished)
+                .Add("bufferedPages", BufferedPages)
+                .Add("pagesSent", PagesSent)
+                .Add("pageBufferInfo", PageBufferInfo)
                 .ToString();
         }
 

@@ -1,11 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TrinoClient.Interfaces;
 using TrinoClient.Model.Query;
 using TrinoClient.Model.Server;
 using TrinoClient.Model.Statement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace TrinoClient.Tests
@@ -22,17 +21,17 @@ namespace TrinoClient.Tests
         public async Task TestPassword()
         {
             // ARRANGE
-            TrinoClientSessionConfig config = new TrinoClientSessionConfig()
+            TrinoClientSessionConfig config = new()
             {
-                Host = "localhost",
+                Host = "172.16.0.232",
                 Port = 8080,
-                Password = "password1!2@3#4$AA"
+                User = "admin"
             };
 
             ITrinoClient client = new TrinodbClient(config);
 
             // ACT
-            ExecuteQueryV1Request req = new ExecuteQueryV1Request($"CREATE SCHEMA IF NOT EXISTS hive.{Schema}");
+            ExecuteQueryV1Request req = new($"CREATE SCHEMA IF NOT EXISTS hive.{Schema}");
 
             //mock.Verify(x => x.ExecuteQueryV1(captor.Capture()));
             //req.
@@ -47,15 +46,17 @@ namespace TrinoClient.Tests
         public async Task CreateSchema()
         {
             // ARRANGE
-            TrinoClientSessionConfig Config = new TrinoClientSessionConfig()
+            TrinoClientSessionConfig Config = new()
             {
-                Host = "localhost",
-                Port = 8080
+                Host = "172.16.0.232",
+                Port = 8080,
+                User = "admin"
+
             };
 
             ITrinoClient Client = new TrinodbClient(Config);
 
-            ExecuteQueryV1Request Req = new ExecuteQueryV1Request($"CREATE SCHEMA IF NOT EXISTS hive.{Schema}");
+            ExecuteQueryV1Request Req = new($"CREATE SCHEMA IF NOT EXISTS hive.{Schema}");
 
             // ACT
             ExecuteQueryV1Response Res = await Client.ExecuteQueryV1(Req);
@@ -68,15 +69,17 @@ namespace TrinoClient.Tests
         public async Task CreateTable()
         {
             // ARRANGE
-            TrinoClientSessionConfig Config = new TrinoClientSessionConfig("hive", Schema)
+            TrinoClientSessionConfig Config = new("hive", Schema)
             {
-                Host = "localhost",
-                Port = 8080
+                Host = "172.16.0.232",
+                Port = 8080,
+                User = "admin"
+
             };
 
             ITrinoClient Client = new TrinodbClient(Config);
 
-            ExecuteQueryV1Request Req = new ExecuteQueryV1Request($"CREATE TABLE IF NOT EXISTS tracklets (id bigint, objectclass varchar, length double, trackdata array(varchar), platform varchar,spectrum varchar, timestamp bigint) WITH (format = 'AVRO', external_location = '{S3_Location}');");
+            ExecuteQueryV1Request Req = new($"CREATE TABLE IF NOT EXISTS tracklets (id bigint, objectclass varchar, length double, trackdata array(varchar), platform varchar,spectrum varchar, timestamp bigint) WITH (format = 'AVRO', external_location = '{S3_Location}');");
 
             // ACT
             ExecuteQueryV1Response Res = await Client.ExecuteQueryV1(Req);
@@ -89,14 +92,16 @@ namespace TrinoClient.Tests
         public async Task TestExecuteStatement()
         {
             //ARRANGE
-            TrinoClientSessionConfig Config = new TrinoClientSessionConfig("hive", Schema)
+            TrinoClientSessionConfig Config = new("hive", Schema)
             {
-                Host = "localhost",
-                Port = 8080
+                Host = "172.16.0.232",
+                Port = 8080,
+                User = "admin"
+
             };
             ITrinoClient Client = new TrinodbClient(Config);
 
-            ExecuteQueryV1Request Req = new ExecuteQueryV1Request("select * from tracklets limit 5;");
+            ExecuteQueryV1Request Req = new("select * from tracklets limit 5;");
 
             // ACT
             ExecuteQueryV1Response Res = await Client.ExecuteQueryV1(Req);
@@ -109,14 +114,16 @@ namespace TrinoClient.Tests
         public async Task TestExecuteStatementOrderBy()
         {
             //ARRANGE
-            TrinoClientSessionConfig Config = new TrinoClientSessionConfig("hive", Schema)
+            TrinoClientSessionConfig Config = new("hive", Schema)
             {
-                Host = "localhost",
-                Port = 8080
+                Host = "172.16.0.232",
+                Port = 8080,
+                User = "admin"
+
             };
             ITrinoClient Client = new TrinodbClient(Config);
 
-            ExecuteQueryV1Request Req = new ExecuteQueryV1Request("select * from tracklets ORDER BY length limit 5;");
+            ExecuteQueryV1Request Req = new("select * from tracklets ORDER BY length limit 5;");
 
             // ACT
             ExecuteQueryV1Response Res = await Client.ExecuteQueryV1(Req);
@@ -129,14 +136,16 @@ namespace TrinoClient.Tests
         public async Task TestExecuteStatementWhere()
         {
             //ARRANGE
-            TrinoClientSessionConfig Config = new TrinoClientSessionConfig("hive", Schema)
+            TrinoClientSessionConfig Config = new("hive", Schema)
             {
-                Host = "localhost",
-                Port = 8080
+                Host = "172.16.0.232",
+                Port = 8080,
+                User = "admin"
+
             };
             ITrinoClient Client = new TrinodbClient(Config);
 
-            ExecuteQueryV1Request Req = new ExecuteQueryV1Request("select id,length,objectclass from tracklets WHERE length > 1000 LIMIT 5;");
+            ExecuteQueryV1Request Req = new("select id,length,objectclass from tracklets WHERE length > 1000 LIMIT 5;");
 
             // ACT
             ExecuteQueryV1Response Res = await Client.ExecuteQueryV1(Req);
@@ -149,14 +158,16 @@ namespace TrinoClient.Tests
         public async Task TestQueryResultDataToJson()
         {
             //ARRANGE
-            TrinoClientSessionConfig Config = new TrinoClientSessionConfig("hive", Schema)
+            TrinoClientSessionConfig Config = new("hive", Schema)
             {
-                Host = "localhost",
-                Port = 8080
+                Host = "172.16.0.232",
+                Port = 8080,
+                User = "admin"
+
             };
             ITrinoClient Client = new TrinodbClient(Config);
 
-            ExecuteQueryV1Request Req = new ExecuteQueryV1Request("select * from tracklets limit 5;");
+            ExecuteQueryV1Request Req = new("select * from tracklets limit 5;");
 
             // ACT
             ExecuteQueryV1Response Res = await Client.ExecuteQueryV1(Req);
@@ -164,39 +175,43 @@ namespace TrinoClient.Tests
             string Json = Res.DataToJson();
 
             // ASSERT
-            Assert.True(Res.QueryClosed == true && !String.IsNullOrEmpty(Json));
+            Assert.True(Res.QueryClosed == true && !string.IsNullOrEmpty(Json));
         }
 
         [Fact]
         public async Task TestQueryResultDataToCsv()
         {
             //ARRANGE
-            TrinoClientSessionConfig Config = new TrinoClientSessionConfig("hive", Schema)
+            TrinoClientSessionConfig Config = new("hive", Schema)
             {
-                Host = "localhost",
-                Port = 8080
+                Host = "172.16.0.232",
+                Port = 8080,
+                User = "admin"
+
             };
             ITrinoClient Client = new TrinodbClient(Config);
 
-            ExecuteQueryV1Request Req = new ExecuteQueryV1Request("select * from tracklets limit 5;");
+            ExecuteQueryV1Request Req = new("select * from tracklets limit 5;");
 
             // ACT
             ExecuteQueryV1Response Res = await Client.ExecuteQueryV1(Req);
 
-            string Csv = String.Join("\n", Res.DataToCsv());
+            string Csv = string.Join("\n", Res.DataToCsv());
 
             // ASSERT
-            Assert.True(Res.QueryClosed == true && !String.IsNullOrEmpty(Csv));
+            Assert.True(Res.QueryClosed == true && !string.IsNullOrEmpty(Csv));
         }
 
         [Fact]
         public async Task TestListQueries()
         {
             //ARRANGE
-            TrinoClientSessionConfig Config = new TrinoClientSessionConfig("hive", Schema)
+            TrinoClientSessionConfig Config = new("hive", Schema)
             {
-                Host = "localhost",
-                Port = 8080
+                Host = "172.16.0.232",
+                Port = 8080,
+                User = "admin"
+
             };
             ITrinoClient Client = new TrinodbClient(Config);
 
@@ -211,17 +226,19 @@ namespace TrinoClient.Tests
         public async Task TestGetQuery()
         {
             //ARRANGE
-            TrinoClientSessionConfig Config = new TrinoClientSessionConfig("hive", Schema)
+            TrinoClientSessionConfig Config = new("hive", Schema)
             {
-                Host = "localhost",
-                Port = 8080
+                Host = "172.16.0.232",
+                Port = 8080,
+                User = "admin"
+
             };
             ITrinoClient Client = new TrinodbClient(Config);
 
             // ACT
             ListQueriesV1Response Res = await Client.GetQueries();
 
-            List<GetQueryV1Response> Info = new List<GetQueryV1Response>();
+            List<GetQueryV1Response> Info = [];
 
             foreach (BasicQueryInfo Item in Res.QueryInfo)
             {

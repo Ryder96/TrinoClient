@@ -36,13 +36,13 @@ namespace TrinoClient.Model
 
             get
             {
-                return this._Properties;
+                return _Properties;
             }
             set
             {
                 foreach (KeyValuePair<string, string> Item in value)
                 {
-                    if (String.IsNullOrEmpty(Item.Key))
+                    if (string.IsNullOrEmpty(Item.Key))
                     {
                         throw new ArgumentNullException("Properties", "Session property key name is empty.");
                     }
@@ -67,7 +67,7 @@ namespace TrinoClient.Model
                     }
                 }
 
-                this._Properties = value;
+                _Properties = value;
             }
         }
 
@@ -93,7 +93,7 @@ namespace TrinoClient.Model
 
             get
             {
-                return this._ClientTags;
+                return _ClientTags;
             }
             set
             {
@@ -105,7 +105,7 @@ namespace TrinoClient.Model
                     }
                 }
 
-                this._ClientTags = value;
+                _ClientTags = value;
             }
         }
 
@@ -123,10 +123,10 @@ namespace TrinoClient.Model
         /// </summary>
         public QueryOptions()
         {
-            this.Properties = new Dictionary<string, string>();
-            this.PreparedStatements = new Dictionary<string, string>();
-            this.ClientTags = new HashSet<string>();
-            this.TransactionId = String.Empty;
+            Properties = new Dictionary<string, string>();
+            PreparedStatements = new Dictionary<string, string>();
+            ClientTags = [];
+            TransactionId = string.Empty;
         }
 
         #endregion

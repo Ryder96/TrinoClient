@@ -6,26 +6,18 @@ namespace TrinoClient.Model.Sql.Planner.Plan
     /// <summary>
     /// From com.facebook.presto.sql.planner.plan.SetOperationNode.java
     /// </summary>
-    public class SetOperationNode : PlanNode
+    public class SetOperationNode(PlanNodeId id, IEnumerable<PlanNode> sources, IEnumerable<KeyValuePair<Symbol, Symbol>> outputToInputs, IEnumerable<Symbol> outputs) : PlanNode(id)
     {
         #region Public Properties
 
-        public IEnumerable<PlanNode> Sources { get; }
+        public IEnumerable<PlanNode> Sources { get; } = sources ?? throw new ArgumentNullException(nameof(sources));
 
-        public IEnumerable<KeyValuePair<Symbol, Symbol>> OutputToInputs { get; }
+        public IEnumerable<KeyValuePair<Symbol, Symbol>> OutputToInputs { get; } = outputToInputs ?? throw new ArgumentNullException(nameof(outputToInputs));
 
-        public IEnumerable<Symbol> Outputs { get; }
+        public IEnumerable<Symbol> Outputs { get; } = outputs ?? throw new ArgumentNullException(nameof(outputs));
 
         #endregion
-
         #region Constructors
-
-        public SetOperationNode(PlanNodeId id, IEnumerable<PlanNode> sources, IEnumerable<KeyValuePair<Symbol, Symbol>> outputToInputs, IEnumerable<Symbol> outputs) : base(id)
-        {
-            this.Sources = sources ?? throw new ArgumentNullException("sources");
-            this.OutputToInputs = outputToInputs ?? throw new ArgumentNullException("outputToInputs");
-            this.Outputs = outputs ?? throw new ArgumentNullException("outputs");
-        }
 
         #endregion
 
@@ -33,12 +25,12 @@ namespace TrinoClient.Model.Sql.Planner.Plan
 
         public override IEnumerable<Symbol> GetOutputSymbols()
         {
-            return this.Outputs;
+            return Outputs;
         }
 
         public override IEnumerable<PlanNode> GetSources()
         {
-            return this.Sources;
+            return Sources;
         }
 
         #endregion

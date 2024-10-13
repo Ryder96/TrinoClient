@@ -1,29 +1,22 @@
-﻿using TrinoClient.Model.SPI.Block;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using TrinoClient.Model.SPI.Block;
 
 namespace TrinoClient.Model.SPI.Type
 {
     /// <summary>
     /// From com.facebook.presto.spi.type.AbstractType.java
     /// </summary>
-    public abstract class AbstractType : IType
+    public abstract class AbstractType(TypeSignature signature, System.Type type) : IType
     {
         #region Protected Fields
 
-        protected readonly TypeSignature Signature;
+        protected readonly TypeSignature Signature = signature;
 
-        protected readonly System.Type JavaType;
+        protected readonly System.Type JavaType = type;
 
         #endregion
-
         #region Constructors
-
-        public AbstractType(TypeSignature signature, System.Type type)
-        {
-            this.Signature = signature;
-            this.JavaType = type;
-        }
 
         #endregion
 
@@ -31,22 +24,22 @@ namespace TrinoClient.Model.SPI.Type
 
         public virtual string GetDisplayName()
         {
-            return this.Signature.ToString();
+            return Signature.ToString();
         }
 
         public virtual System.Type GetJavaType()
         {
-            return this.JavaType;
+            return JavaType;
         }
 
         public virtual IEnumerable<IType> GetTypeParameter()
         {
-            return new IType[0];
+            return [];
         }
 
         public virtual TypeSignature GetTypeSignature()
         {
-            return this.Signature;
+            return Signature;
         }
 
         public virtual bool IsComparable()
@@ -61,7 +54,7 @@ namespace TrinoClient.Model.SPI.Type
 
         public override string ToString()
         {
-            return this.Signature.ToString();
+            return Signature.ToString();
         }
 
         public override bool Equals(object obj)
@@ -70,92 +63,92 @@ namespace TrinoClient.Model.SPI.Type
             {
                 return true;
             }
-            if (obj == null || this.GetType() != obj.GetType())
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
 
-            return this.Signature.Equals(((IType)obj).GetTypeSignature());
+            return Signature.Equals(((IType)obj).GetTypeSignature());
         }
 
         public override int GetHashCode()
         {
-            return Hashing.Hash(this.Signature);
+            return Hashing.Hash(Signature);
         }
 
         public virtual long Hash(IBlock block, int position)
         {
-            throw new InvalidOperationException($"{this.GetTypeSignature()} type is not comparable.");
+            throw new InvalidOperationException($"{GetTypeSignature()} type is not comparable.");
         }
 
         public virtual int CompareTo(IBlock leftBlock, int leftPosition, IBlock rightBlock, int rightPosition)
         {
-            throw new InvalidOperationException($"{this.GetTypeSignature()} type is not orderable.");
+            throw new InvalidOperationException($"{GetTypeSignature()} type is not orderable.");
         }
 
         public virtual bool EqualTo(IBlock leftBlock, int leftPosition, IBlock rightBlock, int rightPosition)
         {
-            throw new InvalidOperationException($"{this.GetTypeSignature()} type is not comparable.");
+            throw new InvalidOperationException($"{GetTypeSignature()} type is not comparable.");
         }
 
         public virtual bool GetBoolean(IBlock block, int position)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual void WriteBoolean(IBlockBuilder blockBuilder, bool value)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual long GetLong(IBlock block, int position)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual void WriteLong(IBlockBuilder blockBuilder, long value)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual double GetDouble(IBlock block, int position)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual void WriteDouble(IBlockBuilder blockBuilder, double value)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual Slice GetSlice(IBlock block, int position)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual void WriteSlice(IBlockBuilder blockBuilder, Slice value)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual void WriteSlice(IBlockBuilder blockBuilder, Slice value, int offset, int length)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual object GetObject(IBlock block, int position)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual void WriteObject(IBlockBuilder blockBuilder, object value)
         {
-            throw new InvalidOperationException(this.GetType().Name);
+            throw new InvalidOperationException(GetType().Name);
         }
 
         public virtual IBlockBuilder CreateBlockBuilder(BlockBuilderStatus blockBuilderStatus, int expectedEntries)
         {
-            return this.CreateBlockBuilder(blockBuilderStatus, expectedEntries, 0);
+            return CreateBlockBuilder(blockBuilderStatus, expectedEntries, 0);
         }
 
         #endregion
